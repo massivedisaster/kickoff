@@ -13,6 +13,5 @@ Configuration
 
 Just build and create configuration file.
 
-```
 ### License
 [GNU LESSER GENERAL PUBLIC LICENSE](LICENSE.md)
