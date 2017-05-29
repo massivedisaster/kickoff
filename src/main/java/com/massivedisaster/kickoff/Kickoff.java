@@ -63,7 +63,7 @@ public class Kickoff {
 
 		System.out.println("Generating new project...");
 
-		copyDirectory(new File( defaultProject +"/templates/" + project.getProjectType()), folderProject);
+		copyDirectory(new File( defaultProject  + "/templates/" + project.getLanguage() + "/" + project.getProjectType()), folderProject);
 		
 		changePackageDirectoryName(folderProject, project.getPackageName().replace(".", "/"));
 
