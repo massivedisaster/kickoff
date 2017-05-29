@@ -1,29 +1,34 @@
 package com.massivedisaster.kickoff;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.Writer;
+import java.io.*;
+import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 import com.google.gson.Gson;
 
 import com.massivedisaster.kickoff.config.ProjectConfiguration;
+import com.massivedisaster.kickoff.network.KickoffService;
 import com.massivedisaster.kickoff.util.Cli;
+import com.massivedisaster.kickoff.util.Const;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import freemarker.template.TemplateExceptionHandler;
 import freemarker.template.Version;
+import okhttp3.ResponseBody;
+import org.rauschig.jarchivelib.Archiver;
+import org.rauschig.jarchivelib.ArchiverFactory;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
 
 /**
  * Generate a new android project based on configurations
@@ -48,8 +53,104 @@ public class Kickoff {
 			}
 		}
 	}
-	
-	/**
+
+    /**
+     * Download the last template form GitHub.
+     * @param project The project configurations.
+     */
+    private static void downloadTemplate(final ProjectConfiguration project){
+        System.out.println("Downloading the template...");
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(Const.WEBSITE_URL)
+                .build();
+
+        KickoffService service = retrofit.create(KickoffService.class);
+        Call<ResponseBody> call = service.downloadTemplate(project.getLanguage(), project.getProjectType());
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                if (response.isSuccessful()) {
+                    System.out.println("Download success.");
+
+                    writeTemplateToDisk(response.body(), normalizeString(project.getProjectName()));
+
+                    //copyDirectory(new File( defaultProject  + "/templates/" + project.getLanguage() + "/" + project.getProjectType()), folderProject);
+
+                    //changePackageDirectoryName(folderProject, project.getPackageName().replace(".", "/"));
+
+                    //applyConfigurations(folderProject, project);
+
+                    System.out.println("Project " + project.getProjectName() + " created.");
+                } else {
+                    System.out.println("Error getting template from the server.");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                t.printStackTrace();
+            }
+        });
+    }
+
+    /**
+     * Write template in disk.
+     * @param body The response body to unpack and save in disk.
+     * @return True if has successful saved.
+     */
+    private static boolean writeTemplateToDisk(ResponseBody body, String dirName) {
+
+        FileOutputStream fout = null;
+        try {
+            fout = new FileOutputStream("template.tar.gz");
+
+            final byte data[] = new byte[1024];
+            int count;
+            while ((count = body.byteStream().read(data, 0, 1024)) != -1) {
+                fout.write(data, 0, count);
+            }
+
+            System.out.println("Temporary file created!");
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }finally {
+            try {
+                if(fout!= null){
+                    fout.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        File file = new File(dirName);
+        if(!file.exists() && file.mkdir()){
+            System.out.println("Directory " + dirName + " created!");
+            Archiver archiver = ArchiverFactory.createArchiver("tar", "gz");
+            try {
+                File template = new File("template.tar.gz");
+                archiver.extract(template, file);
+                System.out.println("Template extracted with success!");
+
+                if(template.delete()){
+                    System.out.println("Temporary file deleted!");
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            return true;
+        }
+
+        System.out.println("Error: " + dirName + " already exists!");
+
+        return false;
+    }
+
+
+
+    /**
 	 * Generate a new project based on a configuration file
 	 */
 	private static void generateNewProject(String fileName) throws Exception{
@@ -63,13 +164,7 @@ public class Kickoff {
 
 		System.out.println("Generating new project...");
 
-		copyDirectory(new File( defaultProject  + "/templates/" + project.getLanguage() + "/" + project.getProjectType()), folderProject);
-		
-		changePackageDirectoryName(folderProject, project.getPackageName().replace(".", "/"));
-
-		applyConfigurations(folderProject, project);
-
-		System.out.println("Project " + project.getProjectName() + " created.");
+        downloadTemplate(project);
 	}
 	
 	private static String getExecutionPath(){
@@ -128,7 +223,9 @@ public class Kickoff {
 	 * @throws TemplateException 
 	  */
 	 private static void applyConfigurations(File folderProject, ProjectConfiguration projectConfiguration) throws IOException, TemplateException{
-		Map<String, Object> input = new HashMap<String, Object>();
+         System.out.println("Applying project configurations...");
+
+         Map<String, Object> input = new HashMap<String, Object>();
 		input.put("configs", projectConfiguration);
 		  
 		Configuration cfg = new Configuration();
@@ -199,4 +296,15 @@ public class Kickoff {
 	            }
 	        } 
 	 }
+
+    /**
+     * Normalize a string and remove white spaces
+     * @param string the string to normalize.
+     * @return the normalized string.
+     */
+    public static String normalizeString(String string) {
+        String stringNormalized = Normalizer.normalize(string, Normalizer.Form.NFD);
+        stringNormalized = stringNormalized.replaceAll("[^\\p{ASCII}]", "");
+        return stringNormalized.replaceAll("\\s+", "");
+    }
 }
