@@ -72,13 +72,20 @@ public class Kickoff {
                 if (response.isSuccessful()) {
                     System.out.println("Download success.");
 
-                    writeTemplateToDisk(response.body(), normalizeString(project.getProjectName()));
+                    String folderName = normalizeString(project.getProjectName());
 
-                    //copyDirectory(new File( defaultProject  + "/templates/" + project.getLanguage() + "/" + project.getProjectType()), folderProject);
+                    if(writeTemplateToDisk(response.body(), folderName)){
+                        File projectDirectory = new File(folderName);
+                        changePackageDirectoryName(projectDirectory, project.getPackageName().replace(".", "/"));
 
-                    //changePackageDirectoryName(folderProject, project.getPackageName().replace(".", "/"));
-
-                    //applyConfigurations(folderProject, project);
+                        try {
+                            applyConfigurations(projectDirectory, project);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        } catch (TemplateException e) {
+                            e.printStackTrace();
+                        }
+                    }
 
                     System.out.println("Project " + project.getProjectName() + " created.");
                 } else {
@@ -182,36 +189,6 @@ public class Kickoff {
 	private static ProjectConfiguration validateConfigurationFile(FileReader fileReader){
 		Gson gson = new Gson();
 		return gson.fromJson(fileReader, ProjectConfiguration.class);
-	}
-	
-	/**
-	 * Copy default project directory
-	 */
-	 private static void copyDirectory(File sourceLocation , File targetLocation)
-			    throws IOException {
-		 
-        if (sourceLocation.isDirectory()) {
-            if (!targetLocation.exists()) {
-                targetLocation.mkdir();
-            }
-
-            String[] children = sourceLocation.list();
-            for (int i=0; i<children.length; i++) {
-                copyDirectory(new File(sourceLocation, children[i]),
-                        new File(targetLocation, children[i]));
-            }
-        } else {
-            InputStream in = new FileInputStream(sourceLocation);
-            OutputStream out = new FileOutputStream(targetLocation);
-
-            byte[] buf = new byte[1024];
-            int len;
-            while ((len = in.read(buf)) > 0) {
-                out.write(buf, 0, len);
-            }
-            in.close();
-            out.close();
-        }
 	}
 	 
 	 /**

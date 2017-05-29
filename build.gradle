@@ -13,4 +13,6 @@ dependencies {
     compile 'com.google.code.gson:gson:2.8.0'
     compile 'org.freemarker:freemarker:2.3.26-incubating'
     compile 'commons-cli:commons-cli:20040117.000000'
+    compile 'org.rauschig:jarchivelib:0.7.1'
+    compile 'com.squareup.retrofit2:retrofit:2.3.0'
 }
