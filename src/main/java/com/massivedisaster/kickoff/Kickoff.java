@@ -34,6 +34,9 @@ public class Kickoff {
 	 * @param args the command line arguments.
 	 */
 	public static void main(String[] args) {
+
+        System.out.println("kickoff v.0.0.1 - A tool to generate new android projects based on a powerful template.\n");
+
 		Cli cli = new Cli(args);
 		cli.parse();
 		
@@ -57,12 +60,16 @@ public class Kickoff {
 		File folderProject = new File(project.getProjectName());
 		
 		String defaultProject = getExecutionPath();
-	
-		copyDirectory(new File( defaultProject +"/templates/" + project.getProjectType()), folderProject);
+
+		System.out.println("Generating new project...");
+
+		copyDirectory(new File( defaultProject  + "/templates/" + project.getLanguage() + "/" + project.getProjectType()), folderProject);
 		
 		changePackageDirectoryName(folderProject, project.getPackageName().replace(".", "/"));
-		
+
 		applyConfigurations(folderProject, project);
+
+		System.out.println("Project " + project.getProjectName() + " created.");
 	}
 	
 	private static String getExecutionPath(){
@@ -140,9 +147,7 @@ public class Kickoff {
 		    } finally {
 		        fileWriter.close();
 		        
-		        if(file.delete()){
-	    			System.out.println(file.getName() + " is deleted!");
-	    		}else{
+		        if(!file.delete()){
 	    			System.out.println("Delete operation is failed.");
 	    		}
 		    }

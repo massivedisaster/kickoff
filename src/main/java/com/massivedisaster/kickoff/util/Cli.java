@@ -29,7 +29,9 @@ public class Cli{
 
 		options.addOption(new Option("h", "help", false, "Show Help."));
 		options.addOption(new Option("u", "update", false, "Update the template project."));
-		options.addOption(new Option("g", "generate", true, "Generate a new project based on a configuration file."));
+        Option optGenerate = new Option("g", "generate", true, "Generate a new project based on a configuration file.");
+        optGenerate.setArgName("configuration file");
+		options.addOption(optGenerate);
 		options.addOption(new Option("o", "open", false, "Open a website to create a new project configuration file."));
 	}
 
@@ -50,7 +52,6 @@ public class Cli{
 			}
 
 		} catch (ParseException e) {
-			log.log(Level.SEVERE, "Failed to parse comand line properties", e);
 			help();
 		}
 	}
@@ -60,8 +61,6 @@ public class Cli{
 		try {
 			return parser.parse(options, args, true);
 		} catch (ParseException e) {
-			e.printStackTrace();
-			log.log(Level.SEVERE, "Failed to parse comand line properties", e);
 			help();
 			return null;
 		}
@@ -71,15 +70,15 @@ public class Cli{
 	private void help() {
 		// This prints out some help
 		HelpFormatter formater = new HelpFormatter();
-
-		formater.printHelp("Kickoff", options);
+        formater.printHelp("kickoff", options);
 		System.exit(0);
 	}
 
 	private void open() {
 		try {
-			Desktop.getDesktop().browse(new URI(Const.WEBSITE));
-		} catch (IOException e) {
+            System.out.println("Opening an online platform to create a configuration file...");
+            Desktop.getDesktop().browse(new URI(Const.WEBSITE));
+        } catch (IOException e) {
 			e.printStackTrace();
 		} catch (URISyntaxException e) {
 			e.printStackTrace();

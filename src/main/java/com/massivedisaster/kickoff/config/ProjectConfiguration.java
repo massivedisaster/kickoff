@@ -5,6 +5,7 @@ public class ProjectConfiguration {
 	private String gradlePluginVersion;
 	private String projectName;
 	private String packageName;
+	private String language;
 	private int minimumSdkApi;
 	private int targetSdkApi;
 	private String buildTools;
@@ -14,6 +15,10 @@ public class ProjectConfiguration {
 	private RetrofitConfiguration retrofit;
 	private OnesignalConfiguration onesignal;
 	private boolean checkstyle;
+
+	public String getLanguage(){
+		return language;
+	}
 
 	public String getProjectName(){
 		return projectName;
