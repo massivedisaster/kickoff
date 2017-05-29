@@ -29,9 +29,9 @@ public class Cli{
 
 		options.addOption(new Option("h", "help", false, "Show Help."));
 		options.addOption(new Option("u", "update", false, "Update the template project."));
-        Option optGenerare = new Option("g", "generate", true, "Generate a new project based on a configuration file.");
-        optGenerare.setArgName("configuration file");
-		options.addOption(optGenerare);
+        Option optGenerate = new Option("g", "generate", true, "Generate a new project based on a configuration file.");
+        optGenerate.setArgName("configuration file");
+		options.addOption(optGenerate);
 		options.addOption(new Option("o", "open", false, "Open a website to create a new project configuration file."));
 	}
 
