@@ -7,7 +7,6 @@ ext {
     <#if configs.onesignal??>
     oneSignalVersion = '3.+@aar'
     </#if>
-
 }
 
 dependencies {

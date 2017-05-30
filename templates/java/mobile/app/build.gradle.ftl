@@ -19,8 +19,8 @@ buildscript {
 repositories {
     maven { url 'https://maven.fabric.io/public' }
 }
-</#if>
 
+</#if>
 apply plugin: 'com.android.application'
 
 android {
@@ -80,7 +80,6 @@ android.variantFilter { variant ->
         variant.setIgnore(true);
     }
 }
-
 
 <#if configs.fabrickey??>
 apply plugin: 'io.fabric'
