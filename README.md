@@ -43,7 +43,7 @@ The configuration file must be named `what_you_want.json`.
   $ java -jar kickoff.jar -g project_configuration.json
 ```
 
-- Also you can use the scripts available for Linux, OSX & Windows:
+- Also you can use the [scripts](https://github.com/massivedisaster/kickoff/tree/master/scripts) available for Linux, OSX & Windows:
 ```
   $ kickoff -g project_configuration.json
 ```
