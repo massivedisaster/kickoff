@@ -28,4 +28,9 @@ dependencies {
     /* ONESIGNAL */
     compile "com.onesignal:OneSignal:$oneSignalVersion"
     </#if>
+    <#if configs.dependencies??>
+    <#list configs.dependencies?keys as key>
+    compile '${key}:{configs.dependencies[key]}'
+    </#list>
+    </#if>
 }

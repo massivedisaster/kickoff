@@ -91,6 +91,8 @@ public class Kickoff {
                 } else {
                     System.out.println("Error getting template from the server.");
                 }
+
+                System.exit(0);
             }
 
             @Override
