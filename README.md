@@ -9,11 +9,11 @@ It will create a new android project based on configurations.
 
 Configuration
 -------------
-### Install
+## Installation
 
 Just build and create configuration file.
 
-### Project configuration file (project_configuration.json)
+## Project configuration file (project_configuration.json)
 
 The configuration file must be named `what_you_want.json`.
 ```js
@@ -36,7 +36,7 @@ The configuration file must be named `what_you_want.json`.
 
 ```
 
-### Usage
+## Usage
 
 - Running the JAR:
 ```
@@ -48,5 +48,5 @@ The configuration file must be named `what_you_want.json`.
   $ kickoff -g project_configuration.json
 ```
 
-### License
+## License
 [GNU LESSER GENERAL PUBLIC LICENSE](LICENSE.md)
