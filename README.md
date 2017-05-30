@@ -4,7 +4,7 @@ A tool to generate new android projects based on a powerful template.
 
 About
 -----
-With this tool you just have to create a configuration file like the one below, build the jar and run it. 
+With this tool you just have to create a project configuration file like the one below and run it. 
 It will create a new android project based on configurations.
 
 Configuration
