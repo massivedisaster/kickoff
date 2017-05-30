@@ -1,20 +1,19 @@
 check {
-
   <#if configs.qualityVerifier??>
-         checkstyle {
-           skip ${configs.qualityVerifier.checkstyle}
-         }
+  checkstyle {
+    skip ${configs.qualityVerifier.checkstyle}
+  }
 
-         findbugs {
-           skip ${configs.qualityVerifier.findbugs}
-         }
+  findbugs {
+    skip ${configs.qualityVerifier.findbugs}
+  }
 
-         pmd {
-           skip ${configs.qualityVerifier.pmd}
-         }
+  pmd {
+    skip ${configs.qualityVerifier.pmd}
+  }
 
-         lint {
-           skip ${configs.qualityVerifier.lint}
-         }
+  lint {
+    skip ${configs.qualityVerifier.lint}
+  }
   </#if>
 }
