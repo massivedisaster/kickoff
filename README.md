@@ -7,7 +7,6 @@ About
 With this tool you just have to create a project configuration file like the one below and run it. 
 It will create a new android project based on configurations.
 
--------------
 ## Installation
 
 Just build and create configuration file.
