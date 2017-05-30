@@ -16,5 +16,5 @@ check {
          lint {
            skip ${configs.qualityVerifier.lint}
          }
-  <#if>
+  </#if>
 }
