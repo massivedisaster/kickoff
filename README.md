@@ -2,7 +2,7 @@ Kickoff
 ===============
 A tool to generate new android projects based on a powerful template.
 
-Usage
+About
 -----
 With this tool you just have to create a configuration file like the one below, build the jar and run it. 
 It will create a new android project based on configurations.
@@ -14,6 +14,7 @@ Configuration
 Just build and create configuration file.
 
 ### Project configuration file (project_configuration.json)
+
 The configuration file must be named `what_you_want.json`.
 ```js
 // The json configuration
@@ -33,6 +34,18 @@ The configuration file must be named `what_you_want.json`.
   }
 }
 
+```
+
+### Usage
+
+- Running the JAR:
+```
+  $ java -jar kickoff.jar -g project_configuration.json
+```
+
+- Also you can use the scripts available for Linux, OSX & Windows:
+```
+  $ kickoff -g project_configuration.json
 ```
 
 ### License
