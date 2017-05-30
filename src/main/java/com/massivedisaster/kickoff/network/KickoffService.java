@@ -7,7 +7,7 @@ import retrofit2.http.Path;
 
 public interface KickoffService {
 
-    @GET("raw/master/templates/{language}/{projectType}.tar.gz")
+    @GET("raw/feature/quality/templates/{language}/{projectType}.tar.gz")
     Call<ResponseBody> downloadTemplate(@Path("language") String language, @Path("projectType") String projectType);
 
 }

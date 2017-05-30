@@ -14,7 +14,7 @@ public class ProjectConfiguration {
 	private String fabrickey;
 	private RetrofitConfiguration retrofit;
 	private OnesignalConfiguration onesignal;
-	private boolean checkstyle;
+	private QualityVerifier qualityVerifier;
 
 	public String getLanguage(){
 		return language;
@@ -64,7 +64,7 @@ public class ProjectConfiguration {
 		return onesignal;
 	}
 
-	public boolean isCheckstyle() {
-		return checkstyle;
+	public QualityVerifier getQualityVerifier() {
+		return qualityVerifier;
 	}
 }

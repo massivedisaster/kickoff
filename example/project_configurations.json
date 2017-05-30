@@ -37,5 +37,10 @@
   "cvs" : {															// Optional
     "type" : "git"
   },
-  "checkstyle" : true												// Optional
+  "qualityVerifier" : {											    // Optional
+    "checkstyle" : true,
+    "findbugs" : true,
+    "pmd" : false,
+    "lint" : true
+  }
 }
