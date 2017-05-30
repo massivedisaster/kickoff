@@ -23,7 +23,7 @@ The configuration file must be named `what_you_want.json`.
   "gradlePluginVersion" : "2.3.0",                              // Mandatory
   "projectType" : "mobile",                                     // Mandatory
   "projectName" : "Kickoff Sample",                             // Mandatory
-  "packageName" : "com.massivedisaster.kickoff.exampe",         // Mandatory
+  "packageName" : "com.massivedisaster.kickoff.example",        // Mandatory
   "minimumSdkApi" : 16,                                         // Mandatory
   "targetSdkApi" : 25,                                          // Mandatory
   "buildTools" : "25.0.3",                                      // Mandatory
