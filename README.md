@@ -13,7 +13,7 @@ Configuration
 
 Just build and create configuration file.
 
-## Project configuration file (project_configuration.json)
+## Project configuration file
 
 The configuration file must be named `what_you_want.json`.
 ```js
