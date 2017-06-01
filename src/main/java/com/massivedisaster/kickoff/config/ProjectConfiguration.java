@@ -2,6 +2,7 @@ package com.massivedisaster.kickoff.config;
 
 public class ProjectConfiguration {
 
+	private String template;
 	private String gradlePluginVersion;
 	private String projectName;
 	private String packageName;
@@ -15,6 +16,10 @@ public class ProjectConfiguration {
 	private RetrofitConfiguration retrofit;
 	private OnesignalConfiguration onesignal;
 	private QualityVerifier qualityVerifier;
+
+	public String getTemplate() {
+		return template;
+	}
 
 	public String getLanguage(){
 		return language;
