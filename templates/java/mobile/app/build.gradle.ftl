@@ -9,7 +9,7 @@ buildscript {
         <#if configs.fabrickey??>
         classpath 'io.fabric.tools:gradle:1.22.1'
         </#if>
-        <#if configs.checkstyle!true>
+        <#if configs.qualityVerifier??>
         classpath 'pt.simdea.verifier:verifier:3.5.0'
         </#if>
     }
@@ -66,7 +66,7 @@ android {
             ]
         }
     }
-    <#if configs.checkstyle!true>
+    <#if configs.qualityVerifier?? && configs.qualityVerifier.lint!true>
     
     lintOptions {
         disable 'InvalidPackage'
@@ -86,6 +86,7 @@ apply plugin: 'io.fabric'
 </#if>
 apply from: 'flavors.gradle'
 apply from: 'dependencies.gradle'
-<#if configs.checkstyle!true>
+<#if configs.qualityVerifier??>
+apply from: 'quality.gradle'
 apply plugin: 'pt.simdea.verifier'
 </#if>

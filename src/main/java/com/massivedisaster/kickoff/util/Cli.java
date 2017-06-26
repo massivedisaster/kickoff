@@ -76,7 +76,7 @@ public class Cli {
     private void open() {
         try {
             System.out.println("Opening an online platform to create a configuration file...");
-            Desktop.getDesktop().browse(new URI(Const.WEBSITE_URL));
+            Desktop.getDesktop().browse(new URI(Const.LIBRARY_REPOSITORY_URL));
         } catch (IOException e) {
             e.printStackTrace();
         } catch (URISyntaxException e) {

@@ -2,6 +2,7 @@ package com.massivedisaster.kickoff.config;
 
 public class ProjectConfiguration {
 
+	private String template;
 	private String gradlePluginVersion;
 	private String projectName;
 	private String packageName;
@@ -14,7 +15,11 @@ public class ProjectConfiguration {
 	private String fabrickey;
 	private RetrofitConfiguration retrofit;
 	private OnesignalConfiguration onesignal;
-	private boolean checkstyle;
+	private QualityVerifier qualityVerifier;
+
+	public String getTemplate() {
+		return template;
+	}
 
 	public String getLanguage(){
 		return language;
@@ -64,7 +69,7 @@ public class ProjectConfiguration {
 		return onesignal;
 	}
 
-	public boolean isCheckstyle() {
-		return checkstyle;
+	public QualityVerifier getQualityVerifier() {
+		return qualityVerifier;
 	}
 }
