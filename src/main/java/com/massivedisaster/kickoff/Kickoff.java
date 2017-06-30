@@ -51,14 +51,14 @@ public class Kickoff {
         ProjectConfiguration project = FileUtils.validateConfigurationFile(configurationFile);
 
         String template = project.getTemplate();
-        if(TextUtils.isEmpty(template)){
+        if (TextUtils.isEmpty(template)) {
             System.out.println("Invalid template");
             return;
         }
 
         System.out.println("Generating new project...");
 
-        if(TextUtils.isValidURL(template)){
+        if (TextUtils.isValidURL(template)) {
             downloadTemplate(project);
         } else {
             accessLocalFile(project);
@@ -111,7 +111,7 @@ public class Kickoff {
         call.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                if (response.isSuccessful() && response.body()!=null) {
+                if (response.isSuccessful() && response.body() != null) {
                     System.out.println("Download success.");
 
                     String folderName = TextUtils.normalizeString(project.getProjectName());
@@ -142,7 +142,7 @@ public class Kickoff {
     /**
      * Iterate all the FTL's in the folder and apply configurations
      *
-     * @param folderName        The project folder to iterate and apply configurations.
+     * @param folderName           The project folder to iterate and apply configurations.
      * @param projectConfiguration The configuration to apply.
      * @throws IOException
      * @throws TemplateException
@@ -153,7 +153,7 @@ public class Kickoff {
         File projectDirectory = new File(folderName);
         FileUtils.changePackageDirectoryName(projectDirectory, projectConfiguration.getPackageName().replace(".", "/"));
 
-        Map<String, Object> input = new HashMap<String, Object>();
+        Map<String, Object> input = new HashMap<>();
         input.put("configs", projectConfiguration);
 
         Configuration cfg = new Configuration();
