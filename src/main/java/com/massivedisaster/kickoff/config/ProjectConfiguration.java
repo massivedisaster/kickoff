@@ -1,5 +1,8 @@
 package com.massivedisaster.kickoff.config;
 
+import java.util.HashMap;
+import java.util.List;
+
 public class ProjectConfiguration {
 
 	private String template;
@@ -16,6 +19,7 @@ public class ProjectConfiguration {
 	private RetrofitConfiguration retrofit;
 	private OnesignalConfiguration onesignal;
 	private QualityVerifier qualityVerifier;
+	private List<Dependency> dependencies;
 
 	public String getTemplate() {
 		return template;
@@ -71,5 +75,9 @@ public class ProjectConfiguration {
 
 	public QualityVerifier getQualityVerifier() {
 		return qualityVerifier;
+	}
+
+	public List<Dependency> getDependencies() {
+		return dependencies;
 	}
 }

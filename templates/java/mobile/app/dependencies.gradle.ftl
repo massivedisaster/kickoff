@@ -7,6 +7,13 @@ ext {
     <#if configs.onesignal??>
     oneSignalVersion = '3.+@aar'
     </#if>
+    <#if configs.dependencies??>
+    <#list configs.dependencies>
+    <#items as dependency>
+    ${dependency.name?lower_case?replace(" ", "")}Version = '${dependency.version}'
+    </#items>
+    </#list>
+    </#if>
 }
 
 dependencies {
@@ -29,8 +36,15 @@ dependencies {
     compile "com.onesignal:OneSignal:$oneSignalVersion"
     </#if>
     <#if configs.dependencies??>
-    <#list configs.dependencies?keys as key>
-    compile '${key}:{configs.dependencies[key]}'
+
+    <#list configs.dependencies>
+    <#items as dependency>
+
+    /* ${dependency.name} */
+    <#list dependency.list as dep>
+    compile("${dep}:$${dependency.name?lower_case?replace(" ", "")}Version")
+    </#list>
+    </#items>
     </#list>
     </#if>
 }
