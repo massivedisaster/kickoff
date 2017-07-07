@@ -1,5 +1,6 @@
 package com.massivedisaster.kickoff;
 
+import com.massivedisaster.kickoff.config.Dependencies;
 import com.massivedisaster.kickoff.config.ProjectConfiguration;
 import com.massivedisaster.kickoff.network.KickoffService;
 import com.massivedisaster.kickoff.util.Cli;
@@ -164,18 +165,27 @@ public class Kickoff {
         cfg.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
 
         for (File file : FileUtils.findAllFilesBasedOnAExtention(projectDirectory, ".ftl")) {
-            Template template = cfg.getTemplate(file.getPath());
+            if (fileIsNeeded(projectConfiguration.getDependencies(), file)) {
+                Template template = cfg.getTemplate(file.getPath());
 
-            Writer fileWriter = new FileWriter(FileUtils.newFileStripExtension(file.getAbsolutePath()));
-            try {
-                template.process(input, fileWriter);
-            } finally {
-                fileWriter.close();
+                Writer fileWriter = new FileWriter(FileUtils.newFileStripExtension(file.getAbsolutePath()));
+                try {
+                    template.process(input, fileWriter);
+                } finally {
+                    fileWriter.close();
 
-                if (!file.delete()) {
-                    System.out.println("Delete operation is failed.");
+                    if (!file.delete()) {
+                        System.out.println("Delete operation is failed.");
+                    }
                 }
             }
         }
+    }
+
+    private static boolean fileIsNeeded(Dependencies dependencies, File file) {
+        if (dependencies == null || (dependencies.getRetrofit() == null && file.getName().contains("RetrofitAdapter"))) {
+            return false;
+        }
+        return true;
     }
 }

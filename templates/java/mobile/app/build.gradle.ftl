@@ -1,12 +1,12 @@
 buildscript {
     repositories {
         jcenter()
-        <#if configs.fabrickey??>
+        <#if configs.dependencies.fabrickey??>
             maven { url 'https://maven.fabric.io/public' }
         </#if>
     }
     dependencies {
-        <#if configs.fabrickey??>
+        <#if configs.dependencies.fabrickey??>
         classpath 'io.fabric.tools:gradle:1.22.1'
         </#if>
         <#if configs.qualityVerifier??>
@@ -15,7 +15,7 @@ buildscript {
     }
 }
 
-<#if configs.fabrickey??>
+<#if configs.dependencies.fabrickey??>
 repositories {
     maven { url 'https://maven.fabric.io/public' }
 }
@@ -30,8 +30,8 @@ android {
     defaultConfig {
         minSdkVersion ${configs.minimumSdkApi}
         targetSdkVersion ${configs.targetSdkApi}
-        <#if configs.retrofit??>
-        	buildConfigField ("long", "API_TIMEOUT", "${configs.retrofit.timeout}")
+        <#if configs.dependencies.retrofit??>
+        	buildConfigField ("long", "API_TIMEOUT", "${configs.dependencies.retrofit.timeout}")
         </#if>
     }
 
@@ -82,7 +82,7 @@ android.variantFilter { variant ->
 }
 
 
-<#if configs.fabrickey??>
+<#if configs.dependencies.fabrickey??>
 apply plugin: 'io.fabric'
 </#if>
 apply from: 'flavors.gradle'
