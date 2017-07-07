@@ -2,7 +2,7 @@ package com.massivedisaster.kickoff.config;
 
 import java.util.List;
 
-public class Dependency {
+public class DependencyExtra {
 
     private String name;
     private String version;

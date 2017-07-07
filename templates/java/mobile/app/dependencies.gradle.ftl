@@ -1,14 +1,14 @@
 ext {
     adalVersion = '0.1.2'
     afmVersion = '0.2.2'
-    <#if configs.fabrickey??>
+    <#if configs.dependencies.fabrickey??>
     fabricCrashlyticsVersion = '2.6.6@aar'
     </#if>
-    <#if configs.onesignal??>
+    <#if configs.dependencies.onesignal??>
     oneSignalVersion = '3.+@aar'
     </#if>
-    <#if configs.dependencies??>
-    <#list configs.dependencies>
+    <#if configs.dependenciesExtra??>
+    <#list configs.dependenciesExtra>
     <#items as dependency>
     ${dependency.name?lower_case?replace(" ", "")}Version = '${dependency.version}'
     </#items>
@@ -30,14 +30,14 @@ dependencies {
         transitive = true;
     }
     </#if>
-    <#if configs.onesignal??>
+    <#if configs.dependencies.onesignal??>
 
     /* ONESIGNAL */
     compile "com.onesignal:OneSignal:$oneSignalVersion"
     </#if>
-    <#if configs.dependencies??>
 
-    <#list configs.dependencies>
+    <#if configs.dependenciesExtra??>
+    <#list configs.dependenciesExtra>
     <#items as dependency>
 
     /* ${dependency.name} */

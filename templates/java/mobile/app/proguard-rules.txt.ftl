@@ -16,7 +16,7 @@
 #   public *;
 #}
 
-<#if configs.retrofit??>
+<#if configs.dependencies.retrofit??>
 ####### RETROFIT #######
 # Platform calls Class.forName on types which do not exist on Android to determine platform.
 -dontnote retrofit2.Platform

@@ -20,10 +20,10 @@
             </intent-filter>
         </activity>
         
-        <#if configs.fabrickey??>
+        <#if configs.dependencies.fabrickey??>
         <meta-data
             android:name="io.fabric.ApiKey"
-            android:value="${configs.fabrickey}" />
+            android:value="${configs.dependencies.fabrickey}" />
 		</#if>
 
     </application>
