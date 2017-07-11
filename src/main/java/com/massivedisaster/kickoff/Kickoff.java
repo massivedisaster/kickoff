@@ -158,37 +158,44 @@ public class Kickoff {
         Map<String, Object> input = new HashMap<>();
         input.put("configs", projectConfiguration);
 
-        Configuration cfg = new Configuration();
+        Configuration cfg = new Configuration(new Version(2, 3, 20));
         cfg.setDirectoryForTemplateLoading(new File("").getAbsoluteFile());
-        cfg.setIncompatibleImprovements(new Version(2, 3, 20));
         cfg.setDefaultEncoding("UTF-8");
         cfg.setLocale(Locale.US);
         cfg.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
 
         for (File file : FileUtils.findAllFilesBasedOnAExtention(projectDirectory, ".ftl")) {
-            if (fileIsNeeded(projectConfiguration.getDependencies(), file)) {
-                Template template = cfg.getTemplate(file.getPath());
+            if(file.getName().contains("._.DS_Store")){
+                file.delete();
+            } else {
+                if (fileIsNeeded(projectConfiguration.getDependencies(), file)) {
+                    Template template = cfg.getTemplate(file.getPath());
 
-                Writer fileWriter = new FileWriter(FileUtils.newFileStripExtension(file.getAbsolutePath()));
-                try {
-                    template.process(input, fileWriter);
-                } finally {
-                    fileWriter.close();
+                    Writer fileWriter = new FileWriter(FileUtils.newFileStripExtension(file.getAbsolutePath()));
+                    try {
+                        template.process(input, fileWriter);
+                    } finally {
+                        fileWriter.close();
 
-                    if (!file.delete()) {
-                        System.out.println("Delete operation is failed.");
+                        if (!file.delete()) {
+                            System.out.println("Delete operation is failed.");
+                        }
+                    }
+                } else if (file.delete()) {
+                    File fileDir = file.getParentFile();
+                    if (fileDir.isDirectory()) {
+                        File[] files = fileDir.listFiles();
+                        if (files == null || files.length == 0) {
+                            fileDir.delete();
+                        }
                     }
                 }
-            } else {
-                file.delete();
             }
         }
     }
 
     private static boolean fileIsNeeded(Dependencies dependencies, File file) {
-        if (dependencies == null || (dependencies.getRetrofit() == null && file.getName().contains("RetrofitAdapter"))) {
-            return false;
-        }
-        return true;
+        return !(dependencies == null || (dependencies.getRetrofit() == null && file.getName().contains("RetrofitAdapter")));
+
     }
 }

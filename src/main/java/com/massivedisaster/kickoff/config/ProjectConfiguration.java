@@ -1,7 +1,5 @@
 package com.massivedisaster.kickoff.config;
 
-import java.util.List;
-
 public class ProjectConfiguration {
 
 	private String template;
@@ -16,7 +14,6 @@ public class ProjectConfiguration {
 	private boolean hasQa;
 	private Dependencies dependencies;
 	private QualityVerifier qualityVerifier;
-	private List<DependencyExtra> dependenciesExtra;
 
 	public String getTemplate() {
 		return template;
@@ -64,9 +61,5 @@ public class ProjectConfiguration {
 
 	public QualityVerifier getQualityVerifier() {
 		return qualityVerifier;
-	}
-
-	public List<DependencyExtra> getDependenciesExtra() {
-		return dependenciesExtra;
 	}
 }

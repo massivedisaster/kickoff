@@ -7,8 +7,8 @@ ext {
     <#if configs.dependencies.onesignal??>
     oneSignalVersion = '3.+@aar'
     </#if>
-    <#if configs.dependenciesExtra??>
-    <#list configs.dependenciesExtra>
+    <#if configs.dependencies.others??>
+    <#list configs.dependencies.others>
     <#items as dependency>
     ${dependency.name?lower_case?replace(" ", "")}Version = '${dependency.version}'
     </#items>
@@ -23,7 +23,7 @@ dependencies {
 
     /* ACTIVITY FRAGMENT MANAGER */
     compile "com.massivedisaster:activity-fragment-manager:$afmVersion"
-    <#if configs.fabrickey??>
+    <#if configs.dependencies.fabrickey??>
 
     /* FABRIC CRASHLYTICS */
     compile("com.crashlytics.sdk.android:crashlytics:$fabricCrashlyticsVersion") {
@@ -35,8 +35,8 @@ dependencies {
     /* ONESIGNAL */
     compile "com.onesignal:OneSignal:$oneSignalVersion"
     </#if>
-    <#if configs.dependenciesExtra??>
-    <#list configs.dependenciesExtra>
+    <#if configs.dependencies.others??>
+    <#list configs.dependencies.others>
     <#items as dependency>
 
     /* ${dependency.name} */
