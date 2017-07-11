@@ -8,6 +8,7 @@ public class Dependencies {
     private RetrofitConfiguration retrofit;
     private OnesignalConfiguration onesignal;
     private List<DependencyExtra> others;
+    private List<String> filesToRemove;
 
     public String getFabrickey() {
         return fabrickey;
@@ -23,5 +24,9 @@ public class Dependencies {
 
     public List<DependencyExtra> getOthers() {
         return others;
+    }
+
+    public List<String> getFilesToRemove() {
+        return filesToRemove;
     }
 }

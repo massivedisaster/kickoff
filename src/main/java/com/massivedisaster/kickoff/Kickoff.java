@@ -17,6 +17,7 @@ import retrofit2.Retrofit;
 
 import java.io.*;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -167,29 +168,25 @@ public class Kickoff {
         cfg.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
 
         for (File file : FileUtils.findAllFilesBasedOnAExtention(projectDirectory, ".ftl")) {
-            if(file.getName().contains("._.DS_Store")){
-                file.delete();
-            } else {
-                if (fileIsNeeded(projectConfiguration.getDependencies(), file)) {
-                    Template template = cfg.getTemplate(file.getPath());
+            if (fileIsNeeded(projectConfiguration.getDependencies(), file)) {
+                Template template = cfg.getTemplate(file.getPath());
 
-                    Writer fileWriter = new FileWriter(FileUtils.newFileStripExtension(file.getAbsolutePath()));
-                    try {
-                        template.process(input, fileWriter);
-                    } finally {
-                        fileWriter.close();
+                Writer fileWriter = new FileWriter(FileUtils.newFileStripExtension(file.getAbsolutePath()));
+                try {
+                    template.process(input, fileWriter);
+                } finally {
+                    fileWriter.close();
 
-                        if (!file.delete()) {
-                            System.out.println("Delete operation is failed.");
-                        }
+                    if (!file.delete()) {
+                        System.out.println("Delete operation is failed.");
                     }
-                } else if (file.delete()) {
-                    File fileDir = file.getParentFile();
-                    if (fileDir.isDirectory()) {
-                        File[] files = fileDir.listFiles();
-                        if (files == null || files.length == 0) {
-                            fileDir.delete();
-                        }
+                }
+            } else if (file.delete()) {
+                File fileDir = file.getParentFile();
+                if (fileDir.isDirectory()) {
+                    File[] files = fileDir.listFiles();
+                    if (files == null || files.length == 0) {
+                        fileDir.delete();
                     }
                 }
             }
@@ -197,7 +194,18 @@ public class Kickoff {
     }
 
     private static boolean fileIsNeeded(Dependencies dependencies, File file) {
-        return !(dependencies == null || (dependencies.getRetrofit() == null && file.getName().contains("RetrofitAdapter")));
+        if (dependencies == null || dependencies.getFilesToRemove() == null) {
+            return true;
+        }
 
+        List<String> filesToRemove = dependencies.getFilesToRemove();
+        boolean fileIsNeeded = true;
+        for (String fileName : filesToRemove) {
+            if (file.getName().contains(fileName)) {
+                fileIsNeeded = false;
+                break;
+            }
+        }
+        return fileIsNeeded;
     }
 }
