@@ -35,7 +35,6 @@ dependencies {
     /* ONESIGNAL */
     compile "com.onesignal:OneSignal:$oneSignalVersion"
     </#if>
-
     <#if configs.dependencies.others??>
     <#list configs.dependencies.others>
     <#items as dependency>
