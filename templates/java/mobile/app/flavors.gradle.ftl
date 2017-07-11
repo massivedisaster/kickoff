@@ -13,43 +13,43 @@ android {
             buildTypes {
                 prod {       
                     resValue ("string", "app_name", appName)
-                    <#if configs.retrofit??>
-                    buildConfigField ("String", "API_BASE_URL", "\"${configs.retrofit.prod}\"")
+                    <#if configs.dependencies.retrofit??>
+                    buildConfigField ("String", "API_BASE_URL", "\"${configs.dependencies.retrofit.prod}\"")
                     </#if>
-					<#if configs.fabrickey??>
+					<#if configs.dependencies.fabrickey??>
                     buildConfigField ("boolean", "CRASHLYTICS_ENABLED", "true")
                     </#if>
-					<#if configs.onesignal??>
-					manifestPlaceholders += [onesignal_app_id: "${configs.onesignal.prod.appId}",
-                              onesignal_google_project_number: "${configs.onesignal.prod.googleProjectNumber}"]
+					<#if configs.dependencies.onesignal??>
+					manifestPlaceholders += [onesignal_app_id: "${configs.dependencies.onesignal.prod.appId}",
+                              onesignal_google_project_number: "${configs.dependencies.onesignal.prod.googleProjectNumber}"]
                     </#if>
                 }
 
                 dev {                   
                     resValue ("string", "app_name", appName + " DEV")
-                    <#if configs.retrofit??>
-                    buildConfigField ("String", "API_BASE_URL", "\"${configs.retrofit.dev}\"")
+                    <#if configs.dependencies.retrofit??>
+                    buildConfigField ("String", "API_BASE_URL", "\"${configs.dependencies.retrofit.dev}\"")
                     </#if>
-					<#if configs.fabrickey??>
+					<#if configs.dependencies.fabrickey??>
                     buildConfigField ("boolean", "CRASHLYTICS_ENABLED", "true")
                     </#if>
-					<#if configs.onesignal??>
-					manifestPlaceholders += [onesignal_app_id: "${configs.onesignal.dev.appId}",
-                              onesignal_google_project_number: "${configs.onesignal.dev.googleProjectNumber}"]
+					<#if configs.dependencies.onesignal??>
+					manifestPlaceholders += [onesignal_app_id: "${configs.dependencies.onesignal.dev.appId}",
+                              onesignal_google_project_number: "${configs.dependencies.onesignal.dev.googleProjectNumber}"]
                     </#if>
                 }
                 <#if configs.hasQa!true>
                 qa {                
                     resValue ("string", "app_name", appName + " QA")
-                    <#if configs.retrofit??>
-                    buildConfigField ("String", "API_BASE_URL", "\"${configs.retrofit.qa}\"")
+                    <#if configs.dependencies.retrofit??>
+                    buildConfigField ("String", "API_BASE_URL", "\"${configs.dependencies.retrofit.qa}\"")
                     </#if>
-					<#if configs.fabrickey??>
+					<#if configs.dependencies.fabrickey??>
                     buildConfigField ("boolean", "CRASHLYTICS_ENABLED", "false")
                     </#if>
-					<#if configs.onesignal??>
-					manifestPlaceholders += [onesignal_app_id: "${configs.onesignal.qa.appId}",
-                              onesignal_google_project_number: "${configs.onesignal.qa.googleProjectNumber}"]
+					<#if configs.dependencies.onesignal??>
+					manifestPlaceholders += [onesignal_app_id: "${configs.dependencies.onesignal.qa.appId}",
+                              onesignal_google_project_number: "${configs.dependencies.onesignal.qa.googleProjectNumber}"]
                     </#if>
                 }
                 </#if>
