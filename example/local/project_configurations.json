@@ -8,8 +8,7 @@
   "minimumSdkApi" : 16,												                            // Mandatory
   "targetSdkApi" : 25,												                            // Mandatory
   "buildTools" : "25.0.3",											                            // Mandatory
-  "hasQa" : true,													                            // Optional
-  "dependencies" : {                                                                            // Optional
+  "dependencies" : {                                                                            // Mandatory
     "onesignal" : {													                            // Optional
       "prod" : {
         "googleProjectNumber" : "<your_prod_google_project_number>",
@@ -46,6 +45,7 @@
       "list" : ["com.github.bumptech.glide:glide"]
     }
   ],
+  "hasQa" : true,													                            // Optional
   "cvs" : {															                            // Optional
     "type" : "git"
   },

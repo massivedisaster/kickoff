@@ -7,6 +7,7 @@ import com.massivedisaster.kickoff.util.Cli;
 import com.massivedisaster.kickoff.util.Const;
 import com.massivedisaster.kickoff.util.FileUtils;
 import com.massivedisaster.kickoff.util.TextUtils;
+import freemarker.cache.*;
 import freemarker.template.*;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -180,6 +181,8 @@ public class Kickoff {
                         System.out.println("Delete operation is failed.");
                     }
                 }
+            } else {
+                file.delete();
             }
         }
     }
