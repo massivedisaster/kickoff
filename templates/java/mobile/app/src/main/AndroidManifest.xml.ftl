@@ -7,7 +7,7 @@
         android:allowBackup="true"
         android:label="@string/app_name"
         android:icon="${r"${appIcon}"}"
-        android:theme="@style/Base.Theme.AppCompat.Light.DarkActionBar"
+        android:theme="@style/AppTheme"
         android:name=".app.App">
 
     	<activity

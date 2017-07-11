@@ -1,7 +1,7 @@
 {
   "template" : "/Users/nunosilva/Documents/Projetos/kickoff/templates/java/mobile.tar.gz",      // Mandatory
   "language" : "java",												                            // Mandatory
-  "gradlePluginVersion" : "2.3.0",									                            // Mandatory
+  "gradlePluginVersion" : "2.3.3",									                            // Mandatory
   "projectType" : "mobile", 										                            // Mandatory
   "projectName" : "Kickoff Example",								                            // Mandatory
   "packageName" : "com.massivedisaster.kickoff.example", 			                            // Mandatory
@@ -14,37 +14,43 @@
         "googleProjectNumber" : "<your_prod_google_project_number>",
         "appId" : "<your_prod_app_id>"
       },
-
       "dev" : {
         "googleProjectNumber" : "<your_dev_google_project_number>",
         "appId" : "<your_dev_app_id>"
       },
-
       "qa" : {
         "googleProjectNumber" : "<your_qa_google_project_number>",
         "appId" : "<your_qa_app_id>"
       }
     },
-    "fabrickey" : "<your_fabric_key>",								                            // Optional
     "retrofit" : {													                            // Optional
       "timeout" : 30,
       "prod" : "<your_prod_api_url>",
       "dev" : "<your_dev_api_url>",
       "qa" : "<your_qa_api_url>"
-    }
-  },
-  "dependenciesExtra" : [													                        // Optional
-    {
-      "name" : "GOOGLE SUPPORT",
-      "version" : "25.0.3",
-      "list" : ["com.android.support:recyclerview-v7", "com.android.support:cardview-v7", "com.android.support:design"]
     },
-    {
-      "name" : "GLIDE",
-      "version" : "3.7.0",
-      "list" : ["com.github.bumptech.glide:glide"]
-    }
-  ],
+    "others" : [													                            // Optional
+      {
+        "name" : "GOOGLE SUPPORT",
+        "version" : "25.3.1",
+        "list" : [
+          "com.android.support:recyclerview-v7",
+          "com.android.support:cardview-v7",
+          "com.android.support:design"
+        ]
+      },
+      {
+        "name" : "GLIDE",
+        "version" : "3.7.0",
+        "list" : [
+          "com.github.bumptech.glide:glide"
+        ]
+      }
+    ],
+    "filesToRemove" : [
+      "RetrofitAdapter.java"
+    ]
+  },
   "hasQa" : true,													                            // Optional
   "cvs" : {															                            // Optional
     "type" : "git"

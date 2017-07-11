@@ -87,6 +87,6 @@ apply plugin: 'io.fabric'
 apply from: 'flavors.gradle'
 apply from: 'dependencies.gradle'
 <#if configs.qualityVerifier??>
-apply from: 'quality.gradle'
 apply plugin: 'pt.simdea.verifier'
+apply from: 'quality.gradle'
 </#if>
