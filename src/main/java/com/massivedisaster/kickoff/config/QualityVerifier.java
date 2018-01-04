@@ -5,24 +5,42 @@ package com.massivedisaster.kickoff.config;
  */
 public class QualityVerifier {
 
-    private boolean checkstyle;
-    private boolean findbugs;
-    private boolean pmd;
-    private boolean lint;
+    private String version;
+    private Option checkstyle;
+    private Option findbugs;
+    private Option pmd;
+    private Option lint;
+    private Option cpd;
 
-    public boolean isCheckstyle() {
+    public String getVersion() {
+        return version;
+    }
+
+    public Option getCheckstyle() {
         return checkstyle;
     }
 
-    public boolean isFindbugs() {
+    public Option getFindbugs() {
         return findbugs;
     }
 
-    public boolean isPmd() {
+    public Option getPmd() {
         return pmd;
     }
 
-    public boolean isLint() {
+    public Option getLint() {
         return lint;
+    }
+
+    public Option getCpd() {
+        return cpd;
+    }
+
+    public class Option {
+        private boolean skip;
+
+        public boolean isSkip() {
+            return skip;
+        }
     }
 }
