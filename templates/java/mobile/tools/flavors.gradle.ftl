@@ -1,5 +1,18 @@
 android {
 
+    /**
+     * Apply version code and version name based on git describe.
+     * For versionCode we use total number of tags. Because every git tag indicate some version, versionCode for next version will be always greater then previous.
+     * However we are not going to create a git tag for every intermediate version, so for dev build we use a timestamp of HEAD commit as version code.
+     *
+     * For versionName we use git describe command:
+     * a. The command finds the most recent tag that is reachable from a commit.
+     * b. If the tag points to the commit, then only the tag is shown.
+     * c. Otherwise, it suffixes the tag name with the number of additional commits on top of the tagged object and the abbreviated object name of the most recent commit.
+     *
+     * More info: https://proandroiddev.com/configuring-android-project-version-name-code-b168952f3323
+     */
+
     applicationVariants.all { variant ->
         def versionCode = 0
         def versionName = ""
