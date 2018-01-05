@@ -18,7 +18,6 @@ default_platform(:android)
 platform :android do
   before_all do
     # ENV["SLACK_URL"] = "https://hooks.slack.com/services/..."
-    ENV["SLACK_URL"] = ""
   end
 
   desc "Runs all the tests"
@@ -55,7 +54,7 @@ platform :android do
   lane :send_crashlytics do |options|
     crashlytics(api_token: options[:crashlytics_api],
                 build_secret: options[:crashlytics_secret],
-                groups: ["CARBON QA"])
+                groups: ["GROUP_PLACEHOLDER"])
   end
 
 
