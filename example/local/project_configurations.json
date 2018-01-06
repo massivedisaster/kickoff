@@ -1,0 +1,92 @@
+{
+  "template" : "/Users/nunosilva/Documents/Projetos/kickoff/templates/java/mobile.tar.gz",      // Mandatory
+  "language" : "java",												                            // Mandatory
+  "gradlePluginVersion" : "3.0.1",									                            // Mandatory
+  "projectType" : "mobile", 										                            // Mandatory
+  "projectName" : "Kickoff Example",								                            // Mandatory
+  "packageName" : "com.massivedisaster.kickoff.example", 			                            // Mandatory
+  "minimumSdkApi" : 19,												                            // Mandatory
+  "targetSdkApi" : 26,												                            // Mandatory
+  "buildTools" : "26.0.2",											                            // Mandatory
+  "dependencies" : {                                                                            // Mandatory
+    "onesignal" : {													                            // Optional
+      "prod" : {
+        "googleProjectNumber" : "<your_prod_google_project_number>",
+        "appId" : "<your_prod_app_id>"
+      },
+
+      "dev" : {
+        "googleProjectNumber" : "<your_dev_google_project_number>",
+        "appId" : "<your_dev_app_id>"
+      },
+      "qa" : {
+        "googleProjectNumber" : "<your_qa_google_project_number>",
+        "appId" : "<your_qa_app_id>"
+      }
+    },
+    "retrofit" : {
+      "timeout" : 30,
+      "prod" : "<your_prod_api_url>",
+      "dev" : "<your_dev_api_url>",
+      "qa" : "<your_qa_api_url>"
+    },
+    "others" : [
+      {
+        "name" : "GOOGLE SUPPORT",
+        "version" : "27.0.1",
+        "list" : [
+          "com.android.support:appcompat-v7",
+          "com.android.support:recyclerview-v7",
+          "com.android.support:cardview-v7",
+          "com.android.support:design"
+        ]
+      },
+      {
+        "name" : "RETROFIT",
+        "version" : "2.3.0",
+        "list" : [
+          "com.squareup.retrofit2:retrofit",
+          "com.squareup.retrofit2:converter-jackson"
+        ]
+      },
+      {
+        "name" : "OKHTTP",
+        "version" : "3.9.0",
+        "list" : [
+          "com.squareup.okhttp3:logging-interceptor"
+        ]
+      },
+      {
+        "name" : "LOMBOK",
+        "version" : "1.16.18",
+        "list" : [
+          "org.projectlombok:lombok"
+        ]
+      },
+      {
+        "name" : "ADAL",
+        "version" : "0.1.15",
+        "list" : [
+          "com.massivedisaster.adal:adal-accounts"
+        ]
+      },
+      {
+        "name" : "AFM",
+        "version" : "0.4.4",
+        "list" : [
+          "com.massivedisaster:activity-fragment-manager"
+        ]
+      }
+    ],
+    "filesToRemove" : [
+      "RetrofitAdapter.java"
+    ]
+  },
+  "hasQa" : false,
+  "cvs" : {
+    "type" : "git"
+  },
+  "qualityVerifier" : {
+    "version" : "3.5.9"
+  }
+}

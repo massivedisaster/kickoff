@@ -1,44 +1,42 @@
-buildscript {
-    repositories {
-        jcenter()
-        <#if configs.fabrickey??>
-            maven { url 'https://maven.fabric.io/public' }
-        </#if>
-    }
-    dependencies {
-        <#if configs.fabrickey??>
-        classpath 'io.fabric.tools:gradle:1.22.1'
-        </#if>
-        <#if configs.checkstyle!true>
-        classpath 'pt.simdea.verifier:verifier:3.5.0'
-        </#if>
-    }
-}
-
-<#if configs.fabrickey??>
-repositories {
-    maven { url 'https://maven.fabric.io/public' }
-}
+apply plugin: 'com.android.application'
+<#if configs.dependencies.fabrickey??>
+apply plugin: 'io.fabric'
+</#if>
+apply from: "$project.rootDir/tools/git-version.gradle"
+<#if configs.qualityVerifier??>
+apply plugin: 'pt.simdea.verifier'
 </#if>
 
-apply plugin: 'com.android.application'
-
 android {
-    compileSdkVersion ${configs.targetSdkApi}
-    buildToolsVersion '${configs.buildTools}'
+
+    compileSdkVersion project.COMPILE_SDK_VERSION.toInteger()
+    buildToolsVersion project.BUILD_TOOLS_VERSION
 
     defaultConfig {
-        minSdkVersion ${configs.minimumSdkApi}
-        targetSdkVersion ${configs.targetSdkApi}
-        <#if configs.retrofit??>
-        	buildConfigField ("long", "API_TIMEOUT", "${configs.retrofit.timeout}")
+        applicationId project.APP_ID
+        minSdkVersion project.MIN_SDK_VERSION.toInteger()
+        targetSdkVersion project.TARGET_SDK_VERSION.toInteger()
+        <#if configs.dependencies.retrofit??>
+        	buildConfigField ("long", "API_TIMEOUT", "${configs.dependencies.retrofit.timeout}")
         </#if>
+    }
+
+    packagingOptions {
+        exclude 'LICENSE.txt'
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/NOTICE.txt'
+        exclude 'META-INF/ASL2.0'
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/NOTICE'
     }
 
     buildTypes {
         prod {
             initWith release
             debuggable false
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), "$project.rootDir/tools/rules-proguard.pro"
             manifestPlaceholders += [
                     appIcon: "@mipmap/ic_launcher"
             ]
@@ -48,8 +46,8 @@ android {
         qa {
             initWith debug
             debuggable true
-            applicationIdSuffix ".qa"
-            versionNameSuffix "-QA"
+            applicationIdSuffix project.QA_APP_ID_SUFFIX
+            versionNameSuffix project.QA_VERSION_NAME_SUFFIX
             manifestPlaceholders += [
                     appIcon: "@drawable/ic_launcher_qa"
             ]
@@ -59,14 +57,14 @@ android {
         dev {
             initWith debug
             debuggable true
-            applicationIdSuffix ".dev"
-            versionNameSuffix "-DEV"
+            applicationIdSuffix project.DEV_APP_ID_SUFFIX
+            versionNameSuffix project.DEV_VERSION_NAME_SUFFIX
             manifestPlaceholders += [
                     appIcon: "@drawable/ic_launcher_dev"
             ]
         }
     }
-    <#if configs.checkstyle!true>
+    <#if configs.qualityVerifier?? && configs.qualityVerifier.lint??>
     
     lintOptions {
         disable 'InvalidPackage'
@@ -81,12 +79,8 @@ android.variantFilter { variant ->
     }
 }
 
-
-<#if configs.fabrickey??>
-apply plugin: 'io.fabric'
-</#if>
-apply from: 'flavors.gradle'
-apply from: 'dependencies.gradle'
-<#if configs.checkstyle!true>
-apply plugin: 'pt.simdea.verifier'
+apply from: "$project.rootDir/tools/flavors.gradle"
+apply from: "$project.rootDir/tools/dependencies.gradle"
+<#if configs.qualityVerifier??>
+apply from: "$project.rootDir/tools/quality.gradle"
 </#if>
