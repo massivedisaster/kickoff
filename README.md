@@ -46,5 +46,5 @@ The configuration file must be named `what_you_want.json`.
   $ kickoff -g project_configuration.json
 ```
 
-## License
-[GNU LESSER GENERAL PUBLIC LICENSE](LICENSE.md)
+### License
+[MIT LICENSE](LICENSE.md)

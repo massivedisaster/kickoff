@@ -1,89 +1,140 @@
 package com.massivedisaster.kickoff;
 
-import java.io.*;
-import java.text.Normalizer;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.zip.GZIPInputStream;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
-
-import com.google.gson.Gson;
-
+import com.massivedisaster.kickoff.config.Dependencies;
 import com.massivedisaster.kickoff.config.ProjectConfiguration;
 import com.massivedisaster.kickoff.network.KickoffService;
 import com.massivedisaster.kickoff.util.Cli;
 import com.massivedisaster.kickoff.util.Const;
-import freemarker.template.Configuration;
-import freemarker.template.Template;
-import freemarker.template.TemplateException;
-import freemarker.template.TemplateExceptionHandler;
-import freemarker.template.Version;
+import com.massivedisaster.kickoff.util.FileUtils;
+import com.massivedisaster.kickoff.util.TextUtils;
+import freemarker.cache.*;
+import freemarker.template.*;
 import okhttp3.ResponseBody;
-import org.rauschig.jarchivelib.Archiver;
-import org.rauschig.jarchivelib.ArchiverFactory;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
+
+import java.io.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 /**
  * Generate a new android project based on configurations
  */
 public class Kickoff {
 
-	/**
-	 * @param args the command line arguments.
-	 */
-	public static void main(String[] args) {
+    /**
+     * @param args the command line arguments.
+     */
+    public static void main(String[] args) {
 
-        System.out.println("kickoff v.0.0.1 - A tool to generate new android projects based on a powerful template.\n");
+        System.out.println("kickoff v.0.0.2 - A tool to generate new android projects based on a powerful template.\n");
 
-		Cli cli = new Cli(args);
-		cli.parse();
-		
-		if (cli.getOptions().hasOption("g")) {
-			try {
-				generateNewProject(cli.getOptions().getOptionValue("g"));
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-	}
+        Cli cli = new Cli(args);
+        cli.parse();
+
+        if (cli.getOptions().hasOption("g")) {
+            try {
+                generateNewProject(cli.getOptions().getOptionValue("g"));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * Generate a new project based on a configuration file
+     */
+    private static void generateNewProject(String fileName) throws Exception {
+        FileReader configurationFile = new FileReader(fileName);
+
+        ProjectConfiguration project = FileUtils.validateConfigurationFile(configurationFile);
+
+        String template = project.getTemplate();
+        if (TextUtils.isEmpty(template)) {
+            System.out.println("Invalid template");
+            return;
+        }
+
+        System.out.println("Generating new project...");
+
+        if (TextUtils.isValidURL(template)) {
+            downloadTemplate(project);
+        } else {
+            accessLocalFile(project);
+        }
+    }
+
+    /**
+     * Access local File from a path
+     *
+     * @param project The project configurations.
+     */
+    private static void accessLocalFile(final ProjectConfiguration project) {
+        File f = new File(project.getTemplate());
+
+        if (!f.exists()) {
+            System.out.println("File not exists");
+            return;
+        }
+
+        System.out.println("Access File with success");
+
+        String folderName = TextUtils.normalizeString(project.getProjectName());
+
+        if (FileUtils.extractFile(f.getAbsolutePath(), folderName, false)) {
+            try {
+                applyConfigurations(folderName, project);
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (TemplateException e) {
+                e.printStackTrace();
+            }
+        }
+
+        System.out.println("Project " + project.getProjectName() + " created.");
+    }
 
     /**
      * Download the last template form GitHub.
+     *
      * @param project The project configurations.
      */
-    private static void downloadTemplate(final ProjectConfiguration project){
+    private static void downloadTemplate(final ProjectConfiguration project) {
         System.out.println("Downloading the template...");
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(Const.WEBSITE_URL)
+                .baseUrl(Const.LIBRARY_REPOSITORY_URL)
                 .build();
 
         KickoffService service = retrofit.create(KickoffService.class);
-        Call<ResponseBody> call = service.downloadTemplate(project.getLanguage(), project.getProjectType());
+        Call<ResponseBody> call = service.downloadTemplate(project.getTemplate());
         call.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                if (response.isSuccessful()) {
+                if (response.isSuccessful() && response.body() != null) {
                     System.out.println("Download success.");
 
-                    writeTemplateToDisk(response.body(), normalizeString(project.getProjectName()));
+                    String folderName = TextUtils.normalizeString(project.getProjectName());
 
-                    //copyDirectory(new File( defaultProject  + "/templates/" + project.getLanguage() + "/" + project.getProjectType()), folderProject);
-
-                    //changePackageDirectoryName(folderProject, project.getPackageName().replace(".", "/"));
-
-                    //applyConfigurations(folderProject, project);
+                    if (FileUtils.writeTemplateToDisk(response.body().byteStream(), folderName)) {
+                        try {
+                            applyConfigurations(folderName, project);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        } catch (TemplateException e) {
+                            e.printStackTrace();
+                        }
+                    }
 
                     System.out.println("Project " + project.getProjectName() + " created.");
                 } else {
                     System.out.println("Error getting template from the server.");
                 }
+
+                System.exit(0);
             }
 
             @Override
@@ -94,217 +145,67 @@ public class Kickoff {
     }
 
     /**
-     * Write template in disk.
-     * @param body The response body to unpack and save in disk.
-     * @return True if has successful saved.
+     * Iterate all the FTL's in the folder and apply configurations
+     *
+     * @param folderName           The project folder to iterate and apply configurations.
+     * @param projectConfiguration The configuration to apply.
+     * @throws IOException
+     * @throws TemplateException
      */
-    private static boolean writeTemplateToDisk(ResponseBody body, String dirName) {
+    private static void applyConfigurations(String folderName, ProjectConfiguration projectConfiguration) throws IOException, TemplateException {
+        System.out.println("Applying project configurations...");
 
-        FileOutputStream fout = null;
-        try {
-            fout = new FileOutputStream("template.tar.gz");
+        File projectDirectory = new File(folderName);
+        FileUtils.changePackageDirectoryName(projectDirectory, projectConfiguration.getPackageName().replace(".", "/"));
 
-            final byte data[] = new byte[1024];
-            int count;
-            while ((count = body.byteStream().read(data, 0, 1024)) != -1) {
-                fout.write(data, 0, count);
-            }
+        Map<String, Object> input = new HashMap<>();
+        input.put("configs", projectConfiguration);
 
-            System.out.println("Temporary file created!");
-        } catch (IOException e) {
-            e.printStackTrace();
-            return false;
-        }finally {
-            try {
-                if(fout!= null){
-                    fout.close();
+        Configuration cfg = new Configuration(new Version(2, 3, 20));
+        cfg.setDirectoryForTemplateLoading(new File("").getAbsoluteFile());
+        cfg.setDefaultEncoding("UTF-8");
+        cfg.setLocale(Locale.US);
+        cfg.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
+
+        for (File file : FileUtils.findAllFilesBasedOnAExtention(projectDirectory, ".ftl")) {
+            if (fileIsNeeded(projectConfiguration.getDependencies(), file)) {
+                Template template = cfg.getTemplate(file.getPath());
+
+                Writer fileWriter = new FileWriter(FileUtils.newFileStripExtension(file.getAbsolutePath()));
+                try {
+                    template.process(input, fileWriter);
+                } finally {
+                    fileWriter.close();
+
+                    if (!file.delete()) {
+                        System.out.println("Delete operation is failed.");
+                    }
                 }
-            } catch (IOException e) {
-                e.printStackTrace();
+            } else if (file.delete()) {
+                File fileDir = file.getParentFile();
+                if (fileDir.isDirectory()) {
+                    File[] files = fileDir.listFiles();
+                    if (files == null || files.length == 0) {
+                        fileDir.delete();
+                    }
+                }
             }
         }
+    }
 
-        File file = new File(dirName);
-        if(!file.exists() && file.mkdir()){
-            System.out.println("Directory " + dirName + " created!");
-            Archiver archiver = ArchiverFactory.createArchiver("tar", "gz");
-            try {
-                File template = new File("template.tar.gz");
-                archiver.extract(template, file);
-                System.out.println("Template extracted with success!");
-
-                if(template.delete()){
-                    System.out.println("Temporary file deleted!");
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
+    private static boolean fileIsNeeded(Dependencies dependencies, File file) {
+        if (dependencies == null || dependencies.getFilesToRemove() == null) {
             return true;
         }
 
-        System.out.println("Error: " + dirName + " already exists!");
-
-        return false;
-    }
-
-
-
-    /**
-	 * Generate a new project based on a configuration file
-	 */
-	private static void generateNewProject(String fileName) throws Exception{
-		FileReader configurationFile = new FileReader(fileName);		
-		
-		ProjectConfiguration project = validateConfigurationFile(configurationFile);
-		
-		File folderProject = new File(project.getProjectName());
-		
-		String defaultProject = getExecutionPath();
-
-		System.out.println("Generating new project...");
-
-        downloadTemplate(project);
-	}
-	
-	private static String getExecutionPath(){
-	    String absolutePath = Kickoff.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-	    absolutePath = absolutePath.substring(0, absolutePath.lastIndexOf("/"));
-	    absolutePath = absolutePath.replaceAll("%20"," "); // Surely need to do this here
-	    return absolutePath;
-	}
-	
-	/**
-	 * Verify if the file configuration is in a valid format
-	 * @param fileReader the file reader to validate.
-	 * @return true if the file it's valid.
-	 */
-	private static ProjectConfiguration validateConfigurationFile(FileReader fileReader){
-		Gson gson = new Gson();
-		return gson.fromJson(fileReader, ProjectConfiguration.class);
-	}
-	
-	/**
-	 * Copy default project directory
-	 */
-	 private static void copyDirectory(File sourceLocation , File targetLocation)
-			    throws IOException {
-		 
-        if (sourceLocation.isDirectory()) {
-            if (!targetLocation.exists()) {
-                targetLocation.mkdir();
+        List<String> filesToRemove = dependencies.getFilesToRemove();
+        boolean fileIsNeeded = true;
+        for (String fileName : filesToRemove) {
+            if (file.getName().contains(fileName)) {
+                fileIsNeeded = false;
+                break;
             }
-
-            String[] children = sourceLocation.list();
-            for (int i=0; i<children.length; i++) {
-                copyDirectory(new File(sourceLocation, children[i]),
-                        new File(targetLocation, children[i]));
-            }
-        } else {
-            InputStream in = new FileInputStream(sourceLocation);
-            OutputStream out = new FileOutputStream(targetLocation);
-
-            byte[] buf = new byte[1024];
-            int len;
-            while ((len = in.read(buf)) > 0) {
-                out.write(buf, 0, len);
-            }
-            in.close();
-            out.close();
         }
-	}
-	 
-	 /**
-	  * Iterate all the FTL's in the folder and apply configurations
-	  * 
-	  * @param folderProject The project folder to iterate and apply configurations.
-	  * @param projectConfiguration The configuration to apply.
-	 * @throws IOException 
-	 * @throws TemplateException 
-	  */
-	 private static void applyConfigurations(File folderProject, ProjectConfiguration projectConfiguration) throws IOException, TemplateException{
-         System.out.println("Applying project configurations...");
-
-         Map<String, Object> input = new HashMap<String, Object>();
-		input.put("configs", projectConfiguration);
-		  
-		Configuration cfg = new Configuration();
-		cfg.setDirectoryForTemplateLoading(new File("").getAbsoluteFile());
-		cfg.setIncompatibleImprovements(new Version(2, 3, 20));
-		cfg.setDefaultEncoding("UTF-8");
-		cfg.setLocale(Locale.US);
-		cfg.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
-		
-		for(File file : findAllFilesBasedOnAExtention(folderProject, ".ftl")){
-		    Template template = cfg.getTemplate(file.getPath());
-		
-		    Writer fileWriter = new FileWriter(new File(stripExtension(file.getAbsolutePath())));
-		    try {
-		        template.process(input, fileWriter);
-		    } finally {
-		        fileWriter.close();
-		        
-		        if(!file.delete()){
-	    			System.out.println("Delete operation is failed.");
-	    		}
-		    }
-        } 
-	 }
-	 
-	 /**
-	  * Find all files in a directory with a specify extension
-	  * @param folder The directory to apply find.
-	  * @param extension The extension to find.
-	  * @return The list of files with the specific extension.
-	  */
-	 private static List<File> findAllFilesBasedOnAExtention(File folder, String extension){
-		 	List<File> lstFiles = new ArrayList<File>();
-		 
-	        File[] fList = folder.listFiles();
-	        for (File file : fList) {
-	            if (file.isFile() && file.getName().endsWith(extension)) {
-	            	lstFiles.add(file);
-	            } else if (file.isDirectory()) {
-	            	lstFiles.addAll(findAllFilesBasedOnAExtention(file, extension));
-	            }
-	        }
-	        
-	        return lstFiles;
-	 }
-	 
-	 /**
-	  * Strip the last extension of a file name
-	  * @param fileName The original filename.
-	  * @return the fileName without the last extension
-	  */
-	 private static String stripExtension(final String fileName){
-	     return fileName != null &&fileName.lastIndexOf(".") > 0 ? fileName.substring(0, fileName.lastIndexOf(".")) : fileName;
-	 }
-
-	 private static void changePackageDirectoryName(File projectFolder, final String packageName){
-	        File[] fList = projectFolder.listFiles();
-	        for (File file : fList) {
-	        	if(file.isDirectory() && file.getName().equals("app_package")){
-	        		File packageFolder = new File(file.getParentFile().getPath() + "/" + packageName);
-        		    if (!packageFolder.exists()) {
-        		    	packageFolder.mkdirs();
-        		    }
-	        		
-	        		file.renameTo(packageFolder);
-	        	}else if (file.isDirectory()) {
-	        		changePackageDirectoryName(file, packageName);
-	            }
-	        } 
-	 }
-
-    /**
-     * Normalize a string and remove white spaces
-     * @param string the string to normalize.
-     * @return the normalized string.
-     */
-    public static String normalizeString(String string) {
-        String stringNormalized = Normalizer.normalize(string, Normalizer.Form.NFD);
-        stringNormalized = stringNormalized.replaceAll("[^\\p{ASCII}]", "");
-        return stringNormalized.replaceAll("\\s+", "");
+        return fileIsNeeded;
     }
 }
