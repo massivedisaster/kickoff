@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/biometric_bg_bottom_sheet"
+    android:orientation="vertical"
+    android:padding="15dp">
+
+    <!--    <ImageView-->
+    <!--        android:id="@+id/img_logo"-->
+    <!--        android:layout_width="48dp"-->
+    <!--        android:layout_height="48dp" />-->
+
+    <Button
+        android:id="@+id/btn_cancel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/item_status"
+        android:layout_marginTop="@dimen/biometric_margin_xxlarge"
+        android:background="@null"
+        android:paddingTop="@dimen/biometric_margin_xxlarge"
+        android:textColor="@color/biometric_dialog_cancel_btn" />
+
+    <ImageView
+        android:id="@+id/img_fingerprint"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_below="@id/item_description"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="@dimen/biometric_margin_large"
+        android:background="@drawable/biometric_bg_fingerprint"
+        android:padding="14dp"
+        android:src="@drawable/biometric_ic_fingerprint" />
+
+    <LinearLayout
+        android:id="@+id/title_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/biometric_margin_large"
+        android:gravity="center"
+        android:orientation="vertical">
+        <!--        android:layout_alignTop="@id/img_logo"-->
+        <!--        android:layout_toRightOf="@+id/img_logo"-->
+
+        <TextView
+            android:id="@+id/item_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textColor="@color/biometric_dialog_title"
+            android:textSize="18dp" />
+
+        <TextView
+            android:id="@+id/item_subtitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/biometric_margin_xxsmall"
+            android:gravity="center"
+            android:textColor="@color/biometric_dialog_subtitle"
+            android:textSize="13dp" />
+    </LinearLayout>
+
+
+    <TextView
+        android:id="@+id/item_status"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/img_fingerprint"
+        android:layout_marginTop="@dimen/biometric_margin_xlarge"
+        android:gravity="center"
+        android:textColor="@color/biometric_dialog_status" />
+
+
+    <TextView
+        android:id="@+id/item_description"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/title_view"
+        android:layout_marginLeft="@dimen/biometric_margin_xsmall"
+        android:layout_marginTop="@dimen/biometric_margin_large"
+        android:layout_marginRight="@dimen/biometric_margin_large"
+        android:gravity="center"
+        android:textColor="@color/biometric_dialog_description" />
+
+</RelativeLayout>

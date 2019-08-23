@@ -1,13 +1,11 @@
 package com.massivedisaster.kickoff;
 
-import com.massivedisaster.kickoff.config.Dependencies;
 import com.massivedisaster.kickoff.config.ProjectConfiguration;
 import com.massivedisaster.kickoff.network.KickoffService;
 import com.massivedisaster.kickoff.util.Cli;
 import com.massivedisaster.kickoff.util.Const;
 import com.massivedisaster.kickoff.util.FileUtils;
 import com.massivedisaster.kickoff.util.TextUtils;
-import freemarker.cache.*;
 import freemarker.template.*;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -17,7 +15,6 @@ import retrofit2.Retrofit;
 
 import java.io.*;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -31,7 +28,7 @@ public class Kickoff {
      */
     public static void main(String[] args) {
 
-        System.out.println("kickoff v.0.0.2 - A tool to generate new android projects based on a powerful template.\n");
+        System.out.println("kickoff v.0.0.3 - A tool to generate new android projects based on a powerful template.\n");
 
         Cli cli = new Cli(args);
         cli.parse();
@@ -168,44 +165,18 @@ public class Kickoff {
         cfg.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
 
         for (File file : FileUtils.findAllFilesBasedOnAExtention(projectDirectory, ".ftl")) {
-            if (fileIsNeeded(projectConfiguration.getDependencies(), file)) {
-                Template template = cfg.getTemplate(file.getPath());
+            Template template = cfg.getTemplate(file.getPath());
 
-                Writer fileWriter = new FileWriter(FileUtils.newFileStripExtension(file.getAbsolutePath()));
-                try {
-                    template.process(input, fileWriter);
-                } finally {
-                    fileWriter.close();
+            Writer fileWriter = new FileWriter(FileUtils.newFileStripExtension(file.getAbsolutePath()));
+            try {
+                template.process(input, fileWriter);
+            } finally {
+                fileWriter.close();
 
-                    if (!file.delete()) {
-                        System.out.println("Delete operation is failed.");
-                    }
-                }
-            } else if (file.delete()) {
-                File fileDir = file.getParentFile();
-                if (fileDir.isDirectory()) {
-                    File[] files = fileDir.listFiles();
-                    if (files == null || files.length == 0) {
-                        fileDir.delete();
-                    }
+                if (!file.delete()) {
+                    System.out.println("Delete operation is failed.");
                 }
             }
         }
-    }
-
-    private static boolean fileIsNeeded(Dependencies dependencies, File file) {
-        if (dependencies == null || dependencies.getFilesToRemove() == null) {
-            return true;
-        }
-
-        List<String> filesToRemove = dependencies.getFilesToRemove();
-        boolean fileIsNeeded = true;
-        for (String fileName : filesToRemove) {
-            if (file.getName().contains(fileName)) {
-                fileIsNeeded = false;
-                break;
-            }
-        }
-        return fileIsNeeded;
     }
 }
