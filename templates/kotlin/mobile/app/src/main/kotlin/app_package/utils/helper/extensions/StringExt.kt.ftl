@@ -12,6 +12,6 @@ import androidx.core.content.res.ResourcesCompat
 import androidx.core.util.PatternsCompat.EMAIL_ADDRESS
 import java.util.*
 
-fun String.round(decimalPlace: Int) = String.format("%.${decimalPlace}f", this.replace(',', '.').toFloat().round(decimalPlace)).replace('.', ',')
+fun String.round(decimalPlace: Int) = String.format("%.${r"${decimalPlace}"}f", this.replace(',', '.').toFloat().round(decimalPlace)).replace('.', ',')
 
 fun String.isEmail() = EMAIL_ADDRESS.matcher(this).matches()
