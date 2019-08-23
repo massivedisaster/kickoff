@@ -1,4 +1,4 @@
-group 'com.assivedisaster'
+group 'com.massivedisaster'
 version '0.0.3-SNAPSHOT'
 
 apply plugin: 'java'
