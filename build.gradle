@@ -1,18 +1,19 @@
-group 'com..massivedisaster'
-version '0.0.2-SNAPSHOT'
+group 'com.assivedisaster'
+version '0.0.3-SNAPSHOT'
 
 apply plugin: 'java'
 
-sourceCompatibility = 1.7
+sourceCompatibility = 1.8
 
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    compile 'com.google.code.gson:gson:2.8.0'
-    compile 'org.freemarker:freemarker:2.3.26-incubating'
-    compile 'commons-cli:commons-cli:20040117.000000'
-    compile 'org.rauschig:jarchivelib:0.7.1'
-    compile 'com.squareup.retrofit2:retrofit:2.3.0'
+    compile 'com.google.code.gson:gson:2.8.5'
+    compile 'org.freemarker:freemarker:2.3.29'
+    compile 'commons-cli:commons-cli:1.4'
+    compile 'org.rauschig:jarchivelib:1.0.0'
+    compile 'com.squareup.retrofit2:retrofit:2.6.1'
+    compile 'com.squareup.retrofit2:converter-jackson:2.6.1'
 }
