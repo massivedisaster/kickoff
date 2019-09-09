@@ -16,11 +16,14 @@ import ${configs.packageName}.BuildConfig
 abstract class NetworkBoundResource<ResultType, RequestType, RefreshType> @MainThread constructor(private val appExecutors: AppExecutors,
                                                                                      private val accountUtils: AccountUtils) {
 
+    enum class Type { NETWORK, DATABASE, BOTH }
+
     private val result = LiveDataWrapper<CallResult<ResultType>>()
     private val network = MediatorLiveData<ResultType>()
     private val refresh = MediatorLiveData<CallResult<RefreshType>>()
 
     private var refreshCall: LiveData<ApiResponse<RefreshType>>? = null
+    private var requestType: Type = Type.NETWORK
 
     private val refreshObserver: Observer<ApiResponse<RefreshType>> by lazy {
         RefreshObserver()
@@ -31,12 +34,14 @@ abstract class NetworkBoundResource<ResultType, RequestType, RefreshType> @MainT
     }
 
     fun network() {
+        requestType = Type.NETWORK
         result.removeSource(network)
         network = MediatorLiveData()
         requestFromNetwork()
     }
 
     fun database() {
+        requestType = Type.DATABASE
         val databaseSource = loadFromDatabase()
         if (databaseSource != null) {
             result.removeSource(network)
@@ -47,6 +52,7 @@ abstract class NetworkBoundResource<ResultType, RequestType, RefreshType> @MainT
     }
 
     fun dbAndNetwork() {
+        requestType = Type.BOTH
         result.value = CallResult.loading(null)
         val databaseSource = loadFromDatabase()
         if (databaseSource != null) {
@@ -64,9 +70,11 @@ abstract class NetworkBoundResource<ResultType, RequestType, RefreshType> @MainT
     }
 
     fun retry() {
-        result.removeSource(network)
-        network = MediatorLiveData()
-        requestFromNetwork()
+        when (requestType) {
+            Type.NETWORK -> network()
+            Type.DATABASE -> database()
+            Type.BOTH -> dbAndNetwork()
+        }
     }
 
     private fun requestFromNetwork(withDb: Boolean = false) {
