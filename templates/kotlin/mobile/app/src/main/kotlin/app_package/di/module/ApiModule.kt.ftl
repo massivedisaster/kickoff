@@ -10,8 +10,10 @@ import ${configs.packageName}.network.EndpointCollection
 import ${configs.packageName}.network.adapter.CallAdapterFactory
 import dagger.Module
 import dagger.Provides
+import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
+import ${configs.packageName}.utils.authentication.AccountUtils
 import retrofit2.Retrofit
 import retrofit2.converter.jackson.JacksonConverterFactory
 import java.util.concurrent.TimeUnit

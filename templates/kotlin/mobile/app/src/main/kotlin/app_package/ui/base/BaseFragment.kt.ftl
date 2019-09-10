@@ -8,6 +8,8 @@ import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProviders
 import ${configs.packageName}.ui.animation.AnimationType
 import ${configs.packageName}.ui.animation.Animations
 import dagger.android.DispatchingAndroidInjector

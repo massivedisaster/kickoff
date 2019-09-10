@@ -11,15 +11,14 @@ import ${configs.packageName}.network.models.ApiResponse
 import ${configs.packageName}.network.models.ApiSuccessResponse
 import ${configs.packageName}.utils.authentication.AccountUtils
 import ${configs.packageName}.utils.helper.AppExecutors
-import ${configs.packageName}.BuildConfig
 
 abstract class NetworkBoundResource<ResultType, RequestType, RefreshType> @MainThread constructor(private val appExecutors: AppExecutors,
                                                                                      private val accountUtils: AccountUtils) {
 
     enum class Type { NETWORK, DATABASE, BOTH }
 
-    private val result = LiveDataWrapper<CallResult<ResultType>>()
-    private val network = MediatorLiveData<ResultType>()
+    private val result = LiveDataWrapper<ResultType>()
+    private var network = MediatorLiveData<RequestType>()
     private val refresh = MediatorLiveData<CallResult<RefreshType>>()
 
     private var refreshCall: LiveData<ApiResponse<RefreshType>>? = null
@@ -53,13 +52,12 @@ abstract class NetworkBoundResource<ResultType, RequestType, RefreshType> @MainT
 
     fun dbAndNetwork() {
         requestType = Type.BOTH
-        result.value = CallResult.loading(null)
         val databaseSource = loadFromDatabase()
         if (databaseSource != null) {
             result.addSource(databaseSource) { data ->
                 result.removeSource(databaseSource)
                 if (shouldRequestFromNetwork(data)) {
-                        requestFromNetwork(true)
+                    requestFromNetwork(true)
                 } else {
                     result.addSource(databaseSource) { newData ->
                         setValue(CallResult.success(200, newData, null, this))
@@ -135,7 +133,7 @@ abstract class NetworkBoundResource<ResultType, RequestType, RefreshType> @MainT
                             }
                         } else {
                             result.addSource(network) { newData ->
-                                setValue(CallResult.error(response.errorMessage, response.errorCode, newData, response, this))
+                                setValue(CallResult.error(response.errorMessage, response.errorCode, newData as ResultType, response, this))
                             }
 
                             updateNetworkSource(null)
@@ -173,7 +171,7 @@ abstract class NetworkBoundResource<ResultType, RequestType, RefreshType> @MainT
     protected open fun saveCallResult(data: RequestType) { }
 
     @MainThread
-    protected open fun loadFromDatabase(): LiveData<ResultType>? = null
+    open fun loadFromDatabase(): LiveData<ResultType>? = null
 
     @MainThread
     protected open fun shouldRequestFromNetwork(data: ResultType?) = true

@@ -24,18 +24,10 @@ class UtilsModule {
 
     @Singleton
     @Provides
-    fun providesDisplayHelper(application: Application) = DisplayHelper(application)
-
-    @Singleton
-    @Provides
     fun providesPermissionHelper() = PermissionHelper()
 
     @Singleton
     @Provides
     fun providesGPSHelper(application: Application, permissionHelper: PermissionHelper) = GPSHelper(application, permissionHelper)
-
-    @Singleton
-    @Provides
-    fun providesKeyboardManager() = KeyboardManager()
 
 }

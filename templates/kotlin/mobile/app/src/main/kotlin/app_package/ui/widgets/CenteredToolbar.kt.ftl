@@ -10,7 +10,7 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
-import ${configs.packageName}.utils.helper.UiUxUtils
+import ${configs.packageName}.utils.helper.extensions.toPx
 
 class CenteredToolbar : Toolbar {
 
@@ -59,7 +59,7 @@ class CenteredToolbar : Toolbar {
         if (centeredLogoImageView == null) {
             centeredLogoImageView = AspectRatioImageView(context)
 
-            val lp = LayoutParams(UiUxUtils.dpToPx(context, 150F), LayoutParams.WRAP_CONTENT)
+            val lp = LayoutParams(150F.toPx(context).toInt(), LayoutParams.WRAP_CONTENT)
             lp.gravity = Gravity.CENTER
             centeredLogoImageView!!.layoutParams = lp
 

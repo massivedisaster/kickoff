@@ -1,17 +1,18 @@
 package ${configs.packageName}.utils.helper.extensions
 
 import android.view.View
+import android.view.View.*
 
 fun View.removeView() {
-    visibility = View.GONE
+    visibility = GONE
 }
 
 fun View.hideView() {
-    visibility = View.INVISIBLE
+    visibility = INVISIBLE
 }
 
 fun View.showView() {
-    visibility = View.VISIBLE
+    visibility = VISIBLE
 }
 
 fun View.showCondition(condition: Boolean, gone: Boolean = true) {

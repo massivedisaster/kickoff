@@ -59,7 +59,7 @@ class PreferencesManager @Inject constructor(context: Context) {
         }
     }
 
-    inline fun <reified T : Any> read(key: String, defaultValue: T? = null) = when (defaultValue) {
+    inline fun <reified T : Any> read(key: String, defaultValue: T? = null): T? = when (defaultValue) {
             is String -> prefs.getString(key, defaultValue as? String) as T
             is Int -> prefs.getInt(key, defaultValue as? Int ?: -1) as T
             is Boolean -> prefs.getBoolean(key, defaultValue as? Boolean ?: false) as T

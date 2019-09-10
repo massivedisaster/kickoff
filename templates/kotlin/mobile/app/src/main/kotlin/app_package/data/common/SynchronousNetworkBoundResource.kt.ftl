@@ -3,14 +3,13 @@ package ${configs.packageName}.data.common
 import androidx.annotation.MainThread
 import androidx.annotation.WorkerThread
 import ${configs.packageName}.BuildConfig
+import ${configs.packageName}.network.models.ApiErrorResponse
+import ${configs.packageName}.network.models.ApiResponse
+import ${configs.packageName}.network.models.ApiSuccessResponse
 import ${configs.packageName}.utils.authentication.AccountUtils
 
 abstract class SynchronousNetworkBoundResource<ResultType, RefreshType>
 @MainThread constructor(private val accountUtils: AccountUtils) {
-
-    companion object {
-        private val TAG = SynchronousNetworkBoundResource::class.java.simpleName
-    }
 
     private var refreshCall: ApiResponse<RefreshType>? = null
 
@@ -47,7 +46,7 @@ abstract class SynchronousNetworkBoundResource<ResultType, RefreshType>
                     }
                 } else {
                     val responseBody = processResponse(apiResponse)
-                    return CallResult.error<ResultType>(apiResponse.errorMessage, apiResponse.errorCode, responseBody, apiResponse)
+                    return CallResult.error(apiResponse.errorMessage, apiResponse.errorCode, null, apiResponse)
                 }
             }
         }

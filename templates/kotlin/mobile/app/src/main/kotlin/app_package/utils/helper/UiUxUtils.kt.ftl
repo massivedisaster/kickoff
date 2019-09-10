@@ -19,6 +19,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputLayout
 //import ${configs.packageName}.R
+import ${configs.packageName}.utils.helper.extensions.isEmail
 
 /**
  * Util class related to Views, Animations etc
