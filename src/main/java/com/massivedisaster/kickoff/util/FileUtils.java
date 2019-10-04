@@ -1,5 +1,8 @@
 package com.massivedisaster.kickoff.util;
 
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.massivedisaster.kickoff.config.ProjectConfiguration;
 import org.rauschig.jarchivelib.Archiver;
@@ -21,9 +24,11 @@ public class FileUtils {
      * @param fileReader the file reader to validate.
      * @return true if the file it's valid.
      */
-    public static ProjectConfiguration validateConfigurationFile(FileReader fileReader) {
-        Gson gson = new Gson();
-        return gson.fromJson(fileReader, ProjectConfiguration.class);
+    public static ProjectConfiguration validateConfigurationFile(FileReader fileReader) throws IOException {
+        JsonFactory jsonFactory = new JsonFactory();
+        jsonFactory.enable(JsonParser.Feature.ALLOW_COMMENTS);
+        ObjectMapper mapper = new ObjectMapper(jsonFactory);
+        return mapper.readValue(fileReader, ProjectConfiguration.class);
     }
 
     /**

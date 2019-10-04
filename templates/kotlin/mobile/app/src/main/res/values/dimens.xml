@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- GENERAL -->
+    <dimen name="no_space">0dp</dimen>
+    <dimen name="line">1dp</dimen>
+    <dimen name="extra_extra_small_spacing">2dp</dimen>
+    <dimen name="extra_small_spacing">3dp</dimen>
+    <dimen name="extra_small_medium_spacing">4dp</dimen>
+    <dimen name="small_spacing">5dp</dimen>
+    <dimen name="small_normal_spacing">8dp</dimen>
+    <dimen name="normal_spacing">10dp</dimen>
+    <dimen name="normal_medium_spacing">13dp</dimen>
+    <dimen name="medium_spacing">16dp</dimen>
+    <dimen name="medium_medium_spacing">17dp</dimen>
+    <dimen name="large_spacing">20dp</dimen>
+    <dimen name="large_medium_spacing">25dp</dimen>
+    <dimen name="material_spacing">24dp</dimen>
+    <dimen name="extra_large_spacing">30dp</dimen>
+    <dimen name="extra_large_medium_spacing">33dp</dimen>
+    <dimen name="extra_extra_large_spacing">35dp</dimen>
+
+    <!-- TEXT SIZES -->
+    <dimen name="text_size_headline_one">96sp</dimen>
+    <dimen name="text_size_headline_two">60sp</dimen>
+    <dimen name="text_size_headline_three">48sp</dimen>
+    <dimen name="text_size_headline_four">32sp</dimen>
+    <dimen name="text_size_headline_five">24sp</dimen>
+    <dimen name="text_size_headline_six">20sp</dimen>
+    <dimen name="text_size_subtitle_one">16sp</dimen>
+    <dimen name="text_size_subtitle_two">14sp</dimen>
+    <dimen name="text_size_mini">8sp</dimen>
+    <dimen name="text_size_toolbar">18sp</dimen>
+    <dimen name="text_size_body_one">16sp</dimen>
+    <dimen name="text_size_body_two">15sp</dimen>
+    <dimen name="text_size_caption">12sp</dimen>
+    <dimen name="text_size_button">14sp</dimen>
+    <dimen name="text_size_over_line">12sp</dimen>
+
+    <!-- BIOMETRICS -->
+    <dimen name="biometric_margin_xxsmall">3dp</dimen>
+    <dimen name="biometric_margin_xsmall">5dp</dimen>
+    <dimen name="biometric_margin_small">8dp</dimen>
+    <dimen name="biometric_margin">10dp</dimen>
+    <dimen name="biometric_margin_medium">12dp</dimen>
+    <dimen name="biometric_margin_large">15dp</dimen>
+    <dimen name="biometric_margin_xlarge">18dp</dimen>
+    <dimen name="biometric_margin_xxlarge">22dp</dimen>
+    <dimen name="biometric_padding_large">14dp</dimen>
+    <dimen name="biometric_font_title">18sp</dimen>
+    <dimen name="biometric_font_subtitle">13sp</dimen>
+    <dimen name="biometric_bg_size">20dp</dimen>
+    <dimen name="biometric_logo_size">48dp</dimen>
+    <dimen name="biometric_bottom_sheet_padding">16dp</dimen>
+    <dimen name="biometric_fingerprint_image_size">60dp</dimen>
+
+</resources>
