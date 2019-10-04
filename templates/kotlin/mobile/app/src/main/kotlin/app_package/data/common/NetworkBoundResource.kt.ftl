@@ -57,6 +57,7 @@ abstract class NetworkBoundResource<ResultType, RequestType, RefreshType> @MainT
             result.addSource(databaseSource) { data ->
                 result.removeSource(databaseSource)
                 if (shouldRequestFromNetwork(data)) {
+                    result.removeSource(network)
                     requestFromNetwork(true)
                 } else {
                     result.addSource(databaseSource) { newData ->
@@ -87,7 +88,7 @@ abstract class NetworkBoundResource<ResultType, RequestType, RefreshType> @MainT
                 is ApiSuccessResponse -> {
                     appExecutors.getDiskIO().execute {
                         val responseBody = processResponse(response)
-                        saveCallResult(responseBody!!)
+                        saveCallResult(responseBody)
                         val databaseSource = loadFromDatabase()
                         if (withDb && databaseSource != null) {
                             appExecutors.getMainThread().execute {
@@ -168,7 +169,7 @@ abstract class NetworkBoundResource<ResultType, RequestType, RefreshType> @MainT
     protected open fun processResponse(response: ApiSuccessResponse<RequestType>) = response.body
 
     @WorkerThread
-    protected open fun saveCallResult(data: RequestType) { }
+    protected open fun saveCallResult(data: RequestType?) { }
 
     @MainThread
     open fun loadFromDatabase(): LiveData<ResultType>? = null
@@ -183,8 +184,8 @@ abstract class NetworkBoundResource<ResultType, RequestType, RefreshType> @MainT
         override fun onChanged(response: ApiResponse<RefreshType>?) {
             accountUtils.refreshingToken.set(false)
             if (response is ApiSuccessResponse) {
-                requestFromNetwork()
                 refreshResult(response.body)
+                retry()
             }
 
             refreshCall?.removeObserver(this)
