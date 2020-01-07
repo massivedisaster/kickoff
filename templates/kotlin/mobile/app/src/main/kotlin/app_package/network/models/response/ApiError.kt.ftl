@@ -5,8 +5,8 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import java.util.*
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-class ApiError(
-        @JsonProperty("status") internal val status: Int = 0,
-        @JsonProperty("title") internal val title: String? = "",
-        @JsonProperty("details") internal val details: HashMap<String, Any>? = null
+data class ApiError(
+        @JsonProperty("status") val status: Int,
+        @JsonProperty("title") val title: String?,
+        @JsonProperty("details") val details: String?
 )

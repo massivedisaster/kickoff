@@ -10,7 +10,7 @@ dependencies {
 
     /* ${dependency.name?upper_case} */
         <#list dependency.list?keys as key>
-    <#if dependency.list[key].isCompiler!true>kapt<#else>implementation</#if> libraries.${dependency.name?capitalize?replace(" ", "")}.${key}
+    <#if dependency.list[key].isCompiler!true>kapt<#else>implementation</#if> libraries.${dependency.name?capitalize?replace(" ", "")?trim?uncap_first}.${key}
         </#list>
     </#list>
 </#if>

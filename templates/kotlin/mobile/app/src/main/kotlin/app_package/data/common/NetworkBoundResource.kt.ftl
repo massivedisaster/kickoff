@@ -99,7 +99,10 @@ abstract class NetworkBoundResource<ResultType, RequestType, RefreshType> @MainT
                         } else {
                             appExecutors.getMainThread().execute {
                                 result.addSource(network) { newData ->
-                                    setValue(CallResult.success(200, newData as ResultType, response.headers, this))
+                                    val innerResponse = transformResponse(response)
+                                    val result = CallResult.success(200, newData as ResultType, response.headers, this)
+                                    publishEvent(result)
+                                    setValue(result)
                                 }
 
                                 updateNetworkSource(responseBody)
@@ -134,7 +137,9 @@ abstract class NetworkBoundResource<ResultType, RequestType, RefreshType> @MainT
                             }
                         } else {
                             result.addSource(network) { newData ->
-                                setValue(CallResult.error(response.errorMessage, response.errorCode, newData as ResultType, response, this))
+                                val result = CallResult.error(response.errorMessage, response.errorCode, newData as ResultType, response, this)
+                                publishEvent(result)
+                                setValue(result)
                             }
 
                             updateNetworkSource(null)
@@ -176,6 +181,12 @@ abstract class NetworkBoundResource<ResultType, RequestType, RefreshType> @MainT
 
     @MainThread
     protected open fun shouldRequestFromNetwork(data: ResultType?) = true
+
+    @WorkerThread
+    protected open fun transformResponse(response: ApiSuccessResponse<RequestType>) : ResultType? = null
+
+    @WorkerThread
+    protected open fun publishEvent(data: CallResult<ResultType>) {}
 
     @MainThread
     protected abstract fun createCall(): LiveData<ApiResponse<RequestType>>

@@ -13,6 +13,8 @@ import javax.inject.Singleton
 class PreferencesManager @Inject constructor(context: Context) {
 
     companion object {
+        const val FIRST_TIME = "FIRST_TIME"
+        const val FIRST_LOGIN = "FIRST_LOGIN"
         const val KEY = "VALUE"
 
         inline fun <reified T : Any> getObject(json: String?): T? {
@@ -41,6 +43,14 @@ class PreferencesManager @Inject constructor(context: Context) {
 
     val prefs: SharedPreferences = context.getSharedPreferences("${configs.packageName}", Context.MODE_PRIVATE)
 
+    var firstRun: Boolean
+        get() = read(FIRST_TIME, true)!!
+        set(value) = write(FIRST_TIME, value)
+
+    var firstLogin: Boolean
+        get() = read(FIRST_LOGIN, true)!!
+        set(value) = write(FIRST_LOGIN, value)
+
     inline fun edit(task: (SharedPreferences.Editor) -> Unit) {
         val editor = prefs.edit()
         task(editor)
@@ -48,7 +58,6 @@ class PreferencesManager @Inject constructor(context: Context) {
     }
 
     inline fun write(key: String, value: Any) {
-        val editor = prefs.edit()
         when (value) {
             is String -> edit { it.putString(key, value) }
             is Int -> edit { it.putInt(key, value) }

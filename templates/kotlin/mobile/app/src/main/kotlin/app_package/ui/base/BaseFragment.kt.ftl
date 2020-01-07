@@ -9,7 +9,6 @@ import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
 import ${configs.packageName}.ui.animation.AnimationType
 import ${configs.packageName}.ui.animation.Animations
 import dagger.android.DispatchingAndroidInjector
@@ -21,26 +20,32 @@ abstract class BaseFragment<T : ViewDataBinding, VM : ViewModel> : Fragment(), H
 
     @Inject
     lateinit var androidInjector: DispatchingAndroidInjector<Any>
-
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
 
+    //makes fragment lazy
+    open var useLazyLoading = false
+
     protected val dataBinding: T by lazy {
-        DataBindingUtil.inflate<T>(LayoutInflater.from(context), layoutToInflate(), null, false)
+        when (getViewModelClass().second) {
+            is BaseFragment<*, *> -> ViewModelProvider(this, viewModelFactory).get(getViewModelClass().first)
+            is BaseActivity<*, *> -> ViewModelProvider(getViewModelClass().second as FragmentActivity, viewModelFactory).get(getViewModelClass().first)
+            else -> throw Exception("ViewModel holder must be of type BaseFragment or BaseActivity")
+        }
     }
 
     protected val viewModel: VM by lazy {
-        ViewModelProviders.of(this, viewModelFactory).get(getViewModelClass())
+        ViewModelProvider(this, viewModelFactory).get(getViewModelClass())
     }
 
     @LayoutRes
     abstract fun layoutToInflate(): Int
 
-    abstract fun getViewModelClass() : Class<VM>
+    abstract fun getViewModelClass() : Pair<Class<VM>, *>
 
     abstract fun doOnCreated()
 
-    open fun initializesArguments(arguments: Bundle) {}
+    open fun getArguments(arguments: Bundle) {}
 
     override fun androidInjector() = androidInjector
 
@@ -53,22 +58,40 @@ abstract class BaseFragment<T : ViewDataBinding, VM : ViewModel> : Fragment(), H
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         if (arguments != null) {
-            initializesArguments(arguments!!)
+            getArguments(arguments!!)
         }
 
         val menuResId = menuResourceId
         setHasOptionsMenu(menuResId > -1)
 
-        doOnCreated()
+        if(useLazyLoading.not()) {
+            doOnCreated()
+        } else if(isVisibleFirstTime.not()) {
+            //else will run when visible to user (visible to user might not run because view might be null, there. so we run here in case is not the first time)
+            doOnCreated()
+        }
+    }
+
+    private var isVisibleFirstTime = true
+    override fun setUserVisibleHint(isVisibleToUser: Boolean) {
+        super.setUserVisibleHint(isVisibleToUser)
+        if (isVisibleToUser) {
+            if(useLazyLoading && isVisibleFirstTime && view != null) {
+                doOnCreated()
+            }
+            isVisibleFirstTime = false
+            // load you data
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        super.onCreateOptionsMenu(menu, inflater)
         val menuResId = menuResourceId
 
         if (menuResId > -1) {
             inflater.inflate(menuResId, menu)
+            activity?.invalidateOptionsMenu();
         }
+        super.onCreateOptionsMenu(menu, inflater)
     }
 
     override fun onDestroyView() {

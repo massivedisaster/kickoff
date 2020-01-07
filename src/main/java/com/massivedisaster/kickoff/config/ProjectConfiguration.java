@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 
 public class ProjectConfiguration {
-
 	@JsonProperty("template")
 	private String template;
 	@JsonProperty("language")
@@ -39,92 +38,73 @@ public class ProjectConfiguration {
 	private boolean useAndroidX;
 	@JsonProperty("hasOneSignal")
 	private boolean hasOneSignal;
-	@JsonProperty("slackChannel")
-	private String slackChannel;
-	@JsonProperty("testFairyKey")
-	private String testFairyKey;
+	@JsonProperty("slack")
+	private Slack slack;
+	@JsonProperty("testFairy")
+	private TestFairy testFairy;
+	@JsonProperty("firebaseDistribution")
+	private FirebaseDistribution firebaseDistribution;
 	@JsonProperty("kotlinVersion")
 	private String kotlinVersion;
-	@JsonProperty("slackSlug")
-	private String slackSlug;
 
 	public String getTemplate() {
 		return template;
 	}
-
 	public String getLanguage() {
 		return language;
 	}
-
 	public String getGradlePluginVersion() {
 		return gradlePluginVersion;
 	}
-
 	public String getGradleVersion() {
 		return gradleVersion;
 	}
-
 	public String getProjectName() {
 		return projectName;
 	}
-
 	public String getPackageName() {
 		return packageName;
 	}
-
 	public int getMinimumSdkApi() {
 		return minimumSdkApi;
 	}
-
 	public int getTargetSdkApi() {
 		return targetSdkApi;
 	}
-
 	public String getBuildTools() {
 		return buildTools;
 	}
-
 	public HashMap<String, HashMap<String, String>> getManifestKeys() {
 		return manifestKeys;
 	}
-
     public HashMap<String, HashMap<String, String>> getExtraBuildVars() {
         return extraBuildVars;
     }
-
 	public Network getNetwork() {
 		return network;
 	}
-
 	public List<Dependency> getDependencies() {
 		return dependencies;
 	}
-
 	public boolean getHasQa() {
 		return hasQa;
 	}
-
 	public boolean getUseAndroidX() {
 		return useAndroidX;
 	}
-
 	public boolean getHasOneSignal() {
 		return hasOneSignal;
 	}
-
-	public String getSlackChannel() {
-		return slackChannel;
-	}
-
-	public String getTestFairyKey() {
-		return testFairyKey;
-	}
-
 	public String getKotlinVersion() {
 		return kotlinVersion;
 	}
-
-	public String getSlackSlug() {
-		return slackSlug;
+	public Slack getSlack() {
+		return slack;
+	}
+	public TestFairy getTestFairy() {
+		return testFairy;
+	}
+	public FirebaseDistribution getFirebaseDistribution() {
+		return firebaseDistribution;
 	}
 }

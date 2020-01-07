@@ -16,7 +16,6 @@ import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
 import ${configs.packageName}.ui.animation.AnimationType
 import ${configs.packageName}.ui.animation.TransactionAnimation
 import ${configs.packageName}.ui.widgets.afm.OnBackPressedListener
@@ -44,13 +43,19 @@ abstract class BaseActivity<T : ViewDataBinding, VM : ViewModel> : AppCompatActi
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
 
-     protected val dataBinding: T by lazy {
-         DataBindingUtil.setContentView<T>(this, layoutToInflate())
-     }
+    //to draw behind potential transparent status bar
+    open var shouldFullScreenStretch = false
 
-     protected val viewModel: VM by lazy {
-         ViewModelProviders.of(this, viewModelFactory).get(getViewModelClass())
-     }
+    private var loadingDialog: LoadingDialog? = null
+    private var errorDialog: ErrorDialog? = null
+
+    protected val dataBinding: T by lazy {
+        DataBindingUtil.setContentView<T>(this, layoutToInflate())
+    }
+
+    protected val viewModel: VM by lazy {
+        ViewModelProvider(this, viewModelFactory).get(getViewModelClass())
+    }
 
      @LayoutRes
      abstract fun layoutToInflate(): Int
@@ -64,29 +69,39 @@ abstract class BaseActivity<T : ViewDataBinding, VM : ViewModel> : AppCompatActi
 
      override fun androidInjector() = androidInjector
 
+     open fun getArguments(arguments: Bundle) {}
+
      override fun onCreate(savedInstanceState: Bundle?) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            requestWindowFeature(Window.FEATURE_ACTIVITY_TRANSITIONS)
-            requestWindowFeature(Window.FEATURE_CONTENT_TRANSITIONS)
-        }
+         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+             requestWindowFeature(Window.FEATURE_ACTIVITY_TRANSITIONS)
+             requestWindowFeature(Window.FEATURE_CONTENT_TRANSITIONS)
+         }
 
-        AndroidInjection.inject(this)
+         if (shouldFullScreenStretch) {
+             window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+         }
 
-        super.onCreate(savedInstanceState)
-        window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN)
-        initDataBinding()
-        if (supportFragmentManager.fragments.isEmpty() && supportFragmentManager.backStackEntryCount == 0) {
-            if (intent.hasExtra(ACTIVITY_MANAGER_FRAGMENT)) {
-                performInitialTransaction(getFragment(intent.getStringExtra(ACTIVITY_MANAGER_FRAGMENT)), getFragmentTag())
-            } else if (getDefaultFragment() != null) {
-                performInitialTransaction(getFragment(getDefaultFragment()!!.canonicalName!!), null)
-            }
-        }
+         AndroidInjection.inject(this)
+         if (intent.extras != null) {
+             getArguments(intent.extras!!)
+         }
 
-        doOnCreated()
+         super.onCreate(savedInstanceState)
+         window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN)
+         initDataBinding()
+         if (supportFragmentManager.fragments.isEmpty() && supportFragmentManager.backStackEntryCount == 0) {
+             if (intent.hasExtra(ACTIVITY_MANAGER_FRAGMENT)) {
+                 performInitialTransaction(getFragment(intent.getStringExtra(ACTIVITY_MANAGER_FRAGMENT)), getFragmentTag())
+             } else if (getDefaultFragment() != null) {
+                 performInitialTransaction(getFragment(getDefaultFragment()!!.canonicalName!!), null)
+             }
+         }
+
+         doOnCreated()
+         setSystemBarTransparent()
      }
 
-     open protected fun getDefaultFragment(): Class<out Fragment>? {
+     protected open fun getDefaultFragment(): Class<out Fragment>? {
         Log.w("BaseActivity", "No default fragment implemented!")
         return null
      }
@@ -106,7 +121,7 @@ abstract class BaseActivity<T : ViewDataBinding, VM : ViewModel> : AppCompatActi
      }
 
      private fun initDataBinding() {
-                dataBinding.lifecycleOwner = this
+        dataBinding.lifecycleOwner = this
      }
 
      /**
@@ -132,9 +147,7 @@ abstract class BaseActivity<T : ViewDataBinding, VM : ViewModel> : AppCompatActi
       override val animationPopExit: Int
           get() = android.R.anim.fade_out
 
-      private fun getFragmentTag(): String? {
-          return intent.getStringExtra(ACTIVITY_MANAGER_FRAGMENT_TAG)
-      }
+      private fun getFragmentTag() = intent.getStringExtra(ACTIVITY_MANAGER_FRAGMENT_TAG)
 
       /**
        * Get a new instance of the Fragment by name.
@@ -179,9 +192,7 @@ abstract class BaseActivity<T : ViewDataBinding, VM : ViewModel> : AppCompatActi
          * Gets the active fragment.
          * @return the active fragment.
          */
-         private fun getActiveFragment(): Fragment? {
-            return supportFragmentManager.findFragmentById(containerId())
-         }
+         fun getActiveFragment() = supportFragmentManager.findFragmentById(containerId())
 
          /**
           * Defines a transition animation to the given activity
@@ -190,8 +201,8 @@ abstract class BaseActivity<T : ViewDataBinding, VM : ViewModel> : AppCompatActi
           * @param animationType The type of the animation.
           */
          fun defineActivityTransitionAnimation(activity: Activity, @AnimationType animationType: Int) {
-             when (animationType) {
-                 /*Animations.LEFT -> activity.overridePendingTransition(R.anim.fragment_left_in, R.anim.fragment_right_out)
+             /*when (animationType) {
+                 Animations.LEFT -> activity.overridePendingTransition(R.anim.fragment_left_in, R.anim.fragment_right_out)
                  Animations.RIGHT -> activity.overridePendingTransition(R.anim.fragment_right_in, R.anim.fragment_left_out)
                  Animations.UP -> activity.overridePendingTransition(R.anim.fragment_up_in, R.anim.fragment_down_out)
                  Animations.DOWN -> activity.overridePendingTransition(R.anim.fragment_down_in, R.anim.fragment_up_out)
@@ -202,8 +213,8 @@ abstract class BaseActivity<T : ViewDataBinding, VM : ViewModel> : AppCompatActi
                  Animations.LEFT_OUT -> activity.overridePendingTransition(R.anim.fragment_static, R.anim.fragment_left_out)
                  Animations.RIGHT_OUT -> activity.overridePendingTransition(R.anim.fragment_static, R.anim.fragment_right_out)
                  Animations.UP_OUT -> activity.overridePendingTransition(R.anim.fragment_static, R.anim.fragment_up_out)
-                 Animations.DOWN_OUT -> activity.overridePendingTransition(R.anim.fragment_static, R.anim.fragment_down_out)*/
-             }
+                 Animations.DOWN_OUT -> activity.overridePendingTransition(R.anim.fragment_static, R.anim.fragment_down_out)
+             }*/
          }
 
 }

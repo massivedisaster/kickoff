@@ -27,14 +27,6 @@ class SplashActivity : BaseActivity<ActivitySplashBinding, SplashViewModel>() {
     private var startTime: Long = 0
 
     /**
-     * Splash timeout.
-     *
-     * @return the splash timeout.
-     */
-    protected val splashTimeOut: Long
-        get() = SPLASH_TIME_OUT
-
-    /**
      * Gets the timeout for the splash finishes.
      *
      * @return the timeout.
@@ -42,7 +34,7 @@ class SplashActivity : BaseActivity<ActivitySplashBinding, SplashViewModel>() {
     private val timeout: Long
         get() {
             val diff = System.currentTimeMillis() - startTime
-            return if (diff > splashTimeOut) 0 else splashTimeOut - diff
+            return if (diff > SPLASH_TIME_OUT) 0 else SPLASH_TIME_OUT - diff
         }
 
     override fun layoutToInflate() = R.layout.activity_splash
@@ -58,7 +50,7 @@ class SplashActivity : BaseActivity<ActivitySplashBinding, SplashViewModel>() {
 
     public override fun onResume() {
         super.onResume()
-        <#if configs.hasOnesignal!true>
+        <#if configs.hasOneSignal!true>
         OneSignal.idsAvailable { userId, _ -> preferencesManager.write(PreferencesManager.PUSH_ID, userId) }
         </#if>
 

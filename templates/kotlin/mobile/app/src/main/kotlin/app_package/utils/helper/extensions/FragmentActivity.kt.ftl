@@ -1,8 +1,14 @@
 package ${configs.packageName}.utils.helper.extensions
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
+import android.content.res.TypedArray
+import android.graphics.Color
 import android.graphics.Point
+import android.os.Build
+import android.view.WindowManager
+import android.view.inputmethod.InputMethodManager
 import androidx.fragment.app.FragmentActivity
 import ${configs.packageName}.utils.helper.DebounceTimer
 
@@ -42,4 +48,46 @@ fun FragmentActivity.getDisplayHeight(): Int {
     windowManager.defaultDisplay.getSize(size)
 
     return size.y
+}
+
+fun Activity.setSystemBarTransparent() {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        val window = this.window
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+        window.statusBarColor = Color.TRANSPARENT
+    }
+}
+
+
+/**
+ * returns actionBar default size (similar to ?attr/actionBarSize)
+ */
+fun FragmentActivity.actionBarSize(): Float {
+    val styledAttributes: TypedArray = theme.obtainStyledAttributes(IntArray(1) { android.R.attr.actionBarSize })
+    val actionBarSize = styledAttributes.getDimension(0, 0F)
+    styledAttributes.recycle()
+    return actionBarSize
+}
+
+
+private const val HIDE_SOFT_INPUT_FLAGS_NONE = 0
+
+/**
+ * hides keyboard for current focused activity
+ */
+fun FragmentActivity.hideKeyboard() {
+    currentFocus?.let {
+        val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(it.windowToken, HIDE_SOFT_INPUT_FLAGS_NONE)
+    }
+}
+
+/**
+ * hides keyboard for current focused activity
+ */
+fun FragmentActivity.openKeyboard() {
+    currentFocus?.let {
+        val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY)
+    }
 }

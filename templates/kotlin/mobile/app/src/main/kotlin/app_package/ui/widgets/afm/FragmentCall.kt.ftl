@@ -49,6 +49,20 @@ class FragmentCall private constructor() : Builder() {
             fragmentCall.init(activity, clazz)
             return fragmentCall
         }
+
+        /**
+         * Initializes builder setting up the activity that will hold the fragment
+         *
+         * @param activity
+         * *
+         * @return Builder instance
+         */
+        fun init(activity: BaseActivity<*, *>, frag: Fragment): FragmentCall {
+            val fragmentCall = FragmentCall()
+            fragmentCall.init(activity, frag)
+            return fragmentCall
+        }
+
     }
 
     /**
@@ -59,6 +73,19 @@ class FragmentCall private constructor() : Builder() {
         this.activity = activity
         this.clazz = clazz.java
     }
+
+    /**
+     * Initializes an instance of FragmentCall retrieving all necessary fields to add or replace
+     * a fragment into an activity
+     */
+    private fun init(activity: BaseActivity<*, *>, frag: Fragment) {
+        this.activity = activity
+        this.frag = frag
+        setBundle(frag.arguments ?: Bundle.EMPTY)
+        this.clazz = frag.javaClass
+    }
+
+    private lateinit var frag: Fragment
 
     override fun build() {
         validate()
@@ -73,7 +100,7 @@ class FragmentCall private constructor() : Builder() {
         }
 
         try {
-            val fragment = clazz!!.newInstance()
+            val fragment = if(::frag.isInitialized) frag else clazz!!.newInstance()
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 fragment.sharedElementEnterTransition = TransitionInflater.from(activity).inflateTransition(android.R.transition.move)
