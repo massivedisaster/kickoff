@@ -1,3 +1,6 @@
+<#if configs.hasOneSignal!true>
+apply plugin: 'com.onesignal.androidsdk.onesignal-gradle-plugin'
+</#if>
 apply plugin: 'com.android.application'
 apply from: "$project.rootDir/tools/git-version.gradle"
 apply from: "$project.rootDir/tools/versions.gradle"

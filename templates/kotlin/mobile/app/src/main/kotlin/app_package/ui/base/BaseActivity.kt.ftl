@@ -22,6 +22,7 @@ import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasAndroidInjector
 import ${configs.packageName}.ui.animation.AnimationType
 import ${configs.packageName}.ui.animation.TransactionAnimation
+import ${configs.packageName}.ui.dialog.LoadingDialog
 import ${configs.packageName}.ui.widgets.afm.OnBackPressedListener
 import ${configs.packageName}.utils.helper.extensions.setSystemBarTransparent
 import javax.inject.Inject
@@ -212,6 +213,29 @@ abstract class BaseActivity<T : ViewDataBinding, VM : ViewModel> : AppCompatActi
                  Animations.UP_OUT -> activity.overridePendingTransition(R.anim.fragment_static, R.anim.fragment_up_out)
                  Animations.DOWN_OUT -> activity.overridePendingTransition(R.anim.fragment_static, R.anim.fragment_down_out)
              }*/
+         }
+
+         open fun showLoading() {
+             KeyboardUtils.hide(this)
+             if (loadingDialog == null) {
+                 loadingDialog = LoadingDialog()
+             }
+             if (!loadingDialog!!.isAdded && !loadingDialog!!.isVisible) {
+                 loadingDialog!!.show(supportFragmentManager, "loading")
+                 supportFragmentManager.registerFragmentLifecycleCallbacks( object : FragmentManager.FragmentLifecycleCallbacks() {
+                     override fun onFragmentViewDestroyed(fm: FragmentManager, f: Fragment) {
+                         super.onFragmentViewDestroyed(fm, f)
+                         supportFragmentManager.unregisterFragmentLifecycleCallbacks(this)
+                         loadingDialog = null
+                     }
+                 }, false)
+             }
+         }
+
+         open fun hideLoading() {
+             if (loadingDialog != null) {
+                 loadingDialog!!.dismiss()
+             }
          }
 
 }

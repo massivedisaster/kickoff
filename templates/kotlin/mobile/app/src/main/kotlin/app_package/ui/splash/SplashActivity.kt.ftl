@@ -1,6 +1,9 @@
 package ${configs.packageName}.ui.splash
 
 import android.os.Handler
+<#if configs.hasOneSignal!true>
+import com.onesignal.OneSignal
+</#if>
 import ${configs.packageName}.R
 import ${configs.packageName}.databinding.ActivitySplashBinding
 import ${configs.packageName}.ui.base.BaseActivity

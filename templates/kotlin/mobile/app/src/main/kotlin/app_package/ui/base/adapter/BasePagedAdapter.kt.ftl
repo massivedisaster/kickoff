@@ -1,4 +1,4 @@
-package ${configs.packageName}.ui.base
+package ${configs.packageName}.ui.base.adapter
 
 import androidx.recyclerview.widget.RecyclerView
 import  ${configs.packageName}.data.common.NetworkState

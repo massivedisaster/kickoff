@@ -1,4 +1,4 @@
-package ${configs.packageName}.ui.base
+package ${configs.packageName}.ui.base.adapter
 
 import android.view.LayoutInflater
 import android.view.View

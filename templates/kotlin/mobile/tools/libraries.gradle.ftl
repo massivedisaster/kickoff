@@ -3,6 +3,13 @@ ext.libraries = [
     kotlin  : [
         base: "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     ],
+
+<#if configs.hasOneSignal!true>
+    oneSignal : [
+        base : "com.onesignal:OneSignal:$versions.oneSignalVersion"
+    ],
+</#if>
+
 <#if configs.dependencies??>
     <#list configs.dependencies as dependency>
 
@@ -13,4 +20,5 @@ ext.libraries = [
     ]<#if (dependency_index+1) < configs.dependencies?size>,</#if>
     </#list>
 </#if>
+
 ]

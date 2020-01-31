@@ -15,6 +15,9 @@ class PreferencesManager @Inject constructor(context: Context) {
     companion object {
         const val FIRST_TIME = "FIRST_TIME"
         const val FIRST_LOGIN = "FIRST_LOGIN"
+<#if configs.hasOneSignal!true>
+        const val PUSH_ID = "PUSH_ID"
+</#if>
         const val KEY = "VALUE"
 
         inline fun <reified T : Any> getObject(json: String?): T? {

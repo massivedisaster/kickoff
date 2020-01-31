@@ -14,4 +14,15 @@ dependencies {
         </#list>
     </#list>
 </#if>
+
+<#if configs.hasOneSignal!true>
+    /* ONE SIGNAL */
+    implementation(libraries.oneSignal.base) {
+        exclude group: 'com.google.firebase', module: 'firebase-messaging'
+        exclude group: 'com.google.android.gms', module: 'play-services-gcm'
+        exclude group: 'com.google.android.gms', module: 'play-services-analytics'
+        exclude group: 'com.google.android.gms', module: 'play-services-location'
+    }
+</#if>
+
 }
