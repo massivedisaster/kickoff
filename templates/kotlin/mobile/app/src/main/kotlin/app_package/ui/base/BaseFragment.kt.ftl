@@ -7,6 +7,8 @@ import androidx.annotation.StringRes
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
+import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import ${configs.packageName}.ui.animation.AnimationType
@@ -27,6 +29,10 @@ abstract class BaseFragment<T : ViewDataBinding, VM : ViewModel> : Fragment(), H
     open var useLazyLoading = false
 
     protected val dataBinding: T by lazy {
+        DataBindingUtil.inflate<T>(LayoutInflater.from(context), layoutToInflate(), null, false)
+    }
+
+    protected val viewModel: VM by lazy {
         when (getViewModelClass().second) {
             is BaseFragment<*, *> -> ViewModelProvider(this, viewModelFactory).get(getViewModelClass().first)
             is BaseActivity<*, *> -> ViewModelProvider(getViewModelClass().second as FragmentActivity, viewModelFactory).get(getViewModelClass().first)
@@ -34,11 +40,7 @@ abstract class BaseFragment<T : ViewDataBinding, VM : ViewModel> : Fragment(), H
         }
     }
 
-    protected val viewModel: VM by lazy {
-        ViewModelProvider(this, viewModelFactory).get(getViewModelClass())
-    }
-
-    @LayoutRes
+        @LayoutRes
     abstract fun layoutToInflate(): Int
 
     abstract fun getViewModelClass() : Pair<Class<VM>, *>

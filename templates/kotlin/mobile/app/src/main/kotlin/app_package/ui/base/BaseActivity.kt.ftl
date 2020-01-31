@@ -5,6 +5,7 @@ import android.content.Context
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.view.Window
 import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
@@ -16,12 +17,13 @@ import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import ${configs.packageName}.ui.animation.AnimationType
-import ${configs.packageName}.ui.animation.TransactionAnimation
-import ${configs.packageName}.ui.widgets.afm.OnBackPressedListener
 import dagger.android.AndroidInjection
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasAndroidInjector
+import ${configs.packageName}.ui.animation.AnimationType
+import ${configs.packageName}.ui.animation.TransactionAnimation
+import ${configs.packageName}.ui.widgets.afm.OnBackPressedListener
+import ${configs.packageName}.utils.helper.extensions.setSystemBarTransparent
 import javax.inject.Inject
 
 abstract class BaseActivity<T : ViewDataBinding, VM : ViewModel> : AppCompatActivity(), HasAndroidInjector, TransactionAnimation {
@@ -47,7 +49,6 @@ abstract class BaseActivity<T : ViewDataBinding, VM : ViewModel> : AppCompatActi
     open var shouldFullScreenStretch = false
 
     private var loadingDialog: LoadingDialog? = null
-    private var errorDialog: ErrorDialog? = null
 
     protected val dataBinding: T by lazy {
         DataBindingUtil.setContentView<T>(this, layoutToInflate())
@@ -138,14 +139,10 @@ abstract class BaseActivity<T : ViewDataBinding, VM : ViewModel> : AppCompatActi
          }
       }
 
-      override val animationEnter: Int
-          get() = android.R.anim.fade_in
-      override val animationExit: Int
-          get() = android.R.anim.fade_out
-      override val animationPopEnter: Int
-          get() = android.R.anim.fade_in
-      override val animationPopExit: Int
-          get() = android.R.anim.fade_out
+      override val animationEnter = android.R.anim.fade_in
+      override val animationExit = android.R.anim.fade_out
+      override val animationPopEnter = android.R.anim.fade_in
+      override val animationPopExit = android.R.anim.fade_out
 
       private fun getFragmentTag() = intent.getStringExtra(ACTIVITY_MANAGER_FRAGMENT_TAG)
 
