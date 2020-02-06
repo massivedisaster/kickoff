@@ -1,14 +1,14 @@
 {
     "template": "templates/kotlin/mobile.tar.gz",
     "language": "kotlin",
-    "gradlePluginVersion": "3.6.0-alpha06",
-    "projectName": "Kickoff Example",
-    "packageName": "example.package",
+    "gradlePluginVersion": "4.0.0-alpha09",
+    "projectName": "TEST APP",
+    "packageName": "pt.test",
     "minimumSdkApi": 21,
     "targetSdkApi": 29,
-    "gradleVersion": "5.4.1",
+    "gradleVersion": "6.1",
     "buildTools": "29.0.0",
-    "kotlinVersion": "1.3.41",
+    "kotlinVersion": "1.3.61",
     "network": {
         "timeout": 30,
         "endpoints": {
@@ -17,10 +17,24 @@
             "qa": "-"
         }
     },
+    "manifestKeys": {
+        "prod": {
+            "onesignal_app_id": "-",
+            "onesignal_google_project_number": "-"
+        },
+        "dev": {
+            "onesignal_app_id": "-",
+            "onesignal_google_project_number": "-"
+        },
+        "qa": {
+            "onesignal_app_id": "-",
+            "onesignal_google_project_number": "-"
+        }
+    },
     "dependencies": [
         {
             "name": "Android Jetpack",
-            "globalVersion": "1.1.0-rc01",
+            "globalVersion": "1.2.0-alpha02",
             "list": {
                 "base": {
                     "group": "androidx.appcompat:appcompat",
@@ -33,17 +47,7 @@
                 },
                 "constraintLayout": {
                     "group": "androidx.constraintlayout:constraintlayout",
-                    "version": "2.0.0-beta2",
-                    "isCompiler": false
-                },
-                "design": {
-                    "group": "com.google.android.material:material",
-                    "version": "1.1.0-alpha08",
-                    "isCompiler": false
-                },
-                "gridLayout": {
-                    "group": "androidx.gridlayout:gridlayout",
-                    "version": "1.0.0",
+                    "version": "2.0.0-beta4",
                     "isCompiler": false
                 },
                 "multidex": {
@@ -53,54 +57,69 @@
                 },
                 "recyclerView": {
                     "group": "androidx.recyclerview:recyclerview",
-                    "version": "1.1.0-beta02",
+                    "version": "1.2.0-alpha01",
                     "isCompiler": false
                 },
                 "recyclerViewSelection": {
                     "group": "androidx.recyclerview:recyclerview-selection",
-                    "version": "1.1.0-alpha06",
-                    "isCompiler": false
-                },
-                "lifecycle": {
-                    "group": "androidx.lifecycle:lifecycle-extensions",
-                    "version": "2.2.0-alpha02",
-                    "isCompiler": false
-                },
-                "lifecycleCompiler": {
-                    "group": "androidx.lifecycle:lifecycle-compiler",
-                    "version": "2.2.0-alpha02",
-                    "isCompiler": true
-                },
-                "lifecycleRuntime": {
-                    "group": "androidx.lifecycle:lifecycle-runtime",
-                    "version": "2.2.0-alpha02",
-                    "isCompiler": false
-                },
-                "viewModel": {
-                    "group": "androidx.lifecycle:lifecycle-viewmodel",
-                    "version": "2.2.0-alpha02",
-                    "isCompiler": false
-                },
-                "viewModelKotlin": {
-                    "group": "androidx.lifecycle:lifecycle-viewmodel-ktx",
-                    "version": "2.2.0-alpha02",
-                    "isCompiler": false
-                },
-                "livedata": {
-                    "group": "androidx.lifecycle:lifecycle-livedata",
-                    "version": "2.2.0-alpha02",
+                    "version": "1.1.0-beta01",
                     "isCompiler": false
                 },
                 "paging": {
                     "group": "androidx.paging:paging-runtime",
-                    "version": "2.1.0",
+                    "version": "2.1.1",
+                    "isCompiler": false
+                }
+            }
+        },
+        {
+            "name": "Android Material Components",
+            "globalVersion": "1.2.0-alpha04",
+            "list": {
+                "design": {
+                    "group": "com.google.android.material:material",
+                    "isCompiler": false
+                }
+            }
+        },
+        {
+            "name": "Android Jetpack Lifecycle",
+            "globalVersion": "2.2.0",
+            "list": {
+                "lifecycle": {
+                    "group": "androidx.lifecycle:lifecycle-extensions",
+                    "isCompiler": false
+                },
+                "lifecycleCompiler": {
+                    "group": "androidx.lifecycle:lifecycle-compiler",
+                    "isCompiler": true
+                },
+                "lifecycleRuntime": {
+                    "group": "androidx.lifecycle:lifecycle-runtime",
+                    "isCompiler": false
+                },
+                "viewModel": {
+                    "group": "androidx.lifecycle:lifecycle-viewmodel",
+                    "isCompiler": false
+                },
+                "viewModelKotlin": {
+                    "group": "androidx.lifecycle:lifecycle-viewmodel-ktx",
+                    "isCompiler": false
+                },
+                "livedata": {
+                    "group": "androidx.lifecycle:lifecycle-livedata",
+                    "isCompiler": false
+                },
+                "savedState": {
+                    "group": "androidx.lifecycle:lifecycle-viewmodel-savedstate",
+                    "version": "1.0.0",
                     "isCompiler": false
                 }
             }
         },
         {
             "name": "Dagger",
-            "globalVersion": "2.24",
+            "globalVersion": "2.26",
             "list": {
                 "base": {
                     "group": "com.google.dagger:dagger",
@@ -139,22 +158,27 @@
             }
         },
         {
-            "name": "firebase",
-            "globalVersion": "17.0.1",
+            "name": "Firebase",
+            "globalVersion": "17.2.2",
             "list": {
                 "base": {
-                    "group": "com.google.firebase:firebase-core",
+                    "group": "com.google.firebase:firebase-analytics",
+                    "isCompiler": false
+                },
+                "messaging": {
+                    "group": "com.google.firebase:firebase-messaging",
+                    "version": "20.1.0",
                     "isCompiler": false
                 },
                 "crashlytics": {
-                    "group": "com.crashlytics.sdk.android:crashlytics",
-                    "version": "2.10.1",
+                    "group": "com.google.firebase:firebase-crashlytics",
+                    "version": "17.0.0-beta01",
                     "isCompiler": false
                 }
             }
         },
         {
-            "name": "glide",
+            "name": "Glide",
             "globalVersion": "4.9.0",
             "list": {
                 "base": {
@@ -169,7 +193,7 @@
         },
         {
             "name": "retrofit",
-            "globalVersion": "2.6.1",
+            "globalVersion": "2.6.2",
             "list": {
                 "base": {
                     "group": "com.squareup.retrofit2:retrofit",
@@ -181,7 +205,7 @@
                 },
                 "jackson": {
                     "group": "com.fasterxml.jackson.module:jackson-module-kotlin",
-                    "version": "2.10.0.pr1",
+                    "version": "2.10.0",
                     "isCompiler": false
                 },
                 "logging": {
@@ -218,8 +242,25 @@
     ],
     "hasQa": true,
     "useAndroidX": true,
-    "hasOneSignal": false,
-    "slackChannel": "channel",
-    "testFairyKey": "testFairyKey",
-    "slackSlug": "slugSlack"
+    "hasOneSignal": true,
+    "slack": {
+        "channel": "-",
+        "slug": "-"
+    },
+    "testFairy": {
+        "key": "-",
+        "groups": [
+            "fastlane"
+        ]
+    },
+    "firebaseDistribution": {
+        "ids": {
+            "prod": "-",
+            "dev": "-",
+            "qa": "-"
+        },
+        "groups": [
+            "fastlane"
+        ]
+    }
 }
