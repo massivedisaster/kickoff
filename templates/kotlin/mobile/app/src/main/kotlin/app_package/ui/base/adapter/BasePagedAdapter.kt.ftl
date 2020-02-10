@@ -8,17 +8,22 @@ abstract class BasePagedAdapter<T : Any, VH : BaseViewHolder<T>, C : BaseDiffCal
         viewHolderClass: KClass<VH>,
         private val itemClass: KClass<T>,
         private val genericCardClickListener: (GenericStateCard.ClickType, GenericStateCard) -> Unit = { _, _ -> },
-        clickListener: (adapter: RecyclerView.Adapter<RecyclerView.ViewHolder>, index: Int, obj: T, type: Enum<*>) -> Unit = { _, _, _, _ -> }
-) : BaseAdapter<T, VH, C>(viewHolderClass, itemClass, genericCardClickListener, clickListener), IPagedListAdapter<Any> {
+        clickListener: (adapter: RecyclerView.Adapter<RecyclerView.ViewHolder>, index: Int, obj: T, type: Enum<*>) -> Unit = { _, _, _, _ -> },
+        private val genericCardErrorListener: (emptyContent: TextView, error: TextView) -> Unit = { _, _ -> }
+) : BaseAdapter<T, VH, C>(viewHolderClass, itemClass, genericCardClickListener, clickListener, genericCardErrorListener), IPagedListAdapter<Any> {
 
     private var networkState: NetworkState? = null
 
     override fun setPagedList(pagedObjects: MutableList<Any>) {
+        //for initial state, to avoid list from starting at bottom of first page
+        if(pagedObjects.isNotEmpty() && itemCount == 1){
+            notifyItemRemoved(itemCount - 1)
+        }
         super.setList(pagedObjects)
     }
 
     override fun genericStateCard(position: Int): GenericStateCard {
-        var card: GenericStateCard = super.genericStateCard(position)
+        var card: GenericStateCard = null
         networkState?.let {
             card = GenericStateCard(it.isLoading, it.isEmpty, it.isFailed)
         }

@@ -14,7 +14,6 @@ import androidx.appcompat.app.AlertDialog
 import javax.inject.Inject
 import javax.inject.Singleton
 
-
 @Singleton
 class GPSHelper : LocationListener {
 

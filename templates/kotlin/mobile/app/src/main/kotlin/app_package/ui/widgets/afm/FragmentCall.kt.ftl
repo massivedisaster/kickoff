@@ -220,7 +220,7 @@ class FragmentCall private constructor() : Builder() {
     }
 
     fun addSharedElement(view: View, transactionName: String): FragmentCall {
-        shareElementsMap.put(transactionName, view)
+        shareElementsMap[transactionName] = view
         return this
     }
 

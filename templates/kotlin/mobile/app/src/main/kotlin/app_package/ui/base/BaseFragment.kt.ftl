@@ -40,7 +40,7 @@ abstract class BaseFragment<T : ViewDataBinding, VM : ViewModel> : Fragment(), H
         }
     }
 
-        @LayoutRes
+    @LayoutRes
     abstract fun layoutToInflate(): Int
 
     abstract fun getViewModelClass() : Pair<Class<VM>, *>

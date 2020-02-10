@@ -37,4 +37,5 @@ class LiveDataWrapper<T> : MediatorLiveData<CallResult<T>>() {
         observeForever(observer)
         return network
     }
+
 }

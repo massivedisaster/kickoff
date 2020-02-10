@@ -100,7 +100,7 @@ abstract class NetworkBoundResource<ResultType, RequestType, RefreshType> @MainT
                             appExecutors.getMainThread().execute {
                                 result.addSource(network) { newData ->
                                     val innerResponse = transformResponse(response)
-                                    val result = CallResult.success(200, newData as ResultType, response.headers, this)
+                                    val result = CallResult.success(200, innerResponse ?: newData as ResultType, response.headers, this)
                                     publishEvent(result)
                                     setValue(result)
                                 }

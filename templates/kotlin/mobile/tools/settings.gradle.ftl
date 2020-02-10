@@ -34,10 +34,18 @@ android {
         variant.mergedFlavor.setApplicationId(applicationId)
         variant.resValue 'string', 'app_name', '' + appName + ''
 
+        String.metaClass.slug { ->
+            def s = delegate.toLowerCase()
+            s = Normalizer.normalize(s, Normalizer.Form.NFD).replaceAll("\\p{InCombiningDiacriticalMarks}+", "")
+            s = s.replaceAll(/[^a-z0-9\s-]/, "").replaceAll(/\s+/, " ").trim()
+            s = s.replaceAll(/\s/, '-')
+            s.replaceAll(/-{2,}/, '-')
+        }
+
         variant.outputs.each { output ->
             output.versionNameOverride = gitVersionName
             output.versionCodeOverride = versionCode
-            output.outputFileName = "${r"${flavors.extension.appName[0]}-${gitVersionName}-${buildType}.apk"}"
+            output.outputFileName = "${r"${flavors.extension.appName[0].slug()}-${gitVersionName}-${buildType}.apk"}"
         }
     }
 

@@ -77,6 +77,6 @@ class ApiModule {
     fun provideEndpointCollection(retrofit: Retrofit): EndpointCollection = retrofit.create(EndpointCollection::class.java)
 
     @Provides
-fun providesApiProvider(service: EndpointCollection) = ApiProvider(service)
+    fun providesApiProvider(service: EndpointCollection) = ApiProvider(service)
 
 }

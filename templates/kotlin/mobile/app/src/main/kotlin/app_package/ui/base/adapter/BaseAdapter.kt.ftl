@@ -13,7 +13,8 @@ abstract class BaseAdapter<T : Any, VH : BaseViewHolder<T>, C : BaseDiffCallback
         private val viewHolderClass: KClass<VH>,
         private val itemClass: KClass<T>,
         private val genericCardClickListener: (GenericStateCard.ClickType, GenericStateCard) -> Unit = { _, _ -> },
-        private val clickListener: (adapter: RecyclerView.Adapter<RecyclerView.ViewHolder>, index: Int, obj: T, type: Enum<*>) -> Unit = { _, _, _, _ -> }
+        private val clickListener: (adapter: RecyclerView.Adapter<RecyclerView.ViewHolder>, index: Int, obj: T, type: Enum<*>) -> Unit = { _, _, _, _ -> },
+        private val genericCardErrorListener: (emptyContent: TextView, error: TextView) -> Unit = { _, _ -> }
 ): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     companion object {
@@ -25,7 +26,9 @@ abstract class BaseAdapter<T : Any, VH : BaseViewHolder<T>, C : BaseDiffCallback
     private inline fun getViewHolder(itemView: View) = viewHolderClass.constructors.first().call(itemView)
     abstract val adapterDiff: C
     @get:LayoutRes abstract val itemLayout: Int
-    internal val mDiffer = AsyncListDiffer(this, adapterDiff)
+    internal val mDiffer by lazy {
+        AsyncListDiffer(this, adapterDiff)
+    }
 
     open fun genericStateCard(position: Int) = mDiffer.currentList[position] as GenericStateCard
 

@@ -13,7 +13,7 @@ class GenericStateCardFullHeightViewHolder(itemView: View): RecyclerView.ViewHol
 
     val dataBinding: ItemGenericViewStateFullHeightBinding? = DataBindingUtil.bind(itemView)
 
-    fun bind(holder: GenericStateCardFullHeightViewHolder, card: GenericStateCard?, clickListener: ((GenericStateCard.ClickType, GenericStateCard) -> Unit)?, noContentType: Int = -1) {
+    fun bind(holder: GenericStateCardFullHeightViewHolder, card: GenericStateCard?, clickListener: ((ClickType, GenericStateCard) -> Unit)?, noContentType: Int = -1) {
 
         val binding = holder.dataBinding ?: return
         var genericStateCard = card
@@ -26,13 +26,13 @@ class GenericStateCardFullHeightViewHolder(itemView: View): RecyclerView.ViewHol
 
         binding.genericView.setOnClickListener {
             if(genericStateCard.showingLoading) {
-                clickListener?.invoke(GenericStateCard.ClickType.LOADING, genericStateCard)
+                clickListener?.invoke(ClickType.LOADING, genericStateCard)
             }
             if(genericStateCard.showingEmptyContent) {
-                clickListener?.invoke(GenericStateCard.ClickType.EMPTY_CONTENT, genericStateCard)
+                clickListener?.invoke(ClickType.EMPTY_CONTENT, genericStateCard)
             }
             if(genericStateCard.showingError) {
-                clickListener?.invoke(GenericStateCard.ClickType.ERROR, genericStateCard)
+                clickListener?.invoke(ClickType.ERROR, genericStateCard)
             }
         }
 

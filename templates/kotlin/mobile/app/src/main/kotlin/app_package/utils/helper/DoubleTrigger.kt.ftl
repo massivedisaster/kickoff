@@ -1,4 +1,4 @@
-package ${configs.packageName}.utils
+package ${configs.packageName}.utils.helper
 
 /*import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData

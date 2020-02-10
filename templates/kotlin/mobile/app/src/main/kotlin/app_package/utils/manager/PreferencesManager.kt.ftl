@@ -54,13 +54,13 @@ class PreferencesManager @Inject constructor(context: Context) {
         get() = read(FIRST_LOGIN, true)!!
         set(value) = write(FIRST_LOGIN, value)
 
-    inline fun edit(task: (SharedPreferences.Editor) -> Unit) {
+    fun edit(task: (SharedPreferences.Editor) -> Unit) {
         val editor = prefs.edit()
         task(editor)
         editor.apply()
     }
 
-    inline fun write(key: String, value: Any) {
+    fun write(key: String, value: Any) {
         when (value) {
             is String -> edit { it.putString(key, value) }
             is Int -> edit { it.putInt(key, value) }
