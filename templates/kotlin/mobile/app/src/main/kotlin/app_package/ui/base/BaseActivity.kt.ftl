@@ -15,15 +15,22 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import dagger.android.AndroidInjection
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasAndroidInjector
+import ${configs.packageName}.R
+import ${configs.packageName}.data.common.CallResult
+import ${configs.packageName}.data.common.ServerErrors
 import ${configs.packageName}.ui.animation.AnimationType
 import ${configs.packageName}.ui.animation.TransactionAnimation
+import ${configs.packageName}.ui.dialog.ErrorDialog
 import ${configs.packageName}.ui.dialog.LoadingDialog
 import ${configs.packageName}.ui.widgets.afm.OnBackPressedListener
+import ${configs.packageName}.utils.helper.DebounceTimer
+import ${configs.packageName}.utils.helper.extensions.hideKeyboard
 import ${configs.packageName}.utils.helper.extensions.setSystemBarTransparent
 import javax.inject.Inject
 
@@ -48,8 +55,10 @@ abstract class BaseActivity<T : ViewDataBinding, VM : ViewModel> : AppCompatActi
 
     //to draw behind potential transparent status bar
     open var shouldFullScreenStretch = false
+    open var setFullScreen = false
 
     private var loadingDialog: LoadingDialog? = null
+    private var errorDialog: ErrorDialog? = null
 
     protected val dataBinding: T by lazy {
         DataBindingUtil.setContentView<T>(this, layoutToInflate())
@@ -58,6 +67,8 @@ abstract class BaseActivity<T : ViewDataBinding, VM : ViewModel> : AppCompatActi
     protected val viewModel: VM by lazy {
         ViewModelProvider(this, viewModelFactory).get(getViewModelClass())
     }
+
+    protected val clickDebouncer: DebounceTimer by lazy { DebounceTimer(lifecycle) }
 
      @LayoutRes
      abstract fun layoutToInflate(): Int
@@ -102,6 +113,35 @@ abstract class BaseActivity<T : ViewDataBinding, VM : ViewModel> : AppCompatActi
          doOnCreated()
          setSystemBarTransparent()
      }
+
+    private fun hideSystemUI() {
+        // Enables regular immersive mode.
+        // For "lean back" mode, remove SYSTEM_UI_FLAG_IMMERSIVE.
+        // Or for "sticky immersive," replace it with SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+        window.decorView.systemUiVisibility = (View.SYSTEM_UI_FLAG_IMMERSIVE
+                // Set the content to appear under the system bars so that the
+                // content doesn't resize when the system bars hide and show.
+                or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                // Hide the nav bar and status bar
+                or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                or View.SYSTEM_UI_FLAG_FULLSCREEN)
+    }
+
+    override fun onWindowFocusChanged(hasFocus: Boolean) {
+        super.onWindowFocusChanged(hasFocus)
+        if (hasFocus && setFullScreen) hideSystemUI()
+    }
+
+
+
+
+
+
+
+
+
 
      protected open fun getDefaultFragment(): Class<out Fragment>? {
         Log.w("BaseActivity", "No default fragment implemented!")
@@ -153,9 +193,9 @@ abstract class BaseActivity<T : ViewDataBinding, VM : ViewModel> : AppCompatActi
        * *
        * @return the instance of the Fragment.
        */
-       private fun getFragment(clazz: String): Fragment? {
-           try {
-               val fragment = Class.forName(clazz).newInstance() as Fragment
+      private fun getFragment(clazz: String): Fragment? {
+          try {
+              val fragment = Class.forName(clazz).newInstance() as Fragment
 
                if (intent.extras != null) {
                    fragment.arguments = intent.extras
@@ -167,13 +207,13 @@ abstract class BaseActivity<T : ViewDataBinding, VM : ViewModel> : AppCompatActi
            }
 
            return null
-       }
+      }
 
-       override fun onBackPressed() {
+      override fun onBackPressed() {
            if (!canBackPress()) {
                super.onBackPressed()
            }
-       }
+      }
 
        /**
         * Checks if the active fragment wants to consume the back press.
@@ -216,7 +256,7 @@ abstract class BaseActivity<T : ViewDataBinding, VM : ViewModel> : AppCompatActi
          }
 
          open fun showLoading() {
-             KeyboardUtils.hide(this)
+             hideKeyboard()
              if (loadingDialog == null) {
                  loadingDialog = LoadingDialog()
              }
@@ -237,5 +277,42 @@ abstract class BaseActivity<T : ViewDataBinding, VM : ViewModel> : AppCompatActi
                  loadingDialog!!.dismiss()
              }
          }
+
+
+    open fun handleError(result: CallResult<*>, title: String? = null) {
+        hideLoading()
+        hideError()
+        val status = result.status
+        when (status.error?.serverError) {
+            ServerErrors.NO_INTERNET, ServerErrors.TIMEOUT -> {}
+            else -> {
+                showError(title ?: "", status.error?.error?.details ?: getString(R.string.error_generic_body), getString(R.string.btn_ok))
+            }
+        }
+    }
+
+    open fun showError(title: String, message: String, buttonOkText: String, buttonOkExecution: (() -> Unit)? = null, buttonCancelText: String? = null, cancelExecution: (() -> Unit)? = null) {
+        KeyboardUtils.hide(this)
+        if (errorDialog == null) {
+            errorDialog = ErrorDialog.newInstance(title, message, buttonOkText, buttonOkExecution, buttonCancelText, cancelExecution)
+        }
+        if (!errorDialog!!.isAdded && !errorDialog!!.isVisible) {
+            errorDialog!!.show(supportFragmentManager, "errorDialog")
+
+            supportFragmentManager.registerFragmentLifecycleCallbacks(object : FragmentManager.FragmentLifecycleCallbacks() {
+                override fun onFragmentViewDestroyed(fm: FragmentManager, f: Fragment) {
+                    super.onFragmentViewDestroyed(fm, f)
+                    supportFragmentManager.unregisterFragmentLifecycleCallbacks(this)
+                    errorDialog = null
+                }
+            }, false)
+        }
+    }
+
+    open fun hideError() {
+        if (errorDialog != null) {
+            errorDialog!!.dismiss()
+        }
+    }
 
 }

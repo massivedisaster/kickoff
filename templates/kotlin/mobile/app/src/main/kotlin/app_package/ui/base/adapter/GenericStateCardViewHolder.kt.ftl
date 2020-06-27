@@ -1,9 +1,9 @@
 package ${configs.packageName}.ui.base.adapter
 
 import android.view.View
+import android.widget.TextView
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
-import ${configs.packageName}.R
 import ${configs.packageName}.databinding.ItemGenericViewStateBinding
 import ${configs.packageName}.utils.helper.extensions.isVisible
 import ${configs.packageName}.utils.helper.extensions.removeView
@@ -13,7 +13,7 @@ class GenericStateCardViewHolder(itemView: View): RecyclerView.ViewHolder(itemVi
 
     val dataBinding: ItemGenericViewStateBinding? = DataBindingUtil.bind(itemView)
 
-    fun bind(holder: GenericStateCardViewHolder, card: GenericStateCard?, clickListener: ((ClickType, GenericStateCard) -> Unit)?, noContentType: Int = -1) {
+    fun bind(holder: GenericStateCardViewHolder, card: GenericStateCard?, clickListener: ((ClickType, GenericStateCard) -> Unit)?, errorViews: (emptyContent: TextView, error: TextView) -> Unit) {
 
         val binding = holder.dataBinding ?: return
         var genericStateCard = card
@@ -36,11 +36,7 @@ class GenericStateCardViewHolder(itemView: View): RecyclerView.ViewHolder(itemVi
             }
         }
 
-        if(noContentType != -1) {
-            binding.emptyContent.text = itemView.context.getString(R.string.generic_no_content_text, itemView.context.getString(noContentType))
-        }
-
-        binding.viewErrorText.text = itemView.context.getString(R.string.generic_error_retry_text)
+        errorViews.invoke(binding.emptyContent, binding.viewErrorText)
 
         if(genericStateCard.showingLoading) {
             binding.loading.showView()
@@ -48,7 +44,7 @@ class GenericStateCardViewHolder(itemView: View): RecyclerView.ViewHolder(itemVi
             binding.viewError.removeView()
         }
 
-        if(genericStateCard.showingEmptyContent && noContentType != -1) {
+        if(genericStateCard.showingEmptyContent) {
             binding.loading.removeView()
             binding.emptyContent.showView()
             binding.viewError.removeView()

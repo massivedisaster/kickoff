@@ -1,6 +1,7 @@
 package ${configs.packageName}.ui.base
 
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import androidx.annotation.LayoutRes
 import androidx.annotation.StringRes
@@ -11,11 +12,15 @@ import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import ${configs.packageName}.ui.animation.AnimationType
-import ${configs.packageName}.ui.animation.Animations
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasAndroidInjector
 import dagger.android.support.AndroidSupportInjection
+import ${configs.packageName}.data.common.CallResult
+import ${configs.packageName}.data.common.ServerErrors
+import ${configs.packageName}.ui.animation.AnimationType
+import ${configs.packageName}.ui.animation.Animations
+import ${configs.packageName}.ui.dialog.ErrorDialog
+import ${configs.packageName}.utils.helper.DebounceTimer
 import javax.inject.Inject
 
 abstract class BaseFragment<T : ViewDataBinding, VM : ViewModel> : Fragment(), HasAndroidInjector {
@@ -39,6 +44,10 @@ abstract class BaseFragment<T : ViewDataBinding, VM : ViewModel> : Fragment(), H
             else -> throw Exception("ViewModel holder must be of type BaseFragment or BaseActivity")
         }
     }
+
+    protected val clickDebouncer: DebounceTimer by lazy { DebounceTimer(lifecycle) }
+
+    fun viewModelFactoryExists() = ::viewModelFactory.isInitialized
 
     @LayoutRes
     abstract fun layoutToInflate(): Int
@@ -91,7 +100,7 @@ abstract class BaseFragment<T : ViewDataBinding, VM : ViewModel> : Fragment(), H
 
         if (menuResId > -1) {
             inflater.inflate(menuResId, menu)
-            activity?.invalidateOptionsMenu();
+            activity?.invalidateOptionsMenu()
         }
         super.onCreateOptionsMenu(menu, inflater)
     }
@@ -158,4 +167,36 @@ abstract class BaseFragment<T : ViewDataBinding, VM : ViewModel> : Fragment(), H
         return Animations.NONE
     }
 
+    open fun handleError(result: CallResult<*>) {
+        val status = result.status
+        when (status.error?.serverError) {
+            ServerErrors.NO_INTERNET, ServerErrors.TIMEOUT -> Log.i("BASE", "failed - No Internet")
+            else -> Log.i("BASE", "failed - ${status.error?.error?.status}")
+        }
+    }
+
+    private var errorDialog: ErrorDialog? = null
+    open fun showError(title: String, message: String, buttonOkText: String, buttonOkExecution: (() -> Unit)? = null) {
+        KeyboardUtils.hide(activity)
+        if (errorDialog == null) {
+            errorDialog = ErrorDialog.newInstance(title, message, buttonOkText, buttonOkExecution)
+        }
+        if (!errorDialog!!.isAdded && !errorDialog!!.isVisible) {
+            errorDialog!!.show(childFragmentManager, "errorDialog")
+
+            childFragmentManager.registerFragmentLifecycleCallbacks( object : FragmentManager.FragmentLifecycleCallbacks() {
+                override fun onFragmentViewDestroyed(fm: FragmentManager, f: Fragment) {
+                    super.onFragmentViewDestroyed(fm, f)
+                    childFragmentManager.unregisterFragmentLifecycleCallbacks(this)
+                    errorDialog = null
+                }
+            }, false)
+        }
+    }
+
+    open fun hideError() {
+        if (errorDialog != null) {
+            errorDialog!!.dismiss()
+        }
+    }
 }

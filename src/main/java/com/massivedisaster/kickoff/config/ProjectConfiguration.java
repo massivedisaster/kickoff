@@ -38,6 +38,8 @@ public class ProjectConfiguration {
 	private boolean useAndroidX;
 	@JsonProperty("hasOneSignal")
 	private boolean hasOneSignal;
+	@JsonProperty("hasFirebasePerformance")
+	private boolean hasFirebasePerformance;
 	@JsonProperty("slack")
 	private Slack slack;
 	@JsonProperty("testFairy")

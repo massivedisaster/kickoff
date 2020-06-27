@@ -1,3 +1,5 @@
+import java.text.Normalizer
+
 android {
 
     applicationVariants.all { variant ->
@@ -53,7 +55,7 @@ android {
         flavor.extensions.create("extension", AppFlavorExtension)
     }
 
-    tasks.whenTaskAdded { task ->
+    /*tasks.whenTaskAdded { task ->
         if (task.name.startsWith("bundle")) {
             def renameTaskName = "rename${r"${task.name.capitalize()}"}Aab"
             def flavor = task.name.substring("bundle".length()).uncapitalize()
@@ -67,7 +69,7 @@ android {
 
             task.finalizedBy(renameTaskName)
         }
-    }
+    }*/
 
 }
 

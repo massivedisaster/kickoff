@@ -7,13 +7,6 @@ data class GenericStateCard(
 
         var contextualObj : Any? = null
 ) {
-
-    enum class ClickType {
-        LOADING,
-        EMPTY_CONTENT,
-        ERROR
-    }
-
     companion object {
         fun getLoadingEmptyList(contextualObj : Any? = null) = mutableListOf(GenericStateCard(showingLoading = true, showingEmptyContent = false, showingError = false, contextualObj = contextualObj))
 
@@ -27,6 +20,4 @@ data class GenericStateCard(
                 && oldItem.showingEmptyContent == newItem.showingEmptyContent && oldItem.showingError == newItem.showingError
                 && oldItem.contextualObj == newItem.contextualObj
     }
-
-
 }

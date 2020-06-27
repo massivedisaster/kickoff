@@ -1,5 +1,6 @@
 package ${configs.packageName}.ui.base.adapter
 
+import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import  ${configs.packageName}.data.common.NetworkState
 import kotlin.reflect.KClass
@@ -22,8 +23,8 @@ abstract class BasePagedAdapter<T : Any, VH : BaseViewHolder<T>, C : BaseDiffCal
         super.setList(pagedObjects)
     }
 
-    override fun genericStateCard(position: Int): GenericStateCard {
-        var card: GenericStateCard = null
+    override fun genericStateCard(position: Int): GenericStateCard? {
+        var card: GenericStateCard? = null
         networkState?.let {
             card = GenericStateCard(it.isLoading, it.isEmpty, it.isFailed)
         }

@@ -10,18 +10,19 @@ import androidx.annotation.LayoutRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
-import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.andrefrsousa.superbottomsheet.SuperBottomSheetFragment
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasAndroidInjector
 import dagger.android.support.AndroidSupportInjection
 import ${configs.packageName}.utils.helper.DebounceTimer
 import javax.inject.Inject
 
-abstract class BaseDialog<T : ViewDataBinding, VM : ViewModel> : DialogFragment(), HasAndroidInjector {
+abstract class BaseBottomSheetDialog<T : ViewDataBinding, VM : ViewModel> : SuperBottomSheetFragment(), HasAndroidInjector {
 
     interface Callback {
         fun onDialogResult(requestCode: Int, resultCode: Int, data: Intent)
@@ -55,6 +56,7 @@ abstract class BaseDialog<T : ViewDataBinding, VM : ViewModel> : DialogFragment(
     open fun getArguments(arguments: Bundle) {}
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        super.onCreateView(inflater, container, savedInstanceState)
         AndroidSupportInjection.inject(this)
         dialog?.requestWindowFeature(Window.FEATURE_NO_TITLE)
         initDataBinding()
@@ -86,7 +88,7 @@ abstract class BaseDialog<T : ViewDataBinding, VM : ViewModel> : DialogFragment(
 
     fun showForResult(fragment: Fragment, requestCode: Int) {
         setTargetFragment(fragment, requestCode)
-        show(fragment.fragmentManager!!, javaClass.name)
+        show(fragment.childFragmentManager, javaClass.name)
     }
 
     fun showForResult(activity: BaseActivity<*,*>, requestCode: Int) {

@@ -1,7 +1,9 @@
 package ${configs.packageName}.utils.helper.extensions
 
+import android.graphics.Rect
 import android.view.View
 import android.view.View.*
+import android.view.ViewGroup
 
 fun View.removeView() {
     visibility = GONE
@@ -60,4 +62,25 @@ fun View.rotateAnimation(rotation: Float, duration: Long) {
         ViewCompat.animate(this).rotation(0f).withLayer().setDuration(duration).setInterpolator(interpolator).start()
         !isActivated
     }
+}
+
+
+/**
+ * returns true if the current view is visible to the user given the scroll position
+ * example: we might have a nestedscrollview with a reyclerview and below it some other views and buttons
+ * in certain scenarios we might want to know if the bottom button is currently visible to the user
+ *
+ * Warning:
+ * carefull using this function during initialization (false positives) -> during screen initialization lists are empty
+ * and is common that all the views fit the screen, only after content is added (usually to lists) these views go offscreen
+ *
+ * @param a ViewGroup that support scrolling (nestedscrollview, scrollview, etc)
+ */
+fun View?.isVisibleInScroller(viewGroupScroller: ViewGroup): Boolean {
+    if (this == null) return false
+    if (!this.isShown) return false
+
+    val scroller = Rect()
+    viewGroupScroller.getHitRect(scroller)
+    return this.getLocalVisibleRect(scroller)
 }
