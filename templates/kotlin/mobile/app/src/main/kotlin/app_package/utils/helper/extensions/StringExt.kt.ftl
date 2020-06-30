@@ -10,6 +10,7 @@ import android.widget.TextView
 import androidx.annotation.FontRes
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.util.PatternsCompat.EMAIL_ADDRESS
+import com.google.android.material.textfield.TextInputLayout
 import java.util.*
 
 fun String.round(decimalPlace: Int) = String.format("%.${r"${decimalPlace}"}f", this.replace(',', '.').toFloat().round(decimalPlace)).replace('.', ',')

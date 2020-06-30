@@ -19,7 +19,6 @@ package ${configs.packageName}.utils.live_data_bus
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
-import i
 
 /**
  * A custom LiveData which can unregister when there is no observer

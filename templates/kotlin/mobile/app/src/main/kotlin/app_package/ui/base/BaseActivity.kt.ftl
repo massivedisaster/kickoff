@@ -292,7 +292,7 @@ abstract class BaseActivity<T : ViewDataBinding, VM : ViewModel> : AppCompatActi
     }
 
     open fun showError(title: String, message: String, buttonOkText: String, buttonOkExecution: (() -> Unit)? = null, buttonCancelText: String? = null, cancelExecution: (() -> Unit)? = null) {
-        KeyboardUtils.hide(this)
+        hideKeyboard()
         if (errorDialog == null) {
             errorDialog = ErrorDialog.newInstance(title, message, buttonOkText, buttonOkExecution, buttonCancelText, cancelExecution)
         }

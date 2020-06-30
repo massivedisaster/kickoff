@@ -4,6 +4,10 @@ import android.graphics.Rect
 import android.view.View
 import android.view.View.*
 import android.view.ViewGroup
+import android.view.animation.OvershootInterpolator
+import androidx.core.view.ViewCompat
+import androidx.transition.TransitionManager
+import androidx.transition.TransitionSet
 
 fun View.removeView() {
     visibility = GONE

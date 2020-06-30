@@ -2,9 +2,9 @@ package ${configs.packageName}.utils.manager
 
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
-import androidx.core.app.TaskStackBuilder
 import androidx.fragment.app.Fragment
 import ${configs.packageName}.ui.base.BaseActivity
 import ${configs.packageName}.ui.splash.SplashActivity

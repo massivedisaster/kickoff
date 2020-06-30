@@ -1,17 +1,20 @@
 package ${configs.packageName}.ui.base.adapter
 
 import android.widget.TextView
+import androidx.databinding.ViewDataBinding
 import androidx.recyclerview.widget.RecyclerView
 import  ${configs.packageName}.data.common.NetworkState
 import kotlin.reflect.KClass
 
-abstract class BasePagedAdapter<T : Any, VH : BaseViewHolder<T>, C : BaseDiffCallback<T>>(
+abstract class BasePagedAdapter<T : Any, VB : ViewDataBinding, VH : BaseViewHolder<T, VB>, C : BaseDiffCallback<T>>(
         viewHolderClass: KClass<VH>,
         private val itemClass: KClass<T>,
-        private val genericCardClickListener: (GenericStateCard.ClickType, GenericStateCard) -> Unit = { _, _ -> },
+        private val genericCardClickListener: (ClickType, GenericStateCard) -> Unit = { _, _ -> },
         clickListener: (adapter: RecyclerView.Adapter<RecyclerView.ViewHolder>, index: Int, obj: T, type: Enum<*>) -> Unit = { _, _, _, _ -> },
-        private val genericCardErrorListener: (emptyContent: TextView, error: TextView) -> Unit = { _, _ -> }
-) : BaseAdapter<T, VH, C>(viewHolderClass, itemClass, genericCardClickListener, clickListener, genericCardErrorListener), IPagedListAdapter<Any> {
+        private val genericCardErrorListener: (emptyContent: TextView, error: TextView) -> Unit = { _, _ -> },
+        private val onNewList: (previousList: List<Any>, currentList: List<Any>) -> Unit = { _, _ -> },
+        private val recyclerView: RecyclerView? = null
+) : BaseAdapter<T, VB, VH, C>(viewHolderClass, itemClass, genericCardClickListener, clickListener, genericCardErrorListener, onNewList, recyclerView), IPagedListAdapter<Any> {
 
     private var networkState: NetworkState? = null
 

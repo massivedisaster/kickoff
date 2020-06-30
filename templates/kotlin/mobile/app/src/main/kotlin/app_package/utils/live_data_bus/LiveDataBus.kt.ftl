@@ -20,7 +20,6 @@ package ${configs.packageName}.utils.live_data_bus
 import androidx.annotation.NonNull
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
-import i
 
 /**
  * Singleton object to manage bus events.

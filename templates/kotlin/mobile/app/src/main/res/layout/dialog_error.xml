@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/bkg"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/dialog_background">
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.50" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/marginStart"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.10" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/marginEnd"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.90" />
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="8.4dp"
+            android:background="#F7F6F8"
+            app:layout_constraintBottom_toBottomOf="@id/guideline"
+            app:layout_constraintEnd_toStartOf="@+id/marginEnd"
+            app:layout_constraintStart_toStartOf="@+id/marginStart"
+            app:layout_constraintTop_toTopOf="@id/guideline">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@android:color/white"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:padding="30dp">
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/dialog_error_image"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:srcCompat="@drawable/ic_error"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/dialog_error_title"
+                    android:layout_width="@dimen/no_space"
+                    app:layout_constrainedWidth="true"
+                    android:gravity="center"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="25dp"
+                    app:fontFamily="@font/roboto"
+                    android:textSize="21.6sp"
+                    android:textColor="#333F48"
+                    app:layout_constraintTop_toBottomOf="@id/dialog_error_image"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    tools:text="Ocorreu um erro a gerar o seu voucher" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/dialog_error_message"
+                    android:layout_width="@dimen/no_space"
+                    app:layout_constrainedWidth="true"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="13dp"
+                    app:fontFamily="@font/roboto"
+                    android:textSize="14sp"
+                    android:textColor="#1E1E1E"
+                    android:gravity="center"
+                    app:layout_constraintTop_toBottomOf="@id/dialog_error_title"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    tools:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit." />
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/btn_cancel"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="20dp"
+                    android:layout_marginTop="32dp"
+                    android:visibility="visible"
+                    android:background="@drawable/secondary_button_shape"
+                    android:foreground="?attr/selectableItemBackground"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/btn_ok"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintHorizontal_chainStyle="packed"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/dialog_error_message"
+                    android:textSize="@dimen/text_size_body_one"
+                    android:textAllCaps="true"
+                    android:textStyle="bold"
+                    android:fontFamily="@font/roboto"
+                    android:elevation="@dimen/normal_spacing"
+                    android:text="@string/btn_back"
+                    android:textColor="#3C4852" />
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/btn_ok"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:visibility="visible"
+                    android:layout_marginTop="32dp"
+                    android:background="@drawable/principal_button_shape"
+                    android:foreground="?attr/selectableItemBackground"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toEndOf="@+id/btn_cancel"
+                    app:layout_constraintTop_toBottomOf="@id/dialog_error_message"
+                    android:textSize="@dimen/text_size_body_one"
+                    android:textAllCaps="true"
+                    android:textStyle="bold"
+                    android:fontFamily="@font/roboto"
+                    android:elevation="@dimen/normal_spacing"
+                    android:text="@string/btn_cancel"
+                    android:textColor="@android:color/white" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </androidx.cardview.widget.CardView>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>

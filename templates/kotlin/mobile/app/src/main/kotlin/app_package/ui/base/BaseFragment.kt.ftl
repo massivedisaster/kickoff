@@ -21,6 +21,7 @@ import ${configs.packageName}.ui.animation.AnimationType
 import ${configs.packageName}.ui.animation.Animations
 import ${configs.packageName}.ui.dialog.ErrorDialog
 import ${configs.packageName}.utils.helper.DebounceTimer
+import ${configs.packageName}.utils.helper.extensions.hideKeyboard
 import javax.inject.Inject
 
 abstract class BaseFragment<T : ViewDataBinding, VM : ViewModel> : Fragment(), HasAndroidInjector {
@@ -171,13 +172,13 @@ abstract class BaseFragment<T : ViewDataBinding, VM : ViewModel> : Fragment(), H
         val status = result.status
         when (status.error?.serverError) {
             ServerErrors.NO_INTERNET, ServerErrors.TIMEOUT -> Log.i("BASE", "failed - No Internet")
-            else -> Log.i("BASE", "failed - ${status.error?.error?.status}")
+            else -> Log.i("BASE", "failed - ${r"${status.error?.error?.status}"}")
         }
     }
 
     private var errorDialog: ErrorDialog? = null
     open fun showError(title: String, message: String, buttonOkText: String, buttonOkExecution: (() -> Unit)? = null) {
-        KeyboardUtils.hide(activity)
+        baseActivity?.hideKeyboard()
         if (errorDialog == null) {
             errorDialog = ErrorDialog.newInstance(title, message, buttonOkText, buttonOkExecution)
         }

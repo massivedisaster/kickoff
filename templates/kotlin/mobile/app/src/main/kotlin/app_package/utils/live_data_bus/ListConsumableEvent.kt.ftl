@@ -1,7 +1,5 @@
 package ${configs.packageName}.utils.live_data_bus
 
-import i
-
 data class ListConsumableEvent(val list : MutableList<ConsumableEvent>) {
 
     /**

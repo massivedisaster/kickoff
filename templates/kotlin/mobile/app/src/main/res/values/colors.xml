@@ -2,6 +2,7 @@
     <color name="colorPrimary">#008577</color>
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#D81B60</color>
+    <color name="dialog_background">#CC3D3F41</color>
 
     <!-- BIOMETRICS -->
     <color name="biometric_bg_fingerprint">#1A73E8</color>

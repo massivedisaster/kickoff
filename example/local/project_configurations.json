@@ -1,36 +1,23 @@
 {
     "template": "templates/kotlin/mobile.tar.gz",
     "language": "kotlin",
-    "gradlePluginVersion": "4.0.0-alpha09",
-    "projectName": "TEST APP",
-    "packageName": "pt.test",
+    "gradlePluginVersion": "4.2.0-alpha02",
+    "projectName": "INFORMA PT",
+    "packageName": "pt.informadb.app",
     "minimumSdkApi": 21,
     "targetSdkApi": 29,
-    "gradleVersion": "6.1",
+    "gradleVersion": "6.5",
     "buildTools": "29.0.0",
-    "kotlinVersion": "1.3.61",
+    "kotlinVersion": "1.3.72",
     "network": {
         "timeout": 30,
         "endpoints": {
-            "prod": "-",
-            "dev": "-",
-            "qa": "-"
+            "prod": "https://apinforma.informadb.pt",
+            "dev": "https://apinforma-pre.informadb.pt",
+            "qa": "https://apinforma-pre.informadb.pt"
         }
     },
-    "manifestKeys": {
-        "prod": {
-            "onesignal_app_id": "-",
-            "onesignal_google_project_number": "-"
-        },
-        "dev": {
-            "onesignal_app_id": "-",
-            "onesignal_google_project_number": "-"
-        },
-        "qa": {
-            "onesignal_app_id": "-",
-            "onesignal_google_project_number": "-"
-        }
-    },
+
     "dependencies": [
         {
             "name": "Android Jetpack",
@@ -177,7 +164,12 @@
                 },
                 "crashlytics": {
                     "group": "com.google.firebase:firebase-crashlytics",
-                    "version": "17.0.0-beta01",
+                    "version": "17.1.0",
+                    "isCompiler": false
+                },
+                "performance": {
+                    "group": "com.google.firebase:firebase-perf",
+                    "version": "19.0.7",
                     "isCompiler": false
                 }
             }
@@ -247,7 +239,8 @@
     ],
     "hasQa": true,
     "useAndroidX": true,
-    "hasOneSignal": true,
+    "hasOneSignal": false,
+    "hasFirebasePerformance": true,
     "slack": {
         "channel": "-",
         "slug": "-"
