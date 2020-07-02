@@ -2,9 +2,9 @@ package ${configs.packageName}.ui.widgets
 
 import android.content.Context
 import android.util.AttributeSet
-import android.widget.ImageView
+import androidx.appcompat.widget.AppCompatImageView
 
-class AspectRatioImageView : ImageView {
+class AspectRatioImageView : AppCompatImageView {
 
     constructor(context: Context) : super(context)
     constructor(context: Context, attrs: AttributeSet) : super(context, attrs)
