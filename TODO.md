@@ -1,5 +1,6 @@
 Todo
 ===============
+ - add hasFirebasePerformance flag to project_configurations.json
  - update biometrics, create flag for it (androidx biometrics is released this is not needed anymore, create and update utils since it mmight be usefull)
  - update data/common/pagination classes, missing lock logic
  - remove some utils and import them has projects
