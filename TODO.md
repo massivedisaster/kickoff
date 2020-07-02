@@ -1,6 +1,6 @@
 Todo
 ===============
- - update biometrics, create flag for it and had missing permissions to manifest
+ - update biometrics, create flag for it (androidx biometrics is released this is not needed anymore, create and update utils since it mmight be usefull)
  - update data/common/pagination classes, missing lock logic
  - remove some utils and import them has projects
  - rearrange/organise extensions into packages
