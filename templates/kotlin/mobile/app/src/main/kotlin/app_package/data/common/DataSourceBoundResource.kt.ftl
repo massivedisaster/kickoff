@@ -5,7 +5,6 @@ import androidx.annotation.WorkerThread
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.paging.PageKeyedDataSource
-import ${configs.packageName}.network.models.ApiErrorResponse
 import ${configs.packageName}.network.models.ApiResponse
 import ${configs.packageName}.network.models.ApiSuccessResponse
 import ${configs.packageName}.utils.helper.AppExecutors

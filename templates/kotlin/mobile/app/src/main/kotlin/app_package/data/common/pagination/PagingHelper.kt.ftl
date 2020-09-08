@@ -14,7 +14,7 @@ class PagingHelper {
 
     companion object {
 
-        fun <PaginatedType, T> getPagedPreference(usePaging: Boolean, factory: PagedDataSourceFactory<PaginatedType, T>, appExecutors: AppExecutors): Listing<T> {
+        fun <PaginatedType, Meta, T> getPagedPreference(usePaging: Boolean, factory: PagedDataSourceFactory<PaginatedType, Meta, T>, appExecutors: AppExecutors): Listing<Meta, T> {
             return if (usePaging) {
                 val config = PagedList.Config.Builder()
                         .setEnablePlaceholders(false)
@@ -41,12 +41,14 @@ class PagingHelper {
                         .setFetchExecutor(appExecutors.getMainThread())
                         .build()
 
-                PagedListing<T>(
+                PagedListing<Meta, T>(
                         list = livePagedList,
                         networkState = Transformations.switchMap(factory.source) { it.network },
                         retry = { factory.source.value?.retryAllFailed() },
                         refresh = { factory.source.value?.invalidate() },
-                        initialState = Transformations.switchMap(factory.source) { it.initial })
+                        initialState = Transformations.switchMap(factory.source) { it.initial },
+                        meta = Transformations.switchMap(factory.source) { it.meta } as MutableLiveData<Meta>
+                )
             } else {
                 factory.create()
                 ListListing(
@@ -55,7 +57,9 @@ class PagingHelper {
                         retry = { factory.source.value?.retryAllFailed() },
                         refresh = { factory.source.value?.listListingInvalidate() },
                         initialState = Transformations.switchMap(factory.source) { it.initial },
-                        loadNext = { factory.source.value?.loadNext() })
+                        loadNext = { factory.source.value?.loadNext() },
+                        meta = Transformations.switchMap(factory.source) { it.meta } as MutableLiveData<Meta>
+                )
             }
         }
     }

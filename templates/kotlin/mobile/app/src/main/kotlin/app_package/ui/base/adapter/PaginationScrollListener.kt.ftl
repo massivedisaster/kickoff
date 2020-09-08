@@ -14,7 +14,7 @@ abstract class PaginationScrollListener(var layoutManager: RecyclerView.LayoutMa
 
     abstract fun isLastPage(): Boolean
 
-    abstract fun isLoading(): Boolean
+    abstract fun canLoad(): Boolean
 
     override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
         super.onScrolled(recyclerView, dx, dy)
@@ -29,12 +29,14 @@ abstract class PaginationScrollListener(var layoutManager: RecyclerView.LayoutMa
             firstVisibleItemPosition = (layoutManager as LinearLayoutManager).findFirstVisibleItemPosition()
         }
 
-        if (!isLoading() && !isLastPage()) {
-            if (visibleItemCount + firstVisibleItemPosition >= totalItemCount && firstVisibleItemPosition >= 0) {
+        if (canLoad() && !isLastPage()) {
+            if (visibleItemCount + firstVisibleItemPosition >= (totalItemCount - loadXItemsSooner()) && firstVisibleItemPosition >= 0) {
                 loadMoreItems()
             }
         }
     }
 
     abstract fun loadMoreItems()
+
+    abstract fun loadXItemsSooner() : Int
 }

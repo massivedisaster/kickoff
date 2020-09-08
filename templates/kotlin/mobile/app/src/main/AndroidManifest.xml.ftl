@@ -24,7 +24,7 @@
         tools:ignore="GoogleAppIndexingWarning">
 
     	<activity
-                android:name=".ui.splash.SplashActivity"
+                android:name=".ui.screens.splash.SplashActivity"
                 android:screenOrientation="portrait">
 
             <intent-filter>

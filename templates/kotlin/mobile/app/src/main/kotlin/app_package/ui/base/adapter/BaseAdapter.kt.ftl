@@ -9,6 +9,7 @@ import androidx.databinding.ViewDataBinding
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.RecyclerView
 import ${configs.packageName}.R
+import ${configs.packageName}.data.common.NetworkState
 import kotlin.reflect.KClass
 
 abstract class BaseAdapter<T : Any, VB : ViewDataBinding, VH : BaseViewHolder<T, VB>, C : BaseDiffCallback<T>>(
@@ -16,7 +17,7 @@ abstract class BaseAdapter<T : Any, VB : ViewDataBinding, VH : BaseViewHolder<T,
         private val itemClass: KClass<T>,
         private val genericCardClickListener: (ClickType, GenericStateCard) -> Unit = { _, _ -> },
         private val clickListener: (adapter: RecyclerView.Adapter<RecyclerView.ViewHolder>, index: Int, obj: T, type: Enum<*>) -> Unit = { _, _, _, _ -> },
-        private val genericCardErrorListener: (emptyContent: TextView, error: TextView) -> Unit = { _, _ -> },
+        private val genericCardErrorListener: (emptyViews: GenericStateCardErrorViews, errorViews: GenericStateCardErrorViews, isFullHeight: Boolean, contextualObject : NetworkState?) -> Unit = {_,_, _, _-> },
         private val onNewList: (previousList: List<Any>, currentList: List<Any>) -> Unit = { _, _ -> },
         private val recyclerView: RecyclerView? = null
 ): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -36,9 +37,24 @@ abstract class BaseAdapter<T : Any, VB : ViewDataBinding, VH : BaseViewHolder<T,
 
     open fun genericStateCard(position: Int) = mDiffer.currentList[position] as GenericStateCard?
 
-    fun setList(list: List<Any>) {
+    fun setList(list: List<*>) {
         mDiffer.submitList(ArrayList(list)) //creating a new list avoids problems
-        mDiffer.addListListener(onNewList)
+        mDiffer.addListListener(object : AsyncListDiffer.ListListener<Any>{
+            override fun onCurrentListChanged(previousList: MutableList<Any>, currentList: MutableList<Any>) {
+                onNewList.invoke(previousList, currentList)
+                mDiffer.removeListListener(this)
+            }
+        })
+    }
+
+    fun setList(list: List<*>, onReady: (previousList: List<Any>, currentList: List<Any>) -> Unit = { _, _ -> }) {
+        mDiffer.submitList(ArrayList(list)) //creating a new list avoids problems
+        mDiffer.addListListener(object : AsyncListDiffer.ListListener<Any>{
+            override fun onCurrentListChanged(previousList: MutableList<Any>, currentList: MutableList<Any>) {
+                onReady.invoke(previousList, currentList)
+                mDiffer.removeListListener(this)
+            }
+        })
     }
 
     override fun getItemCount() = mDiffer.currentList.size

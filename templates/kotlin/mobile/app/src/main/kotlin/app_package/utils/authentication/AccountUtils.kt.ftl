@@ -9,10 +9,12 @@ import javax.inject.Inject
 
 class AccountUtils @Inject constructor(private val application: Application, private val preferencesManager: PreferencesManager) {
 
-    val refreshingToken = AtomicBoolean(false)
 
     companion object {
-        val TOKEN = "TOKEN"
+        //making singleton in dagger is not working must be global var
+        val refreshingToken = AtomicBoolean(false)
+
+        val ACCESS_TOKEN = "ACCESS_TOKEN"
         val REFRESH_TOKEN = "REFRESH_TOKEN"
     }
 
@@ -26,6 +28,7 @@ class AccountUtils @Inject constructor(private val application: Application, pri
     }
 
     fun updateAccount(authenticationModel: TokenModel) {
+        setAccessToken(authenticationModel.accessToken)
         setRefreshToken(authenticationModel.refreshToken)
     }
 
@@ -42,7 +45,10 @@ class AccountUtils @Inject constructor(private val application: Application, pri
 
     fun getPassword() = getCurrentAccount()?.let { AccountHelper.getAccountPassword(it) }
     fun getUsername() = getCurrentAccount()?.let { it.name }
-    fun getToken() = getCurrentAccount()?.let { AccountHelper.getCurrentToken(it, application) }
+
+    fun getAccessToken() = getCurrentAccount()?.let { AccountHelper.getUserData(it, ACCESS_TOKEN) }
+    fun setAccessToken(accessToken: String) = getCurrentAccount()?.let { AccountHelper.setUserData(it, ACCESS_TOKEN, accessToken) }
+
     fun getRefreshToken() = getCurrentAccount()?.let { AccountHelper.getUserData(it, REFRESH_TOKEN) }
     fun setRefreshToken(refreshToken: String) = getCurrentAccount()?.let { AccountHelper.setUserData(it, REFRESH_TOKEN, refreshToken) }
 
@@ -50,6 +56,6 @@ class AccountUtils @Inject constructor(private val application: Application, pri
         AccountHelper.clearAccounts(application, listener)
     }
 
-    fun isLogged() = getToken()?.isNotEmpty() ?: false
+    fun isLogged() = getAccessToken()?.isNotEmpty() ?: false
 
 }

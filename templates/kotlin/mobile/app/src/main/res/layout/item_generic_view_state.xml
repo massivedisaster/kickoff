@@ -6,9 +6,9 @@
         android:id="@+id/generic_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:minHeight="100dp"
+        android:animateLayoutChanges="true"
         android:background="@android:color/transparent"
-        android:animateLayoutChanges="true">
+        android:minHeight="100dp">
 
         <ProgressBar
             android:id="@+id/loading"
@@ -20,49 +20,97 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"/>
-
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/empty_content"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:textColor="@android:color/black"
-            android:textSize="14sp"
-            android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <LinearLayout
-            android:id="@+id/view_error"
+            android:id="@+id/emptyContent"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:gravity="center"
             android:orientation="horizontal"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:gravity="center">
+            app:layout_constraintTop_toTopOf="parent">
 
             <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/view_empty_icon"
                 android:layout_width="41dp"
-                android:layout_height="41dp"/>
+                android:layout_height="41dp" />
 
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/view_empty_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="15dp"
+                android:gravity="center"
+                android:textColor="@android:color/black"
+                android:textSize="14sp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/view_error"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <!--            app:srcCompat="@drawable/ic_sem_resultados"-->
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/view_error_icon"
+                android:layout_width="48dp"
+                android:layout_height="48dp" />
+
+
+            <!--            android:textColor="@color/choose_color"-->
+            <!--            android:fontFamily="@font/choose_font"-->
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/view_error_text_title"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:paddingHorizontal="50dp"
+                android:textSize="14sp" />
+
+
+            <!--            android:textColor="@color/choose_color"-->
+            <!--            android:textColorLink="@font/choose_color"-->
+            <!--            android:fontFamily="@font/choose_font"-->
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/view_error_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:textColor="@android:color/white"
+                android:paddingHorizontal="50dp"
+                android:textSize="14sp" />
+
+
+            <!--            android:backgroundTint="@font/choose_color"-->
+            <!--            android:fontFamily="@font/choose_font"-->
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/view_error_btn_retry"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/bg_round8_corners"
+                android:gravity="center"
+                android:minWidth="140dp"
+                android:padding="12dp"
+                android:textColor="@color/white"
                 android:textSize="14sp"
-                android:layout_marginStart="15dp"
-                 />
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
         </LinearLayout>
-
-
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

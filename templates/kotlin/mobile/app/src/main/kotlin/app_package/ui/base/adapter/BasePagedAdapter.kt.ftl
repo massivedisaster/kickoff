@@ -11,14 +11,14 @@ abstract class BasePagedAdapter<T : Any, VB : ViewDataBinding, VH : BaseViewHold
         private val itemClass: KClass<T>,
         private val genericCardClickListener: (ClickType, GenericStateCard) -> Unit = { _, _ -> },
         clickListener: (adapter: RecyclerView.Adapter<RecyclerView.ViewHolder>, index: Int, obj: T, type: Enum<*>) -> Unit = { _, _, _, _ -> },
-        private val genericCardErrorListener: (emptyContent: TextView, error: TextView) -> Unit = { _, _ -> },
+        private val genericCardErrorListener: (emptyViews: GenericStateCardErrorViews, errorViews: GenericStateCardErrorViews, isFullHeight: Boolean, contextualObject : NetworkState?) -> Unit = {_, _, _, _ -> },
         private val onNewList: (previousList: List<Any>, currentList: List<Any>) -> Unit = { _, _ -> },
         private val recyclerView: RecyclerView? = null
-) : BaseAdapter<T, VB, VH, C>(viewHolderClass, itemClass, genericCardClickListener, clickListener, genericCardErrorListener, onNewList, recyclerView), IPagedListAdapter<Any> {
+) : BaseAdapter<T, VB, VH, C>(viewHolderClass, itemClass, genericCardClickListener, clickListener, genericCardErrorListener, onNewList, recyclerView), IPagedListAdapter {
 
     private var networkState: NetworkState? = null
 
-    override fun setPagedList(pagedObjects: MutableList<Any>) {
+    override fun setPagedList(pagedObjects: MutableList<*>) {
         //for initial state, to avoid list from starting at bottom of first page
         if(pagedObjects.isNotEmpty() && itemCount == 1){
             notifyItemRemoved(itemCount - 1)
@@ -26,17 +26,27 @@ abstract class BasePagedAdapter<T : Any, VB : ViewDataBinding, VH : BaseViewHold
         super.setList(pagedObjects)
     }
 
+    override fun setPagedList(pagedObjects: MutableList<*>, onReady: (previousList: List<Any>, currentList: List<Any>) -> Unit) {
+        //for initial state, to avoid list from starting at bottom of first page
+        if(pagedObjects.isNotEmpty() && itemCount == 1){
+            notifyItemRemoved(itemCount - 1)
+        }
+        super.setList(pagedObjects, onReady)
+    }
+
     override fun genericStateCard(position: Int): GenericStateCard? {
         var card: GenericStateCard? = null
         networkState?.let {
-            card = GenericStateCard(it.isLoading, it.isEmpty, it.isFailed)
+            card = GenericStateCard(it.isLoading, it.isEmpty, it.isFailed, networkState)
         }
         return card
     }
 
     private fun hasExtraRow() = mDiffer.currentList.size >= 0 && networkState != null && (networkState!!.isLoading || networkState!!.isFailed || networkState!!.isEmpty)
 
-    override fun canLoad() = mDiffer.currentList.size > 0 && networkState != null && networkState!!.isLoading
+    override fun canLoad() = mDiffer.currentList.size > 0 && networkState != null && !networkState!!.isLoading && (networkState!!.isFailed || networkState!!.isSuccess)
+
+    override fun canLoad(hasConnection: Boolean) = mDiffer.currentList.size > 0 && networkState != null && !networkState!!.isLoading && ((networkState!!.isFailed && hasConnection) || networkState!!.isSuccess)
 
     override fun getItemViewType(position: Int) = if (hasExtraRow() && position == itemCount - 1) {
         if (mDiffer.currentList.size == 0) {

@@ -40,7 +40,7 @@ sealed class ApiResponse<T> {
         fun <T> create(url: String, response: Response<T>): ApiResponse<T> {
             return if (response.isSuccessful) {
                 val body = response.body()
-                ApiSuccessResponse(url, body, response.headers())
+                ApiSuccessResponse(url, response.code(), body, response.headers())
             } else {
                 val code = response.code()
                 val message = response.errorBody()?.string()
@@ -57,6 +57,6 @@ sealed class ApiResponse<T> {
 
 }
 
-data class ApiSuccessResponse<T>(val url: String, val body: T?, val headers: Headers) : ApiResponse<T>()
+data class ApiSuccessResponse<T>(val url: String, val successCode: Int, val body: T?, val headers: Headers) : ApiResponse<T>()
 
 data class ApiErrorResponse<T>(val url: String, val errorCode: Int, val errorMessage: String, @ServerError val serverError: Int, val error: ApiError? = null) : ApiResponse<T>()

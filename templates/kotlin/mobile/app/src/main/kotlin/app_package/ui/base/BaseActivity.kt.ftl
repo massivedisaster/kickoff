@@ -6,6 +6,7 @@ import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.view.View.*
 import android.view.Window
 import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
@@ -54,8 +55,13 @@ abstract class BaseActivity<T : ViewDataBinding, VM : ViewModel> : AppCompatActi
     lateinit var viewModelFactory: ViewModelProvider.Factory
 
     //to draw behind potential transparent status bar
-    open var shouldFullScreenStretch = false
+    open var drawBehindStatusBar = false
+    //to draw behind potential transparent bottom navigation bar
+    open var drawBehindBottomNavigation = false
+
     open var setFullScreen = false
+
+    open var adjustNothing = false
 
     private var loadingDialog: LoadingDialog? = null
     private var errorDialog: ErrorDialog? = null
@@ -69,50 +75,61 @@ abstract class BaseActivity<T : ViewDataBinding, VM : ViewModel> : AppCompatActi
     }
 
     protected val clickDebouncer: DebounceTimer by lazy { DebounceTimer(lifecycle) }
+    protected val navigationDebouncer: DebounceTimer by lazy { DebounceTimer(lifecycle) }
 
-     @LayoutRes
-     abstract fun layoutToInflate(): Int
+    @LayoutRes
+    abstract fun layoutToInflate(): Int
 
-     abstract fun getViewModelClass(): Class<VM>
+    abstract fun getViewModelClass(): Class<VM>
 
-     abstract fun doOnCreated()
+    abstract fun doOnCreated()
 
-     @IdRes
-     open fun containerId() = DEFAULT_CONTAINER_ID
+    @IdRes
+    open fun containerId() = DEFAULT_CONTAINER_ID
 
-     override fun androidInjector() = androidInjector
+    override fun androidInjector() = androidInjector
 
-     open fun getArguments(arguments: Bundle) {}
+    open fun getArguments(arguments: Bundle) {}
 
-     override fun onCreate(savedInstanceState: Bundle?) {
-         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-             requestWindowFeature(Window.FEATURE_ACTIVITY_TRANSITIONS)
-             requestWindowFeature(Window.FEATURE_CONTENT_TRANSITIONS)
-         }
+    override fun onCreate(savedInstanceState: Bundle?) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            requestWindowFeature(Window.FEATURE_ACTIVITY_TRANSITIONS)
+            requestWindowFeature(Window.FEATURE_CONTENT_TRANSITIONS)
+        }
 
-         if (shouldFullScreenStretch) {
-             window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-         }
+        if (drawBehindStatusBar && drawBehindBottomNavigation) {
+           window.decorView.systemUiVisibility = SYSTEM_UI_FLAG_LAYOUT_STABLE or SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+        } else {
+           if (drawBehindStatusBar) {
+               window.decorView.systemUiVisibility = SYSTEM_UI_FLAG_LAYOUT_STABLE or SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+           }
+           if (drawBehindBottomNavigation) {
+               window.decorView.systemUiVisibility = SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+           }
+        }
 
-         AndroidInjection.inject(this)
-         if (intent.extras != null) {
-             getArguments(intent.extras!!)
-         }
+        AndroidInjection.inject(this)
+        if (intent.extras != null) {
+            getArguments(intent.extras!!)
+        }
 
-         super.onCreate(savedInstanceState)
-         window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN)
-         initDataBinding()
-         if (supportFragmentManager.fragments.isEmpty() && supportFragmentManager.backStackEntryCount == 0) {
-             if (intent.hasExtra(ACTIVITY_MANAGER_FRAGMENT)) {
-                 performInitialTransaction(getFragment(intent.getStringExtra(ACTIVITY_MANAGER_FRAGMENT)), getFragmentTag())
-             } else if (getDefaultFragment() != null) {
-                 performInitialTransaction(getFragment(getDefaultFragment()!!.canonicalName!!), null)
-             }
-         }
+        super.onCreate(savedInstanceState)
+        window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN)
+        if(adjustNothing) {
+           window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING)
+        }
+        initDataBinding()
+        if (supportFragmentManager.fragments.isEmpty() && supportFragmentManager.backStackEntryCount == 0) {
+            if (intent.hasExtra(ACTIVITY_MANAGER_FRAGMENT)) {
+                performInitialTransaction(getFragment(intent.getStringExtra(ACTIVITY_MANAGER_FRAGMENT)), getFragmentTag())
+            } else if (getDefaultFragment() != null) {
+                performInitialTransaction(getFragment(getDefaultFragment()!!.canonicalName!!), null)
+            }
+        }
 
-         doOnCreated()
-         setSystemBarTransparent()
-     }
+        doOnCreated()
+        //setSystemBarTransparent()
+    }
 
     private fun hideSystemUI() {
         // Enables regular immersive mode.

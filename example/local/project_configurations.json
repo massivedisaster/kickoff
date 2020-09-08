@@ -1,14 +1,14 @@
 {
     "template": "templates/kotlin/mobile.tar.gz",
     "language": "kotlin",
-    "gradlePluginVersion": "4.0.0-alpha09",
+    "gradlePluginVersion": "4.2.0-alpha07",
     "projectName": "TEST APP",
     "packageName": "pt.test",
     "minimumSdkApi": 21,
     "targetSdkApi": 29,
-    "gradleVersion": "6.1",
+    "gradleVersion": "6.5",
     "buildTools": "29.0.0",
-    "kotlinVersion": "1.3.61",
+    "kotlinVersion": "1.4.0",
     "network": {
         "timeout": 30,
         "endpoints": {
@@ -34,7 +34,7 @@
     "dependencies": [
         {
             "name": "Android Jetpack",
-            "globalVersion": "1.2.0-alpha02",
+            "globalVersion": "1.3.0-alpha02",
             "list": {
                 "base": {
                     "group": "androidx.appcompat:appcompat",
@@ -47,12 +47,12 @@
                 },
                 "browser": {
                     "group": "androidx.browser:browser",
-                    "version": "1.3.0-alpha01",
+                    "version": "1.3.0-alpha05",
                     "isCompiler": false
                 },
                 "constraintLayout": {
                     "group": "androidx.constraintlayout:constraintlayout",
-                    "version": "2.0.0-beta4",
+                    "version": "2.0.1",
                     "isCompiler": false
                 },
                 "multidex": {
@@ -62,12 +62,12 @@
                 },
                 "recyclerView": {
                     "group": "androidx.recyclerview:recyclerview",
-                    "version": "1.2.0-alpha01",
+                    "version": "1.2.0-alpha05",
                     "isCompiler": false
                 },
                 "recyclerViewSelection": {
                     "group": "androidx.recyclerview:recyclerview-selection",
-                    "version": "1.1.0-beta01",
+                    "version": "1.1.0-rc02",
                     "isCompiler": false
                 },
                 "paging": {
@@ -78,8 +78,18 @@
             }
         },
         {
+            "name": "KOTLIN ANDROID",
+            "globalVersion": "1.3.1",
+            "list": {
+                "core": {
+                    "group": "androidx.core:core-ktx",
+                    "isCompiler": false
+                }
+            }
+        },
+        {
             "name": "Android Material Components",
-            "globalVersion": "1.2.0-alpha04",
+            "globalVersion": "1.3.0-alpha02",
             "list": {
                 "design": {
                     "group": "com.google.android.material:material",
@@ -124,7 +134,7 @@
         },
         {
             "name": "Dagger",
-            "globalVersion": "2.26",
+            "globalVersion": "2.28.3",
             "list": {
                 "base": {
                     "group": "com.google.dagger:dagger",
@@ -164,7 +174,7 @@
         },
         {
             "name": "Firebase",
-            "globalVersion": "17.2.2",
+            "globalVersion": "17.5.0",
             "list": {
                 "base": {
                     "group": "com.google.firebase:firebase-analytics",
@@ -172,19 +182,24 @@
                 },
                 "messaging": {
                     "group": "com.google.firebase:firebase-messaging",
-                    "version": "20.1.0",
+                    "version": "20.2.4",
                     "isCompiler": false
                 },
                 "crashlytics": {
                     "group": "com.google.firebase:firebase-crashlytics",
-                    "version": "17.0.0-beta01",
+                    "version": "17.2.1",
+                    "isCompiler": false
+                },
+                "performance": {
+                    "group": "com.google.firebase:firebase-perf",
+                    "version": "19.0.8",
                     "isCompiler": false
                 }
             }
         },
         {
             "name": "Glide",
-            "globalVersion": "4.9.0",
+            "globalVersion": "4.11.0",
             "list": {
                 "base": {
                     "group": "com.github.bumptech.glide:glide",
@@ -198,7 +213,7 @@
         },
         {
             "name": "retrofit",
-            "globalVersion": "2.6.2",
+            "globalVersion": "2.9.0",
             "list": {
                 "base": {
                     "group": "com.squareup.retrofit2:retrofit",
@@ -210,19 +225,24 @@
                 },
                 "jackson": {
                     "group": "com.fasterxml.jackson.module:jackson-module-kotlin",
-                    "version": "2.10.0",
+                    "version": "2.11.2",
+                    "isCompiler": false
+                },
+                "xmlConverter": {
+                    "group": "com.squareup.retrofit2:converter-simplexml",
+                    "version": "2.9.0",
                     "isCompiler": false
                 },
                 "logging": {
                     "group": "com.squareup.okhttp3:logging-interceptor",
-                    "version": "4.1.0",
+                    "version": "4.8.1",
                     "isCompiler": false
                 }
             }
         },
         {
             "name": "threeTenABP",
-            "globalVersion": "1.2.1",
+            "globalVersion": "1.2.4",
             "list": {
                 "base": {
                     "group": "com.jakewharton.threetenabp:threetenabp",
@@ -232,7 +252,7 @@
         },
         {
             "name": "Permissions Dispatcher",
-            "globalVersion": "4.5.0",
+            "globalVersion": "4.8.0",
             "list": {
                 "base": {
                     "group": "org.permissionsdispatcher:permissionsdispatcher",
@@ -243,11 +263,22 @@
                     "isCompiler": true
                 }
             }
+        },
+        {
+            "name": "Timber",
+            "globalVersion": "4.7.1",
+            "list": {
+                "base": {
+                    "group": "com.jakewharton.timber:timber",
+                    "isCompiler": false
+                }
+            }
         }
     ],
     "hasQa": true,
     "useAndroidX": true,
-    "hasOneSignal": true,
+    "hasOneSignal": false,
+    "hasFirebasePerformance": true,
     "slack": {
         "channel": "-",
         "slug": "-"

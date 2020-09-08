@@ -1,4 +1,4 @@
-package ${configs.packageName}.ui.splash
+package ${configs.packageName}.ui.screens.splash
 
 import android.os.Handler
 <#if configs.hasOneSignal!true>

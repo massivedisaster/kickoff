@@ -47,6 +47,7 @@ abstract class BaseFragment<T : ViewDataBinding, VM : ViewModel> : Fragment(), H
     }
 
     protected val clickDebouncer: DebounceTimer by lazy { DebounceTimer(lifecycle) }
+    protected val navigationDebouncer: DebounceTimer by lazy { DebounceTimer(lifecycle) }
 
     fun viewModelFactoryExists() = ::viewModelFactory.isInitialized
 

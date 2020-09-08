@@ -7,7 +7,7 @@ import android.os.Bundle
 import android.provider.Settings
 import androidx.fragment.app.Fragment
 import ${configs.packageName}.ui.base.BaseActivity
-import ${configs.packageName}.ui.splash.SplashActivity
+import ${configs.packageName}.ui.screens.splash.SplashActivity
 import ${configs.packageName}.ui.widgets.afm.FragmentCall
 import javax.inject.Inject
 import kotlin.reflect.KClass

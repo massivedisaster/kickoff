@@ -12,8 +12,8 @@ buildscript {
         classpath 'com.android.tools.build:gradle:${configs.gradlePluginVersion}'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath 'com.google.gms:google-services:4.3.3'
-        classpath 'com.google.firebase:firebase-crashlytics-gradle:2.2.0'
-        classpath "com.github.ben-manes:gradle-versions-plugin:0.28.0"
+        classpath 'com.google.firebase:firebase-crashlytics-gradle:2.2.1'
+        classpath "com.github.ben-manes:gradle-versions-plugin:0.29.0"
         <#if configs.hasOneSignal!true>
         classpath 'gradle.plugin.com.onesignal:onesignal-gradle-plugin:[0.12.4, 0.99.99]'
         </#if>

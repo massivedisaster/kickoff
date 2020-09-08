@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <!-- BOTTOM_SHEET -->
+    <!--    if you change or copy this height readjust the height accordingly in the other sizes-->
+    <dimen name="bottomsheet_default_height">300dp</dimen>
+
     <!-- GENERAL -->
     <dimen name="no_space">0dp</dimen>
     <dimen name="line">1dp</dimen>
