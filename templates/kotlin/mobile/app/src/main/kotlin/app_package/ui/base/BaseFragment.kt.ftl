@@ -22,6 +22,8 @@ import ${configs.packageName}.ui.animation.Animations
 import ${configs.packageName}.ui.dialog.ErrorDialog
 import ${configs.packageName}.utils.helper.DebounceTimer
 import ${configs.packageName}.utils.helper.extensions.hideKeyboard
+import ${configs.packageName}.utils.helper.InsetsListener
+import ${configs.packageName}.utils.helper.manager.NetworkManager
 import javax.inject.Inject
 
 abstract class BaseFragment<T : ViewDataBinding, VM : ViewModel> : Fragment(), HasAndroidInjector {
@@ -33,6 +35,7 @@ abstract class BaseFragment<T : ViewDataBinding, VM : ViewModel> : Fragment(), H
 
     //makes fragment lazy
     open var useLazyLoading = false
+    protected val debouncer: DebounceTimer by lazy { DebounceTimer(lifecycle) }
 
     protected val dataBinding: T by lazy {
         DataBindingUtil.inflate<T>(LayoutInflater.from(context), layoutToInflate(), null, false)
@@ -46,8 +49,8 @@ abstract class BaseFragment<T : ViewDataBinding, VM : ViewModel> : Fragment(), H
         }
     }
 
-    protected val clickDebouncer: DebounceTimer by lazy { DebounceTimer(lifecycle) }
-    protected val navigationDebouncer: DebounceTimer by lazy { DebounceTimer(lifecycle) }
+    protected val insetsCollapseListener: InsetsListener by lazy { InsetsListener() }
+    protected var hasConnection = false
 
     fun viewModelFactoryExists() = ::viewModelFactory.isInitialized
 
@@ -70,12 +73,18 @@ abstract class BaseFragment<T : ViewDataBinding, VM : ViewModel> : Fragment(), H
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        if (arguments != null) {
-            getArguments(arguments!!)
+        arguments?.let {
+            getArguments(it)
         }
 
         val menuResId = menuResourceId
         setHasOptionsMenu(menuResId > -1)
+
+        NetworkManager(context).observe(viewLifecycleOwner, { isConnected ->
+            isConnected?.let {
+                hasConnection = it
+            }
+        })
 
         if(useLazyLoading.not()) {
             doOnCreated()

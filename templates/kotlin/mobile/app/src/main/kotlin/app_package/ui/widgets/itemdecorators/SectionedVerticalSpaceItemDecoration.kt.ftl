@@ -3,14 +3,12 @@ package ${configs.packageName}.ui.widgets.itemdecorators
 import android.graphics.Rect
 import android.view.View
 import android.view.ViewGroup
-import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.recyclerview.widget.RecyclerView
 
 class SectionedVerticalSpaceItemDecoration(recycler: RecyclerView,
                                            private val horizontalSpacing: Float,
                                            private val dismissViewTypes: ArrayList<Int> = arrayListOf(),
-                                           private val hotFix_firstRowTopPadding: Float = 0F) : RecyclerView.ItemDecoration() {
+                                           private val firstRowTopPadding: Float = 0F) : RecyclerView.ItemDecoration() {
 
     init {
         val marginLayoutParams = recycler.layoutParams as ViewGroup.MarginLayoutParams
@@ -42,7 +40,7 @@ class SectionedVerticalSpaceItemDecoration(recycler: RecyclerView,
 
             //if is first row put padding top
             if (itemPosition == 0) {
-                outRect.top = (horizontalSpacing.toInt() / 2) + hotFix_firstRowTopPadding.toInt()
+                outRect.top = (horizontalSpacing.toInt() / 2) + firstRowTopPadding.toInt()
             }
 
             //if is last row put padding bottom

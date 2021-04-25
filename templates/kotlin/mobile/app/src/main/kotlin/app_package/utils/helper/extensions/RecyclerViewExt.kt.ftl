@@ -1,6 +1,8 @@
 package ${configs.packageName}.utils.helper.extensions
 
+import android.view.View
 import androidx.recyclerview.widget.LinearSmoothScroller
+import androidx.recyclerview.widget.LinearSmoothScroller.SNAP_TO_START
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SnapHelper
 import ${configs.packageName}.utils.recyclerview.OnSnapPositionChangeListener
@@ -15,11 +17,24 @@ fun RecyclerView.attachSnapHelperWithListener(
     addOnScrollListener(snapOnScrollListener)
 }
 
-fun RecyclerView.smoothSnapToPosition(position: Int, snapMode: Int = LinearSmoothScroller.SNAP_TO_START) {
+fun RecyclerView.smoothSnapToPosition(position: Int, snapMode: Int = SNAP_TO_START) {
     val smoothScroller = object : LinearSmoothScroller(this.context) {
-        override fun getVerticalSnapPreference(): Int = snapMode
-        override fun getHorizontalSnapPreference(): Int = snapMode
+        override fun getVerticalSnapPreference() = snapMode
+        override fun getHorizontalSnapPreference() = snapMode
     }
+    smoothScroller.targetPosition = position
+    layoutManager?.startSmoothScroll(smoothScroller)
+}
+
+fun RecyclerView.smoothScrollToCenteredPosition(position: Int) {
+    val smoothScroller = object : LinearSmoothScroller(context) {
+        override fun calculateDxToMakeVisible(view: View?, snapPreference: Int): Int {
+            val dxToStart = super.calculateDxToMakeVisible(view, SNAP_TO_START)
+            val dxToEnd = super.calculateDxToMakeVisible(view, SNAP_TO_END)
+            return (dxToStart + dxToEnd) / 2
+        }
+    }
+
     smoothScroller.targetPosition = position
     layoutManager?.startSmoothScroll(smoothScroller)
 }

@@ -1,6 +1,8 @@
 package ${configs.packageName}.utils.helper.extensions.time
 
-import org.threeten.bp.*
+import org.threeten.bp.LocalDateTime
+import org.threeten.bp.ZoneId
+import org.threeten.bp.ZoneOffset
 
 /**
  * returns the same date but in 0 hour 00:00:00

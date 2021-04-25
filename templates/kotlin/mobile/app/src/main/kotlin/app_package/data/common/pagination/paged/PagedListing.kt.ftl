@@ -5,7 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.paging.PagedList
 import ${configs.packageName}.data.common.NetworkState
 
-data class PagedListing<M, T>(
+data class PagedListing<M, T : Any>(
         override val networkState: LiveData<NetworkState>,
         override val initialState: LiveData<NetworkState>,
         override val refresh: () -> Unit,

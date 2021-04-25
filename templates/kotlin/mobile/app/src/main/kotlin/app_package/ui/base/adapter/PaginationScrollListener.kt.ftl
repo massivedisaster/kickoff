@@ -29,10 +29,8 @@ abstract class PaginationScrollListener(var layoutManager: RecyclerView.LayoutMa
             firstVisibleItemPosition = (layoutManager as LinearLayoutManager).findFirstVisibleItemPosition()
         }
 
-        if (canLoad() && !isLastPage()) {
-            if (visibleItemCount + firstVisibleItemPosition >= (totalItemCount - loadXItemsSooner()) && firstVisibleItemPosition >= 0) {
-                loadMoreItems()
-            }
+        if (canLoad() && !isLastPage() && visibleItemCount + firstVisibleItemPosition >= (totalItemCount - loadXItemsSooner()) && firstVisibleItemPosition >= 0) {
+            loadMoreItems()
         }
     }
 

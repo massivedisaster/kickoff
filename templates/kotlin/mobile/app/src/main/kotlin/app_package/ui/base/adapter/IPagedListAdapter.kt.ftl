@@ -8,8 +8,6 @@ interface IPagedListAdapter {
 
     fun setPagedList(pagedObjects: MutableList<*>)
 
-    fun setPagedList(pagedObjects: MutableList<*>, onReady: (previousList: List<Any>, currentList: List<Any>) -> Unit = { _, _ -> })
-
     fun canLoad() : Boolean
 
     fun canLoad(hasConnection: Boolean) : Boolean

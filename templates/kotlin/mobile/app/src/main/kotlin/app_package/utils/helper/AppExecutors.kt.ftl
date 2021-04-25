@@ -28,7 +28,7 @@ class AppExecutors(private val diskIO: Executor,
 
         private val mainThreadHandler = Handler(Looper.getMainLooper())
 
-        override fun execute(runnable: Runnable?) {
+        override fun execute(runnable: Runnable) {
             mainThreadHandler.post(runnable)
         }
 

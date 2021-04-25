@@ -10,10 +10,7 @@ class SectionedGridSpaceItemDecoration(recycler: RecyclerView,
                                        private val horizontalSpacing: Float,
                                        private val verticalSpacing: Float,
                                        private val dismissViewTypes: ArrayList<Int> = arrayListOf(),
-                                       private val hotFix_firstRowTopPadding: Float = 0F
-//                                       , private val sectionItemCount: (itemType: Int) -> Int,
-//                                       private val sectionFirstItemIndex: (itemType: Int) -> Int,
-//                                       private val sectionLastItemIndex: (itemType: Int) -> Int
+                                       private val firstRowTopPadding: Float = 0F
 ) : RecyclerView.ItemDecoration() {
 
     private var spanCount = 0
@@ -25,10 +22,6 @@ class SectionedGridSpaceItemDecoration(recycler: RecyclerView,
                 marginLayoutParams.bottomMargin - (horizontalSpacing.toInt() / 2))
         recycler.layoutParams = marginLayoutParams
 
-//            recycler.setPadding(recycler.paddingLeft - (verticalSpacing.toInt() / 2),
-//                    recycler.paddingTop - (horizontalSpacing.toInt() / 2),
-//                    recycler.paddingRight - (verticalSpacing.toInt() / 2),
-//                    recycler.paddingBottom - (horizontalSpacing.toInt() / 2))
         spanCount = (recycler.layoutManager as GridLayoutManager).spanCount
     }
 
@@ -65,7 +58,7 @@ class SectionedGridSpaceItemDecoration(recycler: RecyclerView,
                         }
                     }
                     if (itemPosition < firstRowPositions) {
-                        outRect.top = (horizontalSpacing.toInt() / 2) + hotFix_firstRowTopPadding.toInt()
+                        outRect.top = (horizontalSpacing.toInt() / 2) + firstRowTopPadding.toInt()
                     }
                 }
 
@@ -88,38 +81,6 @@ class SectionedGridSpaceItemDecoration(recycler: RecyclerView,
 
         }
 
-
     }
 
-//    }
-
-//    private fun isLastRowOfType(itemPosition: Int, itemType: Int): Boolean {
-//        val itemCountByType = sectionItemCount(itemType)
-//        val lastItemIndexByType = sectionLastItemIndex(itemType)
-//
-//        return if (itemCountByType % 2 == 0) {
-//            if (itemCountByType > 1) {
-//                itemPosition == lastItemIndexByType || itemPosition == lastItemIndexByType - 1
-//            } else {
-//                itemPosition == lastItemIndexByType
-//            }
-//        } else {
-//            itemPosition == lastItemIndexByType
-//        }
-//    }
-//
-//    private fun isFirstRowOfType(itemPosition: Int, itemType: Int): Boolean {
-//        val itemCountByType = sectionItemCount(itemType)
-//        val firstItemIndexByType = sectionFirstItemIndex(itemType)
-//
-//        return if (itemCountByType % 2 == 0) {
-//            if (itemCountByType > 1) {
-//                itemPosition == firstItemIndexByType || itemPosition == firstItemIndexByType + 1
-//            } else {
-//                itemPosition == firstItemIndexByType
-//            }
-//        } else {
-//            itemPosition == firstItemIndexByType
-//        }
-//    }
 }

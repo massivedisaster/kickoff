@@ -7,7 +7,7 @@ import androidx.paging.DataSource
 import ${configs.packageName}.network.models.ApiResponse
 import ${configs.packageName}.utils.helper.AppExecutors
 
-abstract class DataSourceFactory<ItemType, ResultType>
+abstract class DataSourceFactory<ItemType, ResultType : Any>
 @MainThread constructor(
         private val offset: Int,
         private val appExecutors: AppExecutors

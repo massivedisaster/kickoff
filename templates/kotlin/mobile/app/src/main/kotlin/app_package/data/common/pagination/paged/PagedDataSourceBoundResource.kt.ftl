@@ -10,7 +10,7 @@ import ${configs.packageName}.data.common.ServerErrors
 import ${configs.packageName}.network.models.ApiErrorResponse
 import ${configs.packageName}.utils.helper.AppExecutors
 
-abstract class PagedDataSourceBoundResource<PaginationType, MetaType, ResultType>(
+abstract class PagedDataSourceBoundResource<PaginationType, MetaType, ResultType : Any>(
         private val appExecutors: AppExecutors,
         private val usePaging: Boolean
 ) : PageKeyedDataSource<Int, ResultType>() {

@@ -9,7 +9,7 @@ import ${configs.packageName}.network.models.ApiResponse
 import ${configs.packageName}.network.models.ApiSuccessResponse
 import ${configs.packageName}.utils.helper.AppExecutors
 
-abstract class DataSourceBoundResource<ItemType, ResultType>(
+abstract class DataSourceBoundResource<ItemType, ResultType : Any>(
         private val offset: Int,
         private val appExecutors: AppExecutors
 ) : PageKeyedDataSource<Int, ResultType>() {

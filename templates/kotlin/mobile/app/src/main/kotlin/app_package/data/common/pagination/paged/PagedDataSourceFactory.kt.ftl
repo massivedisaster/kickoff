@@ -7,7 +7,7 @@ import androidx.paging.PageKeyedDataSource
 import ${configs.packageName}.data.common.CallResult
 import ${configs.packageName}.utils.helper.AppExecutors
 
-abstract class PagedDataSourceFactory<PaginationType, MetaType, ResultType>
+abstract class PagedDataSourceFactory<PaginationType, MetaType, ResultType : Any>
 @MainThread constructor(
         val offset: Int,
         private val appExecutors: AppExecutors,

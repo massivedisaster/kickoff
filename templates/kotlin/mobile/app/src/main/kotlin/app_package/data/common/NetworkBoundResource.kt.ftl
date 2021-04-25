@@ -99,8 +99,8 @@ abstract class NetworkBoundResource<ResultType, RequestType, RefreshType> @MainT
                             } else {
                                 appExecutors.getMainThread().execute {
                                     result.addSource(network) { newData ->
-                                        val innerResponse = transformResponse(response)
-                                        val result = CallResult.success(response.successCode, innerResponse ?: newData as ResultType, response.headers, this)
+                                        val innerResponse = transformResponse(response.body)
+                                        val result = CallResult.success(response.successCode, innerResponse ?: newData as ResultType?, response.headers, this)
                                         publishEndEvent(result)
                                         publishEndEventMeta(newData)
                                         setValue(result)
@@ -139,7 +139,6 @@ abstract class NetworkBoundResource<ResultType, RequestType, RefreshType> @MainT
                                 result.addSource(network) { newData ->
                                     val result = CallResult.error(response.errorMessage, response.errorCode, newData as ResultType, response, this)
                                     publishEndEvent(result)
-//                                publishEndEventMeta(newData)
                                     setValue(result)
                                 }
 
@@ -188,10 +187,7 @@ abstract class NetworkBoundResource<ResultType, RequestType, RefreshType> @MainT
     protected open fun shouldRequestFromNetwork(data: ResultType?) = true
 
     @WorkerThread
-    protected open fun transformResponse(response: ApiSuccessResponse<RequestType>) : ResultType? = null
-
-//    @WorkerThread
-//    protected open fun publishInitialEvent() {}
+    protected open fun transformResponse(response: RequestType?) : ResultType? = null
 
     @WorkerThread
     protected open fun publishEndEvent(data: CallResult<ResultType>) {}

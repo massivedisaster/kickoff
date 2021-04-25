@@ -1,7 +1,6 @@
 package ${configs.packageName}.ui.base.adapter
 
 import android.view.View
-import android.widget.TextView
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
 import ${configs.packageName}.data.common.NetworkState
@@ -15,49 +14,34 @@ class GenericStateCardFullHeightViewHolder(itemView: View): RecyclerView.ViewHol
     val dataBinding: ItemGenericViewStateFullHeightBinding? = DataBindingUtil.bind(itemView)
 
     fun bind(holder: GenericStateCardFullHeightViewHolder, card: GenericStateCard?, clickListener: ((ClickType, GenericStateCard) -> Unit)?
-             , errorViews: (emptyViews: GenericStateCardErrorViews, errorViews: GenericStateCardErrorViews, isFullHeight: Boolean, contextualObject : NetworkState?) -> Unit) {
+             , errorViews: (emptyViews: GenericStateCardErrorViews, errorViews: GenericStateCardErrorViews, isFullHeight: Boolean, state : NetworkState?) -> Unit) {
 
         val binding = holder.dataBinding ?: return
         var genericStateCard = card
 
         if(genericStateCard == null) {
-            genericStateCard = GenericStateCard(binding.loading.isVisible()
-                    , binding.emptyContent.isVisible()
-                    , binding.viewError.isVisible())
+            genericStateCard = GenericStateCard(binding.loading.isVisible(), binding.emptyContent.isVisible(), binding.viewError.isVisible())
         }
 
-//        binding.genericView.setOnClickListener {
-//            if(genericStateCard.showingLoading) {
-//                clickListener?.invoke(ClickType.LOADING, genericStateCard)
-//            }
-//            if(genericStateCard.showingEmptyContent) {
-//                clickListener?.invoke(ClickType.EMPTY_CONTENT, genericStateCard)
-//            }
-//            if(genericStateCard.showingError) {
-//                clickListener?.invoke(ClickType.ERROR, genericStateCard)
-//            }
-//        }
-
-        binding.viewEmptyBtnRetry.setOnClickListener {
-            clickListener?.invoke(ClickType.EMPTY_CONTENT, genericStateCard)
-        }
-        binding.viewErrorBtnRetry.setOnClickListener {
-            clickListener?.invoke(ClickType.ERROR, genericStateCard)
+        binding.genericView.setOnClickListener {
+            if(genericStateCard.showingLoading) {
+                clickListener?.invoke(ClickType.LOADING, genericStateCard)
+            }
+            if(genericStateCard.showingEmptyContent) {
+                clickListener?.invoke(ClickType.EMPTY_CONTENT, genericStateCard)
+            }
+            if(genericStateCard.showingError) {
+                clickListener?.invoke(ClickType.ERROR, genericStateCard)
+            }
         }
 
         errorViews.invoke(GenericStateCardErrorViews(
-                icon = binding.emptyEmptyIcon,
-                title = binding.viewEmptyTextTitle,
-                body = binding.viewEmptyTextBody,
-                button = binding.viewEmptyBtnRetry
+                icon = binding.emptyIcon,
+                body = binding.emptyText
         ), GenericStateCardErrorViews(
-                icon = binding.viewErrorIcon,
-                title = binding.viewErrorTextTitle,
-                body = binding.viewErrorTextBody,
-                button = binding.viewErrorBtnRetry
-        )
-                ,true
-                , genericStateCard.contextualObj)
+                icon = binding.errorIcon,
+                body = binding.errorText
+        ),true, genericStateCard.state)
 
         if(genericStateCard.showingLoading) {
             binding.loading.showView()

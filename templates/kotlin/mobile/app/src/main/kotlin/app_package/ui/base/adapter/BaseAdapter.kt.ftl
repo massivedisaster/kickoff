@@ -3,7 +3,6 @@ package ${configs.packageName}.ui.base.adapter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.annotation.LayoutRes
 import androidx.databinding.ViewDataBinding
 import androidx.recyclerview.widget.AsyncListDiffer
@@ -17,7 +16,7 @@ abstract class BaseAdapter<T : Any, VB : ViewDataBinding, VH : BaseViewHolder<T,
         private val itemClass: KClass<T>,
         private val genericCardClickListener: (ClickType, GenericStateCard) -> Unit = { _, _ -> },
         private val clickListener: (adapter: RecyclerView.Adapter<RecyclerView.ViewHolder>, index: Int, obj: T, type: Enum<*>) -> Unit = { _, _, _, _ -> },
-        private val genericCardErrorListener: (emptyViews: GenericStateCardErrorViews, errorViews: GenericStateCardErrorViews, isFullHeight: Boolean, contextualObject : NetworkState?) -> Unit = {_,_, _, _-> },
+        private val genericCardErrorListener: (emptyViews: GenericStateCardErrorViews, errorViews: GenericStateCardErrorViews, isFullHeight: Boolean, state: NetworkState?) -> Unit = {_,_, _, _-> },
         private val onNewList: (previousList: List<Any>, currentList: List<Any>) -> Unit = { _, _ -> },
         private val recyclerView: RecyclerView? = null
 ): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -28,36 +27,23 @@ abstract class BaseAdapter<T : Any, VB : ViewDataBinding, VH : BaseViewHolder<T,
         const val ITEM_TYPE = 2
     }
 
-    private inline fun getViewHolder(itemView: View) = viewHolderClass.constructors.first().call(itemView, this, recyclerView)
+    private fun getViewHolder(itemView: View) = viewHolderClass.constructors.first().call(itemView, this, recyclerView)
     abstract val adapterDiff: C
     @get:LayoutRes abstract val itemLayout: Int
-    internal val mDiffer by lazy {
+    internal val differ by lazy {
         AsyncListDiffer(this, adapterDiff)
     }
 
-    open fun genericStateCard(position: Int) = mDiffer.currentList[position] as GenericStateCard?
+    fun getItem(position: Int) = differ.currentList[position]
+
+    open fun genericStateCard(position: Int) = getItem(position) as GenericStateCard?
 
     fun setList(list: List<*>) {
-        mDiffer.submitList(ArrayList(list)) //creating a new list avoids problems
-        mDiffer.addListListener(object : AsyncListDiffer.ListListener<Any>{
-            override fun onCurrentListChanged(previousList: MutableList<Any>, currentList: MutableList<Any>) {
-                onNewList.invoke(previousList, currentList)
-                mDiffer.removeListListener(this)
-            }
-        })
+        differ.submitList(ArrayList(list)) //creating a new list avoids problems
+        differ.addListListener(onNewList)
     }
 
-    fun setList(list: List<*>, onReady: (previousList: List<Any>, currentList: List<Any>) -> Unit = { _, _ -> }) {
-        mDiffer.submitList(ArrayList(list)) //creating a new list avoids problems
-        mDiffer.addListListener(object : AsyncListDiffer.ListListener<Any>{
-            override fun onCurrentListChanged(previousList: MutableList<Any>, currentList: MutableList<Any>) {
-                onReady.invoke(previousList, currentList)
-                mDiffer.removeListListener(this)
-            }
-        })
-    }
-
-    override fun getItemCount() = mDiffer.currentList.size
+    override fun getItemCount() = differ.currentList.size
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
         ITEM_TYPE -> getViewHolder(LayoutInflater.from(parent.context).inflate(itemLayout, parent, false))
@@ -69,7 +55,7 @@ abstract class BaseAdapter<T : Any, VB : ViewDataBinding, VH : BaseViewHolder<T,
         clickListener(this, index, obj, type)
     }
 
-    override fun getItemViewType(position: Int) = if (itemClass.isInstance(mDiffer.currentList[position])) {
+    override fun getItemViewType(position: Int) = if (itemClass.isInstance(differ.currentList[position])) {
         ITEM_TYPE
     } else {
         GENERIC_TYPE_EMPTY
@@ -78,7 +64,7 @@ abstract class BaseAdapter<T : Any, VB : ViewDataBinding, VH : BaseViewHolder<T,
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder.itemViewType) {
             ITEM_TYPE -> {
-                val item = mDiffer.currentList[position] as T
+                val item = differ.currentList[position] as T
                 (holder as VH).bind(position, item, ::relayClickListener)
             }
             GENERIC_TYPE, GENERIC_TYPE_EMPTY -> {

@@ -25,7 +25,8 @@
 
     	<activity
                 android:name=".ui.screens.splash.SplashActivity"
-                android:screenOrientation="portrait">
+                android:screenOrientation="portrait"
+                tools:ignore="LockedOrientationActivity">
 
             <intent-filter>
 
@@ -38,7 +39,7 @@
         </activity>
 
         <service
-                android:name="com.massivedisaster.adal.account.AuthenticationService"
+                android:name=".utils.authentication.AuthenticationService"
                 android:exported="false"
                 android:process=":auth">
             <intent-filter>

@@ -24,6 +24,9 @@
     <dimen name="extra_large_medium_spacing">33dp</dimen>
     <dimen name="extra_extra_large_spacing">35dp</dimen>
 
+    <dimen name="error_top_margin">50dp</dimen>
+    <dimen name="error_image_size">100dp</dimen>
+
     <!-- TEXT SIZES -->
     <dimen name="text_size_headline_one">96sp</dimen>
     <dimen name="text_size_headline_two">60sp</dimen>

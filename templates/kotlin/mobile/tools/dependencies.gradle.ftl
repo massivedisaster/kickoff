@@ -1,7 +1,7 @@
 apply from: "$project.rootDir/tools/libraries.gradle"
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
 
     /* KOTLIN */
     implementation libraries.kotlin.base
