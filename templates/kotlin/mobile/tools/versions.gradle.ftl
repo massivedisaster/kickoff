@@ -1,14 +1,18 @@
 ext.versions = [
 
+        // DEPENDENCIES VERSIONS
 <#if configs.dependencies??>
         <#list configs.dependencies as dependency>
-        ${dependency.name?capitalize?replace(" ", "")}Version: '${dependency.globalVersion}',
+        ${dependency.name?capitalize?replace(" ", "")?trim?uncap_first}Version: '${dependency.globalVersion}',
         <#list dependency.list?keys as key>
                 <#if dependency.list[key].version??>
-        ${dependency.name?capitalize?replace(" ", "")}${key?capitalize?replace(" ", "")}Version: '${dependency.list[key].version}',
+        ${dependency.name?capitalize?replace(" ", "")?trim?uncap_first}${key?capitalize?replace(" ", "")?trim}Version: '${dependency.list[key].version}',
                 </#if>
         </#list>
         </#list>
+</#if>
+<#if configs.hasOneSignal!true>
+        oneSignalVersion: '[3.9.1, 3.99.99]',
 </#if>
 
         // ANDROID CONFIGS

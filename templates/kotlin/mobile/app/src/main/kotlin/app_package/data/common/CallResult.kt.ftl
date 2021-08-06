@@ -1,6 +1,7 @@
 package ${configs.packageName}.data.common
 
 import okhttp3.Headers
+import ${configs.packageName}.network.models.ApiErrorResponse
 
 data class CallResult<T>(val status: NetworkState, val code: Int, val data: T?, val message: String?, val headers: Headers? = null, val connection: NetworkBoundResource<T, *, *>? = null) {
 

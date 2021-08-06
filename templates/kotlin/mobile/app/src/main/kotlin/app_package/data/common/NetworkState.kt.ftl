@@ -2,43 +2,32 @@ package ${configs.packageName}.data.common
 
 import ${configs.packageName}.network.models.ApiErrorResponse
 
-class NetworkState(
-    val status: Int,
-    val error: ApiErrorResponse<*>? = null
-) {
-    val isLoading: Boolean
-        get() = status == Status.LOADING
+class NetworkState(val status: Status, val error: ApiErrorResponse<*>? = null) {
 
-    val isSuccess: Boolean
-        get() = status == Status.SUCCESS
+    enum class Status {
+        LOADING, SUCCESS, FAILED, EMPTY, NO_MORE
+    }
 
-    val isFailed: Boolean
-        get() = status == Status.FAILED
+    val isLoading = status == Status.LOADING
+    val isSuccess = status == Status.SUCCESS
+    val isFailed = status == Status.FAILED
+    val isEmpty = status == Status.EMPTY
+    val isEnd = status == Status.NO_MORE
 
-    val isEmpty: Boolean
-        get() = status == Status.EMPTY
-
-    val statusString: String
-        get() {
-            return when (status) {
-                Status.LOADING -> "running"
-                Status.SUCCESS -> "success"
-                Status.EMPTY -> "empty"
-                else -> "failed"
-            }
-        }
+    val statusString = when (status) {
+        Status.LOADING -> "running"
+        Status.SUCCESS -> "success"
+        Status.EMPTY -> "empty"
+        Status.NO_MORE -> "no more"
+        else -> "failed"
+    }
 
     companion object {
         val SUCCESS = NetworkState(Status.SUCCESS)
         val LOADING = NetworkState(Status.LOADING)
         val EMPTY = NetworkState(Status.EMPTY)
+        val NO_MORE = NetworkState(Status.NO_MORE)
         fun error(error: ApiErrorResponse<*>?) = NetworkState(Status.FAILED, error)
     }
-}
 
-object Status {
-    const val LOADING = 0
-    const val SUCCESS = 1
-    const val FAILED = 2
-    const val EMPTY = 3
 }

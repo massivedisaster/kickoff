@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.Window
 import androidx.annotation.LayoutRes
+import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.DialogFragment
@@ -14,10 +15,11 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasAndroidInjector
 import dagger.android.support.AndroidSupportInjection
+import ${configs.packageName}.utils.helper.DebounceTimer
+import ${configs.packageName}.utils.helper.InsetsListener
 import javax.inject.Inject
 
 abstract class BaseDialog<T : ViewDataBinding, VM : ViewModel> : DialogFragment(), HasAndroidInjector {
@@ -37,8 +39,12 @@ abstract class BaseDialog<T : ViewDataBinding, VM : ViewModel> : DialogFragment(
     }
 
     protected val viewModel: VM by lazy {
-        ViewModelProviders.of(this, viewModelFactory).get(getViewModelClass())
+        ViewModelProvider(this, viewModelFactory).get(getViewModelClass())
     }
+
+    protected val debouncer: DebounceTimer by lazy { DebounceTimer(lifecycle) }
+
+    protected val insetsCollapseListener: InsetsListener by lazy { InsetsListener() }
 
     @LayoutRes
     abstract fun layoutToInflate(): Int
@@ -49,11 +55,17 @@ abstract class BaseDialog<T : ViewDataBinding, VM : ViewModel> : DialogFragment(
 
     override fun androidInjector() = androidInjector
 
+    open fun getArguments(arguments: Bundle) {}
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         AndroidSupportInjection.inject(this)
         dialog?.requestWindowFeature(Window.FEATURE_NO_TITLE)
         initDataBinding()
-        if (viewModel is LifecycleObserver )lifecycle.addObserver(viewModel as LifecycleObserver)
+        if (viewModel is LifecycleObserver)lifecycle.addObserver(viewModel as LifecycleObserver)
+        arguments?.let {
+            getArguments(it)
+        }
+
         doOnCreated()
         return dataBinding.root
     }
@@ -64,15 +76,23 @@ abstract class BaseDialog<T : ViewDataBinding, VM : ViewModel> : DialogFragment(
     }
 
     private fun initDataBinding() {
-            dataBinding.lifecycleOwner = this
+        dataBinding.lifecycleOwner = this
+    }
+
+    fun show(fragment: Fragment) {
+        show(fragment.childFragmentManager, javaClass.name)
+    }
+
+    fun show(activity: AppCompatActivity) {
+        show(activity.supportFragmentManager, javaClass.name)
     }
 
     fun showForResult(fragment: Fragment, requestCode: Int) {
         setTargetFragment(fragment, requestCode)
-        show(fragment.fragmentManager!!, javaClass.name)
+        show(fragment.parentFragmentManager, javaClass.name)
     }
 
-            fun showForResult(activity: BaseActivity<*,*>, requestCode: Int) {
+    fun showForResult(activity: BaseActivity<*,*>, requestCode: Int) {
         var args = arguments
         if (args == null)
             args = Bundle()
@@ -97,7 +117,7 @@ abstract class BaseDialog<T : ViewDataBinding, VM : ViewModel> : DialogFragment(
             val activity = activity
             if (activity != null && activity is Callback) {
                 callback = activity
-                requestCode = arguments!!.getInt(activity.javaClass.name + "requestCode")
+                requestCode = requireArguments().getInt(activity.javaClass.name + "requestCode")
             }
         }
 

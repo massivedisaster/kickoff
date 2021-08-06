@@ -28,7 +28,7 @@ platform :android do
     gradle(task: 'assemble', flavor: 'app', build_type: 'dev')
 
     if options[:submit]
-      send_testfairy
+      send_firebase(value: ENV["FIREBASE_APP_ID_DEV"])
     else
       ENV["FL_SLACK_MESSAGE"] = "Build successfully!"
     end
@@ -41,7 +41,7 @@ platform :android do
            print_command: false, properties: { })
 
     if options[:submit]
-      send_testfairy
+      send_firebase(value: ENV["FIREBASE_APP_ID_PROD"])
     end
   end
   <#if configs.hasQa!true>
@@ -52,7 +52,7 @@ platform :android do
     gradle(task: 'assemble', flavor: 'app', build_type: 'qa')
 
     if options[:submit]
-      send_testfairy
+      send_firebase(value: ENV["FIREBASE_APP_ID_QA"])
     end
   end
   </#if>
@@ -71,6 +71,20 @@ platform :android do
     @testfairy_build_url = lane_context[SharedValues::TESTFAIRY_BUILD_URL]
 
     ENV["FL_SLACK_MESSAGE"] = "A new version has been uploaded on TestFairy! \n Version: #@app_version \n URL: #@testfairy_build_url"
+  end
+
+  lane :send_firebase do |options|
+    changelog = changelog_from_git_commits(merge_commit_filtering: "exclude_merges")
+    changelog = "No changes" if changelog.to_s.length == 0
+
+    firebase_app_distribution(
+      app: options[:value],
+      release_notes: changelog,
+      groups: ENV['FIREBASE_GROUPS'],
+      firebase_cli_path: "/usr/local/bin/firebase"
+    )
+
+    ENV["FL_SLACK_MESSAGE"] = "A new version has been uploaded on Firebase! \n Version: #@app_version"
   end
 
   desc "For every error we send a Slack message"

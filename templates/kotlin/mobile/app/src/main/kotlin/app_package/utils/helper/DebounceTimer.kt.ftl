@@ -10,7 +10,9 @@ class DebounceTimer(private val lifecycle: Lifecycle
                     , private var timerFirst: Timer = Timer()
                     , private var timerLast: Timer = Timer()) : LifecycleObserver {
 
-    private val DEFAULT_DELAY = 750L
+    companion object {
+        const val DEFAULT_DELAY = 750L
+    }
 
     init {
         lifecycle.addObserver(this)

@@ -32,8 +32,13 @@ class ApiModule {
         var requestBuilder = it.request().newBuilder()
         requestBuilder.header("Content-Type", "application/json")
         requestBuilder.header("Accept", "application/json")
+
+        //seems to fix server issue (IOException end of stream) -> https://github.com/square/okhttp/issues/2738
+        //uncommnent if you need to
+        //.addHeader("Connection", "close")
+
         if (accountUtils.isLogged()) {
-            requestBuilder.header("Authorization", "Bearer ${r"${accountUtils.getToken()}"}")
+            requestBuilder.header("Authorization", "Bearer ${r"${accountUtils.getAccessToken()}"}")
         }
         return@Interceptor it.proceed(requestBuilder.build())
     }
@@ -77,6 +82,6 @@ class ApiModule {
     fun provideEndpointCollection(retrofit: Retrofit): EndpointCollection = retrofit.create(EndpointCollection::class.java)
 
     @Provides
-fun providesApiProvider(service: EndpointCollection) = ApiProvider(service)
+    fun providesApiProvider(service: EndpointCollection) = ApiProvider(service)
 
 }

@@ -13,7 +13,7 @@ import ${configs.packageName}.utils.authentication.AccountUtils
 import ${configs.packageName}.utils.helper.AppExecutors
 
 abstract class NetworkBoundResource<ResultType, RequestType, RefreshType> @MainThread constructor(private val appExecutors: AppExecutors,
-                                                                                     private val accountUtils: AccountUtils) {
+                                                                                                  private val accountUtils: AccountUtils) {
 
     enum class Type { NETWORK, DATABASE, BOTH }
 
@@ -78,66 +78,72 @@ abstract class NetworkBoundResource<ResultType, RequestType, RefreshType> @MainT
 
     private fun requestFromNetwork(withDb: Boolean = false) {
         val apiResponse = createCall()
+        if (apiResponse != null) {
+            setValue(CallResult.loading())
 
-        setValue(CallResult.loading())
+            result.addSource(apiResponse) { response ->
+                result.removeSource(apiResponse)
 
-        result.addSource(apiResponse) { response ->
-            result.removeSource(apiResponse)
-
-            when (response) {
-                is ApiSuccessResponse -> {
-                    appExecutors.getDiskIO().execute {
-                        val responseBody = processResponse(response)
-                        saveCallResult(responseBody)
-                        val databaseSource = loadFromDatabase()
-                        if (withDb && databaseSource != null) {
-                            appExecutors.getMainThread().execute {
-                                result.addSource(databaseSource) { newData ->
-                                    setValue(CallResult.success(200, newData, response.headers, this))
-                                }
-                            }
-                        } else {
-                            appExecutors.getMainThread().execute {
-                                result.addSource(network) { newData ->
-                                    setValue(CallResult.success(200, newData as ResultType, response.headers, this))
-                                }
-
-                                updateNetworkSource(responseBody)
-                            }
-                        }
-                    }
-                }
-                is ApiErrorResponse -> {
-                    appExecutors.getMainThread().execute {
-                        refreshCall = refreshCall()
-                        if (response.errorCode == 401 && refreshCall != null) {
-                            if (accountUtils.refreshingToken.get()) {
-                                appExecutors.getNetworkIO().execute {
-                                    var i = BuildConfig.API_TIMEOUT //MUST BE IN SECONDS
-                                    if (i > 100) {
-                                        throw Exception("API_TIMEOUT must be in seconds and less than 100")
-                                    }
-                                    while (accountUtils.refreshingToken.get() && i > 0) {
-                                        Thread.sleep(1000)
-                                        i--
-                                    }
-                                    appExecutors.getMainThread().execute {
-                                        requestFromNetwork()
+                when (response) {
+                    is ApiSuccessResponse -> {
+                        appExecutors.getDiskIO().execute {
+                            val responseBody = processResponse(response)
+                            saveCallResult(responseBody)
+                            val databaseSource = loadFromDatabase()
+                            if (withDb && databaseSource != null) {
+                                appExecutors.getMainThread().execute {
+                                    result.addSource(databaseSource) { newData ->
+                                        setValue(CallResult.success(response.successCode, newData, response.headers, this))
                                     }
                                 }
                             } else {
-                                accountUtils.refreshingToken.set(true)
-                                refresh.addSource(refreshCall!!) {
-                                    refresh.removeSource(refreshCall!!)
-                                }
-                                refreshCall?.observeForever(refreshObserver)
-                            }
-                        } else {
-                            result.addSource(network) { newData ->
-                                setValue(CallResult.error(response.errorMessage, response.errorCode, newData as ResultType, response, this))
-                            }
+                                appExecutors.getMainThread().execute {
+                                    result.addSource(network) { newData ->
+                                        val innerResponse = transformResponse(response.body)
+                                        val result = CallResult.success(response.successCode, innerResponse ?: newData as ResultType?, response.headers, this)
+                                        publishEndEvent(result)
+                                        publishEndEventMeta(newData)
+                                        setValue(result)
+                                    }
 
-                            updateNetworkSource(null)
+                                    updateNetworkSource(responseBody)
+                                }
+                            }
+                        }
+                    }
+                    is ApiErrorResponse -> {
+                        appExecutors.getMainThread().execute {
+                            refreshCall = refreshCall()
+                            if (response.errorCode == 401 && refreshCall != null) {
+                                if (AccountUtils.refreshingToken.compareAndSet(false, true)) {
+                                    refresh.addSource(refreshCall!!) {
+                                        refresh.removeSource(refreshCall!!)
+                                    }
+                                    refreshCall?.observeForever(refreshObserver)
+                                } else {
+                                    appExecutors.getNetworkIO().execute {
+                                        var i = BuildConfig.API_TIMEOUT //MUST BE IN SECONDS
+                                        if (i > 100) {
+                                            throw Exception("API_TIMEOUT must be in seconds and less than 100")
+                                        }
+                                        while (AccountUtils.refreshingToken.get() && i > 0) {
+                                            Thread.sleep(1000)
+                                            i--
+                                        }
+                                        appExecutors.getMainThread().execute {
+                                            requestFromNetwork()
+                                        }
+                                    }
+                                }
+                            } else {
+                                result.addSource(network) { newData ->
+                                    val result = CallResult.error(response.errorMessage, response.errorCode, newData as ResultType, response, this)
+                                    publishEndEvent(result)
+                                    setValue(result)
+                                }
+
+                                updateNetworkSource(null)
+                            }
                         }
                     }
                 }
@@ -165,6 +171,9 @@ abstract class NetworkBoundResource<ResultType, RequestType, RefreshType> @MainT
     @MainThread
     protected open fun refreshResult(apiResponse: RefreshType?) { }
 
+    @MainThread
+    protected open fun refreshError() { }
+
     @WorkerThread
     protected open fun processResponse(response: ApiSuccessResponse<RequestType>) = response.body
 
@@ -177,17 +186,36 @@ abstract class NetworkBoundResource<ResultType, RequestType, RefreshType> @MainT
     @MainThread
     protected open fun shouldRequestFromNetwork(data: ResultType?) = true
 
+    @WorkerThread
+    protected open fun transformResponse(response: RequestType?) : ResultType? = null
+
+    @WorkerThread
+    protected open fun publishEndEvent(data: CallResult<ResultType>) {}
+
+    @WorkerThread
+    protected open fun publishEndEventMeta(data: RequestType) {}
+
     @MainThread
-    protected abstract fun createCall(): LiveData<ApiResponse<RequestType>>
+    protected open fun createCall(): LiveData<ApiResponse<RequestType>>? = null
 
     private inner class RefreshObserver : Observer<ApiResponse<RefreshType>> {
         override fun onChanged(response: ApiResponse<RefreshType>?) {
-            accountUtils.refreshingToken.set(false)
-            if (response is ApiSuccessResponse) {
-                refreshResult(response.body)
-                retry()
+            when (response) {
+                is ApiSuccessResponse -> {
+                    refreshResult(response.body)
+                    AccountUtils.refreshingToken.set(false)
+                    retry()
+                }
+                is ApiErrorResponse -> {
+                    refreshError()
+                    AccountUtils.refreshingToken.set(false)
+                    setValue(CallResult.error(response.errorMessage, response.errorCode, null, response))
+                }
+                else -> {
+                    AccountUtils.refreshingToken.set(false)
+                    setValue(CallResult.error("", -1, ""))
+                }
             }
-
             refreshCall?.removeObserver(this)
         }
     }

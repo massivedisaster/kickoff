@@ -1,3 +1,5 @@
+import java.text.Normalizer
+
 android {
 
     applicationVariants.all { variant ->
@@ -7,58 +9,66 @@ android {
         def buildType = variant.buildType.name
         def appName = flavors.extension.appName[0]
 
-        applicationId += '' + flavors[0].extension.clientId + ''
-
         if (variant.buildType.isDebuggable()) {
             versionCode = gitVersionCodeTime
             appName += " " + buildType.toUpperCase()
         } else {
-            versionCode = gitVersionCode
+            versionCode = gitVersionCode + flavors[0].extension.versionCodeExtra
         }
 
         variant.buildConfigField 'String', 'API_BASE_URL', '\"' + flavors[0].extension.endpoints[buildType] + '\"'
+
+        //MANIFEST KEYS
         if (flavors[0].extension.manifestKeys != null && !flavors[0].extension.manifestKeys.isEmpty()) {
             for ( e in flavors[0].extension.manifestKeys[buildType] ) {
                 variant.mergedFlavor.manifestPlaceholders.put(e.key, e.value)
             }
         }
+
+        //RESVALUES
+        if (flavors[0].extension.resValues != null && !flavors[0].extension.resValues.isEmpty()) {
+            for ( e in flavors[0].extension.resValues[buildType] ) {
+                variant.resValue 'string', e.key, '' + e.value + ''
+            }
+        }
+
+        //EXTRA BUILD VARS
         if (flavors[0].extension.extraBuildVars != null && !flavors[0].extension.extraBuildVars.isEmpty()) {
             for ( e in flavors[0].extension.extraBuildVars[buildType] ) {
                 variant.buildConfigField 'String', e.key, '\"' + e.value + '\"'
             }
         }
 
-        variant.buildConfigField 'int', 'VERSION_CODE_GIT', versionCode.toString()
-        variant.buildConfigField 'String', 'VERSION_NAME_GIT', '\"' + gitVersionName + '\"'
-
-        variant.mergedFlavor.setApplicationId(applicationId)
+        if (flavors[0].extension.clientId != null && !flavors[0].extension.clientId.isEmpty()) {
+            applicationId += '' + flavors[0].extension.clientId
+            if (buildType == 'dev') {
+                applicationId += versions.appIdSuffixDev
+            } else if (buildType == 'qa') {
+                applicationId += versions.appIdSuffixQa
+            }
+            variant.mergedFlavor.setApplicationId(applicationId)
+        }
         variant.resValue 'string', 'app_name', '' + appName + ''
+
+        String.metaClass.slug { ->
+            def s = delegate.toLowerCase()
+            s = Normalizer.normalize(s, Normalizer.Form.NFD).replaceAll("\\p{InCombiningDiacriticalMarks}+", "")
+            s = s.replaceAll(/[^a-z0-9\s-]/, "").replaceAll(/\s+/, " ").trim()
+            s = s.replaceAll(/\s/, '-')
+            s.replaceAll(/-{2,}/, '-')
+        }
 
         variant.outputs.each { output ->
             output.versionNameOverride = gitVersionName
             output.versionCodeOverride = versionCode
-            output.outputFileName = "${r"${flavors.extension.appName[0]}-${gitVersionName}-${buildType}.apk"}"
+            output.outputFileName = "${r"${flavors.extension.appName[0].slug()}-${gitVersionName}-${buildType}.apk"}"
         }
+
+        //println(flavors.extension.toString())
     }
 
     productFlavors.whenObjectAdded { flavor ->
         flavor.extensions.create("extension", AppFlavorExtension)
-    }
-
-    tasks.whenTaskAdded { task ->
-        if (task.name.startsWith("bundle")) {
-            def renameTaskName = "rename${r"${task.name.capitalize()}"}Aab"
-            def flavor = task.name.substring("bundle".length()).uncapitalize()
-            tasks.create(renameTaskName, Copy) {
-                def path = "${r"${buildDir}/outputs/bundle/${flavor}/"}"
-                from(path)
-                include "app.aab"
-                destinationDir file("${r"${buildDir}/outputs/renamedBundle/"}")
-                rename "app.aab", "${r"${flavor}.aab"}"
-            }
-
-            task.finalizedBy(renameTaskName)
-        }
     }
 
 }
@@ -66,8 +76,10 @@ android {
 class AppFlavorExtension {
     String clientId = ""
     String appName
+    int versionCodeExtra = 0
     Map endpoints
     Map manifestKeys
+    Map resValues
     Map extraBuildVars
 
     void setClientId(String id) {
@@ -76,6 +88,14 @@ class AppFlavorExtension {
 
     String getClientId() {
         clientId
+    }
+
+    void setVersionCodeExtra(int extra) {
+        versionCodeExtra = extra
+    }
+
+    int getVersionCodeExtra() {
+        versionCodeExtra
     }
 
     void setAppName(String name) {
@@ -102,6 +122,14 @@ class AppFlavorExtension {
         this.manifestKeys = manifestKeys
     }
 
+    Map getResValues() {
+        return resValues
+    }
+
+    void setResValues(Map resValues) {
+        this.resValues = resValues
+    }
+
     Map getExtraBuildVars() {
         return extraBuildVars
     }
@@ -114,9 +142,11 @@ class AppFlavorExtension {
     String toString() {
         String ret = ""
         ret += "ClientId: " + clientId + "\n"
+        ret += "VersionCodeExtra: " + versionCodeExtra + "\n"
         ret += "AppName: " + appName + "\n"
         ret += "Endpoint: " + endpoints + "\n"
         ret += "ManifestKeys: " + manifestKeys + "\n"
+        ret += "ResValues: " + resValues + "\n"
         ret += "ExtraBuildVars: " + extraBuildVars + "\n"
         return ret
     }

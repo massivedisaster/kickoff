@@ -11,14 +11,31 @@ class LiveDataWrapper<T> : MediatorLiveData<CallResult<T>>() {
         observe(owner, observer)
     }
 
-    fun observeNetwork(owner: LifecycleOwner, observer: Observer<CallResult<T>>) {
-        value?.connection?.network()
+    fun observeNetwork(owner: LifecycleOwner, observer: Observer<CallResult<T>>, initCall : Boolean = true) : NetworkBoundResource<T,*,*>? {
+        val network = value?.connection
+        if(initCall) {
+            network?.network()
+        }
         observe(owner, observer)
+        return network
     }
 
-    fun observeDbAndNetwork(owner: LifecycleOwner, observer: Observer<CallResult<T>>) {
-        value?.connection?.dbAndNetwork()
+    fun observeDbAndNetwork(owner: LifecycleOwner, observer: Observer<CallResult<T>>, initCall : Boolean = true) : NetworkBoundResource<T,*,*>? {
+        val network = value?.connection
+        if(initCall) {
+            network?.dbAndNetwork()
+        }
         observe(owner, observer)
+        return network
+    }
+
+    fun observeNetworkForever(observer: Observer<CallResult<T>>, initCall : Boolean = true) : NetworkBoundResource<T,*,*>? {
+        val network = value?.connection
+        if(initCall) {
+            network?.network()
+        }
+        observeForever(observer)
+        return network
     }
 
 }

@@ -2,13 +2,16 @@ package ${configs.packageName}.app
 
 import android.app.Application
 import android.content.Context
+import com.jakewharton.threetenabp.AndroidThreeTen
 import ${configs.packageName}.di.component.DaggerAppComponent
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasAndroidInjector
 import javax.inject.Inject
-<#if configs.hasOnesignal!true>
+import timber.log.Timber
+<#if configs.hasOneSignal!true>
 import com.onesignal.OneSignal
 </#if>
+
 
 /**
  * Base class fot the application.
@@ -23,14 +26,17 @@ open class App @Inject constructor() : Application(), HasAndroidInjector {
 
     override fun onCreate() {
         super.onCreate()
-        <#if configs.hasOnesignal!true>
+        <#if configs.hasOneSignal!true>
 
         OneSignal.startInit(this).init()
 		</#if>
+
+		Timber.plant(Timber.DebugTree())
     }
 
     override fun attachBaseContext(base: Context?) {
         super.attachBaseContext(base)
+        AndroidThreeTen.init(this)
         DaggerAppComponent.builder().application(this).build().inject(this)
     }
 

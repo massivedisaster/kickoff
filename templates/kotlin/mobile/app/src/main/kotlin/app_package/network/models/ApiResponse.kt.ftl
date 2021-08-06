@@ -1,11 +1,11 @@
 package ${configs.packageName}.network.models
 
 import com.fasterxml.jackson.databind.JsonMappingException
+import okhttp3.Headers
 import ${configs.packageName}.data.common.ServerError
 import ${configs.packageName}.data.common.ServerErrors
 import ${configs.packageName}.network.models.response.ApiError
 import ${configs.packageName}.utils.manager.PreferencesManager
-import okhttp3.Headers
 import retrofit2.HttpException
 import retrofit2.Response
 import java.net.SocketTimeoutException
@@ -15,32 +15,33 @@ import java.net.UnknownHostException
 sealed class ApiResponse<T> {
 
     companion object {
+        const val ERROR = "Something went wrong"
         fun <T> create(url: String, throwable: Throwable): ApiErrorResponse<T> {
             throwable.printStackTrace()
 
             if (throwable is SocketTimeoutException && throwable.message != null) {
-                return ApiErrorResponse(url, -1, throwable.message ?: "Something went wrong", ServerErrors.TIMEOUT)
+                return ApiErrorResponse(url, -1, throwable.message ?: ERROR, ServerErrors.TIMEOUT)
             }
 
             if (throwable is JsonMappingException && throwable.message != null) {
-                return ApiErrorResponse(url, -1, throwable.message ?: "Something went wrong", ServerErrors.EMPTY_BODY)
+                return ApiErrorResponse(url, -1, throwable.message ?: ERROR, ServerErrors.EMPTY_BODY)
             }
 
             if (throwable is UnknownHostException && throwable.message != null) {
-                return ApiErrorResponse(url, -1, throwable.message ?: "Something went wrong", ServerErrors.NO_INTERNET)
+                return ApiErrorResponse(url, -1, throwable.message ?: ERROR, ServerErrors.NO_INTERNET)
             }
 
             if (throwable is HttpException) {
-                return ApiErrorResponse(url, throwable.code(), "Something went wrong", ServerErrors.GENERAL)
+                return ApiErrorResponse(url, throwable.code(), ERROR, ServerErrors.GENERAL)
             }
 
-            return ApiErrorResponse(url, 520, throwable.message ?: "Something went wrong", ServerErrors.GENERAL)
+            return ApiErrorResponse(url, 520, throwable.message ?: ERROR, ServerErrors.GENERAL)
         }
 
         fun <T> create(url: String, response: Response<T>): ApiResponse<T> {
             return if (response.isSuccessful) {
                 val body = response.body()
-                ApiSuccessResponse(url, body, response.headers())
+                ApiSuccessResponse(url, response.code(), body, response.headers())
             } else {
                 val code = response.code()
                 val message = response.errorBody()?.string()
@@ -50,13 +51,13 @@ sealed class ApiResponse<T> {
                 } else {
                     message
                 }
-                ApiErrorResponse(url, code, errorMessage ?: "Something went wrong", ServerErrors.API, error)
+                ApiErrorResponse(url, code, errorMessage ?: ERROR, ServerErrors.API, error)
             }
         }
     }
 
 }
 
-data class ApiSuccessResponse<T>(val url: String, val body: T?, val headers: Headers) : ApiResponse<T>()
+data class ApiSuccessResponse<T>(val url: String, val successCode: Int, val body: T?, val headers: Headers) : ApiResponse<T>()
 
 data class ApiErrorResponse<T>(val url: String, val errorCode: Int, val errorMessage: String, @ServerError val serverError: Int, val error: ApiError? = null) : ApiResponse<T>()

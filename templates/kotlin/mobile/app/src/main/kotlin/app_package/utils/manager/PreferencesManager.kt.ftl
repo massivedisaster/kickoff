@@ -13,7 +13,11 @@ import javax.inject.Singleton
 class PreferencesManager @Inject constructor(context: Context) {
 
     companion object {
-        const val KEY = "VALUE"
+        const val FIRST_TIME = "FIRST_TIME"
+        const val FIRST_LOGIN = "FIRST_LOGIN"
+<#if configs.hasOneSignal!true>
+        const val PUSH_ID = "PUSH_ID"
+</#if>
 
         inline fun <reified T : Any> getObject(json: String?): T? {
             val mapper = jacksonObjectMapper()
@@ -26,11 +30,11 @@ class PreferencesManager @Inject constructor(context: Context) {
             return null
         }
 
-        fun getJson(`object`: Any?): String? {
+        fun getJson(obj: Any?): String? {
             val mapper = jacksonObjectMapper()
             try {
-                if (`object` == null) return null
-                return mapper.writeValueAsString(`object`)
+                if (obj == null) return null
+                return mapper.writeValueAsString(obj)
             } catch (e: JsonProcessingException) {
                 e.printStackTrace()
             }
@@ -41,14 +45,21 @@ class PreferencesManager @Inject constructor(context: Context) {
 
     val prefs: SharedPreferences = context.getSharedPreferences("${configs.packageName}", Context.MODE_PRIVATE)
 
-    inline fun edit(task: (SharedPreferences.Editor) -> Unit) {
+    var firstRun: Boolean
+        get() = read(FIRST_TIME, true)!!
+        set(value) = write(FIRST_TIME, value)
+
+    var firstLogin: Boolean
+        get() = read(FIRST_LOGIN, true)!!
+        set(value) = write(FIRST_LOGIN, value)
+
+    private fun edit(task: (SharedPreferences.Editor) -> Unit) {
         val editor = prefs.edit()
         task(editor)
         editor.apply()
     }
 
-    inline fun write(key: String, value: Any) {
-        val editor = prefs.edit()
+    fun write(key: String, value: Any?) {
         when (value) {
             is String -> edit { it.putString(key, value) }
             is Int -> edit { it.putInt(key, value) }

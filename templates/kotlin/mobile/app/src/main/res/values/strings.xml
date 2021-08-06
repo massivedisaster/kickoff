@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="btn_ok">ok</string>
+    <string name="btn_back">Voltar</string>
+    <string name="btn_cancel">Cancelar</string>
+
+</resources>

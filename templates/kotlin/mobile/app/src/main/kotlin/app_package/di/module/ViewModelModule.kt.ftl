@@ -7,7 +7,7 @@ import dagger.Module
 import dagger.multibindings.IntoMap
 import ${configs.packageName}.di.annotations.ViewModelKey
 import ${configs.packageName}.di.factory.ViewModelFactory
-import ${configs.packageName}.ui.splash.SplashViewModel
+import ${configs.packageName}.ui.screens.splash.SplashViewModel
 
 @Module(includes = [RepositoryModule::class])
 abstract class ViewModelModule {

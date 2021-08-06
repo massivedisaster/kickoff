@@ -1,0 +1,12 @@
+{
+  "name": "Firebase",
+  "globalVersion": "17.2.2",
+  "list": {
+    "performance": {
+      "group": "com.google.firebase:firebase-perf",
+      "version": "19.0.7",
+      "isCompiler": false
+    }
+  },
+  "hasFirebasePerformance": true
+}
