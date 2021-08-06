@@ -19,3 +19,5 @@ fun <E> List<E>.getRandomElements(numberOfElements: Int): List<E>? {
     }
     return this.shuffled().take(numberOfElements)
 }
+
+fun <T> Iterable<T>.sumByLong(selector: (T) -> Long) = map { selector(it) }.sum()

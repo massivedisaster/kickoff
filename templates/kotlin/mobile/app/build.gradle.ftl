@@ -2,13 +2,13 @@ plugins {
     id 'com.android.application'
     id 'kotlin-android'
     id 'kotlin-kapt'
-    id 'kotlin-android-extensions'
+    id 'kotlin-parcelize'
     id 'com.google.firebase.crashlytics'
     <#if configs.hasFirebasePerformance!true>
-id 'com.google.firebase.firebase-perf'
+    id 'com.google.firebase.firebase-perf'
     </#if>
     <#if configs.hasOneSignal!true>
-id 'com.onesignal.androidsdk.onesignal-gradle-plugin'
+    id 'com.onesignal.androidsdk.onesignal-gradle-plugin'
     </#if>
 }
 apply from: "$project.rootDir/tools/git-version.gradle"

@@ -1,12 +1,14 @@
-package ${configs.packageName}.ui.splash
+package ${configs.packageName}.ui.screens.splash
 
 import android.os.Handler
+import android.os.Looper
 <#if configs.hasOneSignal!true>
 import com.onesignal.OneSignal
 </#if>
 import ${configs.packageName}.R
 import ${configs.packageName}.databinding.ActivitySplashBinding
 import ${configs.packageName}.ui.base.BaseActivity
+import ${configs.packageName}.utils.authentication.AccountUtils
 import ${configs.packageName}.utils.manager.CallManager
 import ${configs.packageName}.utils.manager.PreferencesManager
 import javax.inject.Inject
@@ -19,6 +21,9 @@ class SplashActivity : BaseActivity<ActivitySplashBinding, SplashViewModel>() {
     companion object {
         private const val SPLASH_TIME_OUT: Long = 2000
     }
+
+    @Inject
+    lateinit var accountUtils: AccountUtils
 
     @Inject
     lateinit var callManager: CallManager
@@ -48,7 +53,7 @@ class SplashActivity : BaseActivity<ActivitySplashBinding, SplashViewModel>() {
 
     public override fun onStart() {
         super.onStart()
-        handler = Handler()
+        handler = Handler(Looper.getMainLooper())
     }
 
     public override fun onResume() {

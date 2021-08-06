@@ -1,7 +1,6 @@
 package ${configs.packageName}.utils.helper.extensions.time
 
 import org.threeten.bp.OffsetDateTime
-import org.threeten.bp.ZonedDateTime
 
 /**
  * returns the same date but in 0 hour 00:00:00

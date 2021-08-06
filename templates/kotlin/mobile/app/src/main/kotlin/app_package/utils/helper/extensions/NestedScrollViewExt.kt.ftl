@@ -11,7 +11,7 @@ import androidx.core.widget.NestedScrollView
  * pass in the views you want to lose focus and close keyboard on scroll of main container (nestedscroll)
  */
 fun NestedScrollView.closeKeyboardOnScroll(ctx : Context, vararg views: View) {
-    setOnScrollChangeListener(NestedScrollView.OnScrollChangeListener { v, scrollX, scrollY, oldScrollX, oldScrollY ->
+    setOnScrollChangeListener(NestedScrollView.OnScrollChangeListener { _, _, _, _, _ ->
         for(view in views) {
             if(view.hasFocus()) {
                 view.clearFocus()

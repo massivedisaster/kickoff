@@ -15,7 +15,7 @@ class LoadingDialog : BaseDialog<DialogLoadingBinding, LoadingViewModel>() {
 
     override fun doOnCreated() {
         isCancelable = false
-        dialog?.window!!.setBackgroundDrawable(ColorDrawable(ContextCompat.getColor(context!!, android.R.color.transparent)))
+        dialog?.window!!.setBackgroundDrawable(ColorDrawable(ContextCompat.getColor(requireContext(), android.R.color.transparent)))
     }
 
     override fun setEnterTransition(transition: Any?) {

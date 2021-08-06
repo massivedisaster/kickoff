@@ -1,9 +1,9 @@
 package ${configs.packageName}.ui.base.adapter
 
 import android.view.View
-import android.widget.TextView
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
+import ${configs.packageName}.data.common.NetworkState
 import ${configs.packageName}.databinding.ItemGenericViewStateFullHeightBinding
 import ${configs.packageName}.utils.helper.extensions.isVisible
 import ${configs.packageName}.utils.helper.extensions.removeView
@@ -14,15 +14,13 @@ class GenericStateCardFullHeightViewHolder(itemView: View): RecyclerView.ViewHol
     val dataBinding: ItemGenericViewStateFullHeightBinding? = DataBindingUtil.bind(itemView)
 
     fun bind(holder: GenericStateCardFullHeightViewHolder, card: GenericStateCard?, clickListener: ((ClickType, GenericStateCard) -> Unit)?
-             , errorViews: (emptyContent: TextView, error: TextView) -> Unit) {
+             , errorViews: (emptyViews: GenericStateCardErrorViews, errorViews: GenericStateCardErrorViews, isFullHeight: Boolean, state : NetworkState?) -> Unit) {
 
         val binding = holder.dataBinding ?: return
         var genericStateCard = card
 
         if(genericStateCard == null) {
-            genericStateCard = GenericStateCard(binding.loading.isVisible()
-                    , binding.emptyContent.isVisible()
-                    , binding.viewError.isVisible())
+            genericStateCard = GenericStateCard(binding.loading.isVisible(), binding.emptyContent.isVisible(), binding.viewError.isVisible())
         }
 
         binding.genericView.setOnClickListener {
@@ -37,7 +35,17 @@ class GenericStateCardFullHeightViewHolder(itemView: View): RecyclerView.ViewHol
             }
         }
 
-        errorViews.invoke(binding.emptyContent, binding.viewErrorText)
+        errorViews.invoke(GenericStateCardErrorViews(
+            icon = binding.emptyIcon,
+            title = binding.emptyTitle,
+            body = binding.emptyText,
+            button = binding.emptyBtn
+        ), GenericStateCardErrorViews(
+            icon = binding.errorIcon,
+            title = binding.errorTitle,
+            body = binding.errorText,
+            button = binding.errorBtn
+        ),true, genericStateCard.state)
 
         if(genericStateCard.showingLoading) {
             binding.loading.showView()

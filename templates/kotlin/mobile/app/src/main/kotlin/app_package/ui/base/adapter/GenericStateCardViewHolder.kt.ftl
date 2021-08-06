@@ -1,27 +1,25 @@
 package ${configs.packageName}.ui.base.adapter
 
 import android.view.View
-import android.widget.TextView
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
+import ${configs.packageName}.data.common.NetworkState
 import ${configs.packageName}.databinding.ItemGenericViewStateBinding
 import ${configs.packageName}.utils.helper.extensions.isVisible
 import ${configs.packageName}.utils.helper.extensions.removeView
 import ${configs.packageName}.utils.helper.extensions.showView
 
-class GenericStateCardViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
+class GenericStateCardViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
     val dataBinding: ItemGenericViewStateBinding? = DataBindingUtil.bind(itemView)
 
-    fun bind(holder: GenericStateCardViewHolder, card: GenericStateCard?, clickListener: ((ClickType, GenericStateCard) -> Unit)?, errorViews: (emptyContent: TextView, error: TextView) -> Unit) {
+    fun bind(holder: GenericStateCardViewHolder, card: GenericStateCard?, clickListener: ((ClickType, GenericStateCard) -> Unit)?, errorViews: (emptyViews: GenericStateCardErrorViews, errorViews: GenericStateCardErrorViews, isFullHeight: Boolean, state: NetworkState?) -> Unit) {
 
         val binding = holder.dataBinding ?: return
         var genericStateCard = card
 
-        if(genericStateCard == null) {
-            genericStateCard = GenericStateCard(binding.loading.isVisible()
-                    , binding.emptyContent.isVisible()
-                    , binding.viewError.isVisible())
+        if (genericStateCard == null) {
+            genericStateCard = GenericStateCard(binding.loading.isVisible(), binding.emptyContent.isVisible(), binding.viewError.isVisible())
         }
 
         binding.genericView.setOnClickListener {
@@ -36,21 +34,21 @@ class GenericStateCardViewHolder(itemView: View): RecyclerView.ViewHolder(itemVi
             }
         }
 
-        errorViews.invoke(binding.emptyContent, binding.viewErrorText)
+        errorViews.invoke(GenericStateCardErrorViews(binding.emptyIcon, binding.emptyText), GenericStateCardErrorViews(binding.errorIcon, binding.errorText),false, genericStateCard.state)
 
-        if(genericStateCard.showingLoading) {
+        if (genericStateCard.showingLoading) {
             binding.loading.showView()
             binding.emptyContent.removeView()
             binding.viewError.removeView()
         }
 
-        if(genericStateCard.showingEmptyContent) {
+        if (genericStateCard.showingEmptyContent) {
             binding.loading.removeView()
             binding.emptyContent.showView()
             binding.viewError.removeView()
         }
 
-        if(genericStateCard.showingError) {
+        if (genericStateCard.showingError) {
             binding.loading.removeView()
             binding.emptyContent.removeView()
             binding.viewError.showView()

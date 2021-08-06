@@ -5,6 +5,9 @@
     <string name="generic_error_retry_text">Houve um problema\na carregar o conteúdo</string>
     <string name="generic_object_text">Houve um problema\na carregar o conteúdo</string>
 
+    <string name="internet_title">Sem Internet</string>
+    <string name="internet_error">Verifique a sua ligação à internet.</string>
+
     <string name="error_generic_title">Erro</string>
     <string name="error_generic_body">Ocorreu um erro inesperado.</string>
 

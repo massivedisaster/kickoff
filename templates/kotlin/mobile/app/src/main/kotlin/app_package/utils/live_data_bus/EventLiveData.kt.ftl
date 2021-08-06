@@ -16,7 +16,6 @@ package ${configs.packageName}.utils.live_data_bus
  * limitations under the License.
  */
 
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 
@@ -24,8 +23,6 @@ import androidx.lifecycle.Observer
  * A custom LiveData which can unregister when there is no observer
  */
 class EventLiveData(private val mSubject: String, private val list : MutableList<ConsumableEvent> = mutableListOf()) : MutableLiveData<ListConsumableEvent>() {
-
-//    private lateinit var finalList
 
     fun update(obj: ConsumableEvent) {
         list.removeAll {it.isConsumed}

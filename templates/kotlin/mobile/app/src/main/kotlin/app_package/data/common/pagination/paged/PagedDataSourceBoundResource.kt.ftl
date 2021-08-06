@@ -10,7 +10,7 @@ import ${configs.packageName}.data.common.ServerErrors
 import ${configs.packageName}.network.models.ApiErrorResponse
 import ${configs.packageName}.utils.helper.AppExecutors
 
-abstract class PagedDataSourceBoundResource<PaginationType, ResultType>(
+abstract class PagedDataSourceBoundResource<PaginationType, MetaType, ResultType : Any>(
         private val appExecutors: AppExecutors,
         private val usePaging: Boolean
 ) : PageKeyedDataSource<Int, ResultType>() {
@@ -20,6 +20,8 @@ abstract class PagedDataSourceBoundResource<PaginationType, ResultType>(
     val networkData = MediatorLiveData<MutableList<ResultType>>()
     val network = MediatorLiveData<NetworkState>()
     val initial = MediatorLiveData<NetworkState>()
+    val meta = MediatorLiveData<MetaType>()
+    private var isLoading = false
 
     override fun loadInitial(params: LoadInitialParams<Int>, callback: LoadInitialCallback<Int, ResultType>) {
         loadInit(params, callback)
@@ -55,6 +57,7 @@ abstract class PagedDataSourceBoundResource<PaginationType, ResultType>(
                         }
                     } else {
                         loadnext = nextKey?.let { { loadNext(LoadParams<Int>(nextKey, params.requestedLoadSize), null) } }
+                        postMeta(identifyMeta(responseBody))
                         postInitialState(identifyResponseList(responseBody), null, nextKey)
                         if (nextKey == null) {
                             if(identifyResponseList(responseBody).isNullOrEmpty()) {
@@ -70,11 +73,13 @@ abstract class PagedDataSourceBoundResource<PaginationType, ResultType>(
                 }
                 NetworkState.Status.FAILED -> {
                     retry = { loadInit(params, callback) }
+                    postMeta(null)
                     postInitialState(NetworkState.error(ApiErrorResponse<PaginationType>("", apiResponse.code, apiResponse.message ?: "", apiResponse.status.error?.serverError ?: ServerErrors.GENERAL)))
                 }
                 else -> {
                 }
             }
+            isLoading = false
         }
     }
 
@@ -99,6 +104,7 @@ abstract class PagedDataSourceBoundResource<PaginationType, ResultType>(
                         }
                     } else {
                         loadnext = nextKey?.let { { loadNext(LoadParams(nextKey, params.requestedLoadSize), null) } }
+                        postMeta(identifyMeta(responseBody))
                         postAfterState(identifyResponseList(responseBody), nextKey)
                         if (nextKey == null) {
                             postAfterState(NetworkState.NO_MORE)
@@ -115,6 +121,7 @@ abstract class PagedDataSourceBoundResource<PaginationType, ResultType>(
                 else -> {
                 }
             }
+            isLoading = false
         }
     }
 
@@ -137,20 +144,33 @@ abstract class PagedDataSourceBoundResource<PaginationType, ResultType>(
 
     private fun postAfterState(content: List<ResultType>, nextKey: Int?) {
         val list = networkData.value
-        list?.addAll(content)
+        if (!allowDuplicates()) {
+            val temp = mutableListOf<ResultType>()
+            temp.addAll(content)
+            content.forEach {newObject ->
+                if (list?.any { duplicateComparator(it, newObject) } == true) {
+                    temp.remove(newObject)
+                }
+            }
+            list?.addAll(temp)
+        } else {
+            list?.addAll(content)
+        }
         appExecutors.getMainThread().execute {
             networkData.value = list
         }
     }
 
     open fun loadNext() {
-        loadnext?.invoke()
+        if (!isLoading) {
+            isLoading = true
+            loadnext?.invoke()
+        }
     }
 
     open fun listListingInvalidate() {
         appExecutors.getMainThread().execute {
-            networkData.value = mutableListOf()
-            networkData.postValue(networkData.value)
+            networkData.postValue(mutableListOf())
         }
         loadInit(LoadInitialParams(initialPage(), false), null)
     }
@@ -170,6 +190,12 @@ abstract class PagedDataSourceBoundResource<PaginationType, ResultType>(
         }
     }
 
+    private fun postMeta(obj: MetaType?) {
+        appExecutors.getMainThread().execute {
+            meta.value = obj
+        }
+    }
+
     @WorkerThread
     protected open fun processResponse(response: CallResult<PaginationType>) = response.data
 
@@ -180,5 +206,11 @@ abstract class PagedDataSourceBoundResource<PaginationType, ResultType>(
 
     protected abstract fun identifyResponseList(response: PaginationType): List<ResultType>
 
+    protected abstract fun identifyMeta(response: PaginationType): MetaType
+
     protected abstract fun initialPage(): Int
+
+    protected abstract fun allowDuplicates(): Boolean
+
+    protected abstract fun duplicateComparator(oldObject : ResultType, newObject: ResultType) : Boolean
 }

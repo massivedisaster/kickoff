@@ -18,7 +18,6 @@ class PreferencesManager @Inject constructor(context: Context) {
 <#if configs.hasOneSignal!true>
         const val PUSH_ID = "PUSH_ID"
 </#if>
-        const val KEY = "VALUE"
 
         inline fun <reified T : Any> getObject(json: String?): T? {
             val mapper = jacksonObjectMapper()
@@ -31,11 +30,11 @@ class PreferencesManager @Inject constructor(context: Context) {
             return null
         }
 
-        fun getJson(`object`: Any?): String? {
+        fun getJson(obj: Any?): String? {
             val mapper = jacksonObjectMapper()
             try {
-                if (`object` == null) return null
-                return mapper.writeValueAsString(`object`)
+                if (obj == null) return null
+                return mapper.writeValueAsString(obj)
             } catch (e: JsonProcessingException) {
                 e.printStackTrace()
             }
@@ -54,13 +53,13 @@ class PreferencesManager @Inject constructor(context: Context) {
         get() = read(FIRST_LOGIN, true)!!
         set(value) = write(FIRST_LOGIN, value)
 
-    fun edit(task: (SharedPreferences.Editor) -> Unit) {
+    private fun edit(task: (SharedPreferences.Editor) -> Unit) {
         val editor = prefs.edit()
         task(editor)
         editor.apply()
     }
 
-    fun write(key: String, value: Any) {
+    fun write(key: String, value: Any?) {
         when (value) {
             is String -> edit { it.putString(key, value) }
             is Int -> edit { it.putInt(key, value) }
