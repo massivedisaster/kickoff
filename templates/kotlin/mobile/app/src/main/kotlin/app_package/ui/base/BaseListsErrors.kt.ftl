@@ -1,18 +1,10 @@
 package ${configs.packageName}.ui.base
 
 import android.content.Context
-import android.util.TypedValue
-import android.view.View
-import androidx.core.view.updatePadding
 import ${configs.packageName}.R
 import ${configs.packageName}.ui.base.adapter.GenericStateCardErrorViews
-import ${configs.packageName}.utils.helper.DebounceTimer
-import ${configs.packageName}.utils.helper.extensions.DpInPx
 import ${configs.packageName}.utils.helper.extensions.removeView
 import ${configs.packageName}.utils.helper.extensions.showView
-import ${configs.packageName}.utils.helper.extensions.startActivityDebounced
-import ${configs.packageName}.utils.helper.extensions.text.makeLinks
-import ${configs.packageName}.utils.manager.CallManager
 
 fun BigNoInternetErrors(ctx: Context, view: GenericStateCardErrorViews) {
     view.icon?.removeView()

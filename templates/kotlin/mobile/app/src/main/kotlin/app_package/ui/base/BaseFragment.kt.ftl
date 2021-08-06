@@ -3,6 +3,7 @@ package ${configs.packageName}.ui.base
 import android.os.Bundle
 import android.util.Log
 import android.view.*
+import androidx.annotation.DrawableRes
 import androidx.annotation.LayoutRes
 import androidx.annotation.StringRes
 import androidx.databinding.DataBindingUtil
@@ -19,11 +20,11 @@ import ${configs.packageName}.data.common.CallResult
 import ${configs.packageName}.data.common.ServerErrors
 import ${configs.packageName}.ui.animation.AnimationType
 import ${configs.packageName}.ui.animation.Animations
-import ${configs.packageName}.ui.dialog.ErrorDialog
+import ${configs.packageName}.ui.dialog.MessageDialog
 import ${configs.packageName}.utils.helper.DebounceTimer
 import ${configs.packageName}.utils.helper.extensions.hideKeyboard
 import ${configs.packageName}.utils.helper.InsetsListener
-import ${configs.packageName}.utils.helper.manager.NetworkManager
+import ${configs.packageName}.utils.manager.NetworkManager
 import javax.inject.Inject
 
 abstract class BaseFragment<T : ViewDataBinding, VM : ViewModel> : Fragment(), HasAndroidInjector {
@@ -80,11 +81,11 @@ abstract class BaseFragment<T : ViewDataBinding, VM : ViewModel> : Fragment(), H
         val menuResId = menuResourceId
         setHasOptionsMenu(menuResId > -1)
 
-        NetworkManager(context).observe(viewLifecycleOwner, { isConnected ->
+        NetworkManager(context).observe(viewLifecycleOwner) { isConnected ->
             isConnected?.let {
                 hasConnection = it
             }
-        })
+        }
 
         if(useLazyLoading.not()) {
             doOnCreated()
@@ -186,28 +187,28 @@ abstract class BaseFragment<T : ViewDataBinding, VM : ViewModel> : Fragment(), H
         }
     }
 
-    private var errorDialog: ErrorDialog? = null
-    open fun showError(title: String, message: String, buttonOkText: String, buttonOkExecution: (() -> Unit)? = null) {
+    private var messageDialog: MessageDialog? = null
+    open fun showMessage(@DrawableRes icon: Int, @StringRes message: Int, @StringRes okButton: Int, buttonOkExecution: (() -> Unit)? = null, @StringRes cancelButton: Int = -1, cancelExecution: (() -> Unit)? = null, close: Boolean = false) {
         baseActivity?.hideKeyboard()
-        if (errorDialog == null) {
-            errorDialog = ErrorDialog.newInstance(title, message, buttonOkText, buttonOkExecution)
+        if (messageDialog == null) {
+            messageDialog = MessageDialog.newInstance(message, icon, okButton, buttonOkExecution, cancelButton, cancelExecution, close)
         }
-        if (!errorDialog!!.isAdded && !errorDialog!!.isVisible) {
-            errorDialog!!.show(childFragmentManager, "errorDialog")
+        if (!messageDialog!!.isAdded && !messageDialog!!.isVisible) {
+            messageDialog!!.show(childFragmentManager, "errorDialog")
 
             childFragmentManager.registerFragmentLifecycleCallbacks( object : FragmentManager.FragmentLifecycleCallbacks() {
                 override fun onFragmentViewDestroyed(fm: FragmentManager, f: Fragment) {
                     super.onFragmentViewDestroyed(fm, f)
                     childFragmentManager.unregisterFragmentLifecycleCallbacks(this)
-                    errorDialog = null
+                    messageDialog = null
                 }
             }, false)
         }
     }
 
     open fun hideError() {
-        if (errorDialog != null) {
-            errorDialog!!.dismiss()
+        if (messageDialog != null) {
+            messageDialog!!.dismiss()
         }
     }
 }

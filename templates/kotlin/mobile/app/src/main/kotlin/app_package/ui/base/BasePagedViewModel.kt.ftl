@@ -6,37 +6,41 @@ import ${configs.packageName}.data.common.pagination.paged.ListListing
 import ${configs.packageName}.data.common.pagination.paged.Listing
 import ${configs.packageName}.ui.base.adapter.IPagedListAdapter
 
-open class BasePagedViewModel<T> : ViewModel() {
+open class BasePagedViewModel : ViewModel() {
 
     enum class Observers { INITIAL, STATE, LIST }
 
-    var isLastPage = false
+    private var isLastPage: MutableMap<String, Boolean> = mutableMapOf()
+    private var results: MutableMap<String, MediatorLiveData<Listing<*, *>>> = mutableMapOf()
+    private var networkState: MutableMap<String, LiveData<NetworkState>> = mutableMapOf()
+    private var initialLoading: MutableMap<String, LiveData<NetworkState>> = mutableMapOf()
+    private var typedList: MutableMap<String, LiveData<MutableList<Any>?>> = mutableMapOf()
+    private var meta: MutableMap<String, LiveData<Any>> = mutableMapOf()
 
-    val results: MediatorLiveData<Listing<T>> = MediatorLiveData()
-    lateinit var networkState: LiveData<NetworkState>
-    lateinit var initialLoading: LiveData<NetworkState>
-    lateinit var typedList: LiveData<MutableList<Any>?>
-
-    fun resetStates() {
-        networkState = Transformations.switchMap(results) { dataSource -> dataSource.networkState }
-        initialLoading = Transformations.switchMap(results) { dataSource -> dataSource.initialState }
-        typedList = Transformations.switchMap(results as MediatorLiveData<ListListing<Any>>) { dataSource -> dataSource.list }
+    fun resetStates(key: String) {
+        results[key] = MediatorLiveData()
+        networkState[key] = Transformations.switchMap(results[key]!!) { dataSource -> dataSource.networkState }
+        initialLoading[key] = Transformations.switchMap(results[key]!!) { dataSource -> dataSource.initialState }
+        typedList[key] = Transformations.switchMap(results[key]!! as MediatorLiveData<ListListing<Any, Any>>) { dataSource -> dataSource.list }
+        meta[key] = Transformations.switchMap(results[key]!! as MediatorLiveData<ListListing<Any, Any>>) { dataSource -> dataSource.meta }
     }
 
-    fun loadMore() {
-        (results.value as ListListing<T>).loadNext()
+    fun isLastPage(key: String) = isLastPage[key] ?: false
+
+    fun loadMore(key: String) {
+        (results[key]?.value as ListListing<*, *>?)?.loadNext?.invoke()
     }
 
-    fun refresh() {
-        (results.value as ListListing<T>).refresh()
+    fun refresh(key: String) {
+        (results[key]?.value as ListListing<*, *>?)?.refresh?.invoke()
     }
 
-    fun retry() {
-        (results.value as ListListing<T>).retry()
+    fun retry(key: String) {
+        (results[key]?.value as ListListing<*, *>?)?.retry?.invoke()
     }
 
-    open fun setPagedObserver(owner: LifecycleOwner, vararg adapters: IPagedListAdapter, callback: (Observers, NetworkState?) -> Unit = { _, _ -> }) {
-        typedList.observe(owner, {
+    open fun setPagedObserver(key: String, owner: LifecycleOwner, vararg adapters: IPagedListAdapter, callback: (Observers, NetworkState?) -> Unit = { _, _ -> }) {
+        typedList[key]?.observe(owner, {
             it?.let {
                 adapters.forEach { adapter ->
                     adapter.setPagedList(it)
@@ -44,20 +48,19 @@ open class BasePagedViewModel<T> : ViewModel() {
             }
             callback(Observers.LIST, null)
         })
-        networkState.observe(owner, { state ->
-            isLastPage = state.isEnd
+        networkState[key]?.observe(owner, { state ->
+            isLastPage[key] = state.isEnd
             adapters.forEach { adapter ->
                 adapter.setNetworkState(state)
             }
             callback(Observers.STATE, state)
         })
-        initialLoading.observe(owner, { state ->
+        initialLoading[key]?.observe(owner, { state ->
             adapters.forEach { adapter ->
                 adapter.setNetworkState(state)
             }
             callback(Observers.INITIAL, state)
         })
     }
-
 
 }

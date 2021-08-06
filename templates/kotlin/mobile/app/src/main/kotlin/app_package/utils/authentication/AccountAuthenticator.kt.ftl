@@ -20,9 +20,8 @@ class AccountAuthenticator(private val context: Context) : AbstractAccountAuthen
         if (AccountHelper.getCurrentAccount(context) != null) {
             val result = Bundle()
     
-            result.putInt(KEY_ERROR_CODE, ERROR_CODE_ONE_ACCOUNT_ALLOWED);
-            result.putString(KEY_ERROR_MESSAGE, context.getString(R.string.error_account_only_one_allowed));
-            
+            result.putInt(KEY_ERROR_CODE, ERROR_CODE_ONE_ACCOUNT_ALLOWED)
+
             return result
         }
         

@@ -9,8 +9,10 @@ import android.view.View.*
 import android.view.Window
 import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
+import androidx.annotation.DrawableRes
 import androidx.annotation.IdRes
 import androidx.annotation.LayoutRes
+import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
@@ -26,12 +28,13 @@ import ${configs.packageName}.data.common.CallResult
 import ${configs.packageName}.data.common.ServerErrors
 import ${configs.packageName}.ui.animation.AnimationType
 import ${configs.packageName}.ui.animation.TransactionAnimation
-import ${configs.packageName}.ui.dialog.ErrorDialog
 import ${configs.packageName}.ui.dialog.LoadingDialog
+import ${configs.packageName}.ui.dialog.MessageDialog
 import ${configs.packageName}.ui.widgets.afm.OnBackPressedListener
 import ${configs.packageName}.utils.helper.DebounceTimer
 import ${configs.packageName}.utils.helper.extensions.hideKeyboard
 import ${configs.packageName}.utils.helper.extensions.setSystemBarTransparent
+import ${configs.packageName}.utils.manager.NetworkManager
 import javax.inject.Inject
 
 abstract class BaseActivity<T : ViewDataBinding, VM : ViewModel> : AppCompatActivity(), HasAndroidInjector, TransactionAnimation {
@@ -92,10 +95,8 @@ abstract class BaseActivity<T : ViewDataBinding, VM : ViewModel> : AppCompatActi
     open fun getArguments(arguments: Bundle) {}
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            requestWindowFeature(Window.FEATURE_ACTIVITY_TRANSITIONS)
-            requestWindowFeature(Window.FEATURE_CONTENT_TRANSITIONS)
-        }
+        requestWindowFeature(Window.FEATURE_ACTIVITY_TRANSITIONS)
+        requestWindowFeature(Window.FEATURE_CONTENT_TRANSITIONS)
 
         if (drawBehindStatusBar && drawBehindBottomNavigation) {
            window.decorView.systemUiVisibility = SYSTEM_UI_FLAG_LAYOUT_STABLE or SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
@@ -128,11 +129,11 @@ abstract class BaseActivity<T : ViewDataBinding, VM : ViewModel> : AppCompatActi
             }
         }
 
-        NetworkManager(this).observe(this, { isConnected ->
+        NetworkManager(this).observe(this) { isConnected ->
             isConnected?.let {
                 hasConnection = it
             }
-        })
+        }
 
         doOnCreated()
         //setSystemBarTransparent()
@@ -297,8 +298,8 @@ abstract class BaseActivity<T : ViewDataBinding, VM : ViewModel> : AppCompatActi
         hideMessage()
         val status = result.status
         when (status.error?.serverError) {
-            ServerErrors.NO_INTERNET, ServerErrors.TIMEOUT -> showMessage(R.drawable.ic_error, R.string.internet_error, if (retry == null) android.R.string.ok else R.string.retry, retry)
-            else -> showMessage(R.drawable.ic_error, R.string.error_generic_body, if (retry == null) android.R.string.ok else R.string.retry, retry)
+            ServerErrors.NO_INTERNET, ServerErrors.TIMEOUT -> showMessage(R.drawable.ic_error, R.string.internet_error, if (retry == null) android.R.string.ok else R.string.btn_retry, retry)
+            else -> showMessage(R.drawable.ic_error, R.string.error_generic_body, if (retry == null) android.R.string.ok else R.string.btn_retry, retry)
         }
     }
 

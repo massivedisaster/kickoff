@@ -7,12 +7,13 @@ import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.RecyclerView
 import ${configs.packageName}.R
 import ${configs.packageName}.data.common.NetworkState
-import ${configs.packageName}.network.models.response.CategoryModel
+import ${configs.packageName}.network.models.response.Category
 import ${configs.packageName}.ui.base.adapter.*
 import kotlin.reflect.KClass
 
-class HorizontalsAdapter<T : Any, VB : ViewDataBinding, VH : BaseViewHolder<T, VB>, C : BaseDiffCallback<T>, A : BaseAdapter<T, VB, VH, C>>(
+class HorizontalsAdapter<T : Any, V : Category, VB : ViewDataBinding, VH : BaseViewHolder<T, VB>, C : BaseDiffCallback<T>, A : BaseAdapter<T, VB, VH, C>>(
         private val adapterClass: KClass<A>,
+        private val categoryClass: KClass<V>,
         private val genericCardClickListener: (ClickType, GenericStateCard) -> Unit = { _, _ -> },
         private val clickListener: (obj: Any, type: Enum<*>) -> Unit = { _, _ -> },
         private val genericCardClickListenerInternal: (ClickType, GenericStateCard) -> Unit = { _, _ -> },
@@ -26,7 +27,7 @@ class HorizontalsAdapter<T : Any, VB : ViewDataBinding, VH : BaseViewHolder<T, V
     private val GENERIC_TYPE = 0
     private val CATEGORY_TYPE = 1
 
-    private val adapterDiff = HorizontalsDiffCallback()
+    private val adapterDiff = HorizontalsDiffCallback(categoryClass)
     private val mDiffer = AsyncListDiffer(this, adapterDiff)
 
     private val adaptersList: MutableMap<Long, BaseAdapter<T, VB, VH, C>> = mutableMapOf()
@@ -93,7 +94,7 @@ class HorizontalsAdapter<T : Any, VB : ViewDataBinding, VH : BaseViewHolder<T, V
                 override fun onCurrentListChanged(previousList: MutableList<Any>, currentList: MutableList<Any>) {
                     currentList.forEach {
                         if (it is Pair<*, *>) {
-                            adaptersList[(it.first as CategoryModel).id]?.setList(it.second as MutableList<Any>)
+                            adaptersList[(it.first as V).id]?.setList(it.second as MutableList<Any>)
                         }
                     }
                     mDiffer.removeListListener(this)
@@ -103,7 +104,7 @@ class HorizontalsAdapter<T : Any, VB : ViewDataBinding, VH : BaseViewHolder<T, V
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
-        CATEGORY_TYPE -> HorizontalsViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_category, parent, false), viewPool)
+        CATEGORY_TYPE -> HorizontalsViewHolder<V>(LayoutInflater.from(parent.context).inflate(R.layout.item_category, parent, false), viewPool)
         else -> GenericStateCardFullHeightViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_generic_view_state_full_height, parent, false))
     }
 
@@ -113,7 +114,7 @@ class HorizontalsAdapter<T : Any, VB : ViewDataBinding, VH : BaseViewHolder<T, V
         when (holder.itemViewType) {
             CATEGORY_TYPE -> {
                 val category = mDiffer.currentList[position] as Pair<*, *>
-                (holder as HorizontalsViewHolder).bind(category.first as CategoryModel, clickListener, adaptersList[(category.first as CategoryModel).id])
+                (holder as HorizontalsViewHolder<V>).bind(category.first as V, clickListener, adaptersList[(category.first as V).id])
             }
             GENERIC_TYPE -> {
                 val genericStateCard = mDiffer.currentList[position] as GenericStateCard

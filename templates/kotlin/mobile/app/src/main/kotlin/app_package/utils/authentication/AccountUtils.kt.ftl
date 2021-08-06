@@ -1,7 +1,6 @@
 package ${configs.packageName}.utils.authentication
 
 import android.app.Application
-import com.massivedisaster.adal.account.AccountHelper
 import ${configs.packageName}.network.models.response.TokenModel
 import ${configs.packageName}.utils.manager.PreferencesManager
 import java.util.concurrent.atomic.AtomicBoolean

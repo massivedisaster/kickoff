@@ -14,7 +14,7 @@ class PagingHelper {
 
     companion object {
 
-        fun <PaginatedType, Meta, T> getPagedPreference(usePaging: Boolean, factory: PagedDataSourceFactory<PaginatedType, Meta, T>, appExecutors: AppExecutors): Listing<Meta, T> {
+        fun <PaginatedType, Meta, T : Any> getPagedPreference(usePaging: Boolean, factory: PagedDataSourceFactory<PaginatedType, Meta, T>, appExecutors: AppExecutors): Listing<Meta, T> {
             return if (usePaging) {
                 val config = PagedList.Config.Builder()
                         .setEnablePlaceholders(false)

@@ -1,9 +1,9 @@
 package ${configs.packageName}.network.converters
 
-import ${configs.packageName}.network.models.enums.Content
 import retrofit2.Converter
 import retrofit2.Retrofit
 import java.lang.reflect.Type
+import java.util.*
 
 class EnumConverterFactory : Converter.Factory() {
 
@@ -11,14 +11,10 @@ class EnumConverterFactory : Converter.Factory() {
             : Converter<Enum<*>, String>? = if (type is Class<*> && type.isEnum) {
                 Converter { enum ->
                     try {
-                        if (enum is Content) {
-                            enum.value
-                        } else {
-                            enum.name.toLowerCase()
-                        }
+                        enum.name.lowercase(Locale.getDefault())
                     } catch (exception: Exception) {
                         null
-                    } ?: enum.toString().toLowerCase()
+                    } ?: enum.toString().lowercase(Locale.getDefault())
                 }
             } else {
                 null

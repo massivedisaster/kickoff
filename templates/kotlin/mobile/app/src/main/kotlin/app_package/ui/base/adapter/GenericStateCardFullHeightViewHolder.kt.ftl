@@ -36,11 +36,15 @@ class GenericStateCardFullHeightViewHolder(itemView: View): RecyclerView.ViewHol
         }
 
         errorViews.invoke(GenericStateCardErrorViews(
-                icon = binding.emptyIcon,
-                body = binding.emptyText
+            icon = binding.emptyIcon,
+            title = binding.emptyTitle,
+            body = binding.emptyText,
+            button = binding.emptyBtn
         ), GenericStateCardErrorViews(
-                icon = binding.errorIcon,
-                body = binding.errorText
+            icon = binding.errorIcon,
+            title = binding.errorTitle,
+            body = binding.errorText,
+            button = binding.errorBtn
         ),true, genericStateCard.state)
 
         if(genericStateCard.showingLoading) {
