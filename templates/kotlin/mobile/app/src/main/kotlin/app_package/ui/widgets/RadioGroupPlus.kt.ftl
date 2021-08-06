@@ -128,15 +128,13 @@ class RadioGroupPlus : LinearLayout {
                 find(element)
             }
         }
-        if (view is RadioButton) {
-            if (view.isChecked) {
-                protectFromCheckedChange = true
-                if (checkedRadioButtonId != -1) {
-                    setCheckedStateForView(checkedRadioButtonId, false)
-                }
-                protectFromCheckedChange = false
-                setCheckedId(view.id)
+        if (view is RadioButton && view.isChecked) {
+            protectFromCheckedChange = true
+            if (checkedRadioButtonId != -1) {
+                setCheckedStateForView(checkedRadioButtonId, false)
             }
+            protectFromCheckedChange = false
+            setCheckedId(view.id)
         }
     }
 

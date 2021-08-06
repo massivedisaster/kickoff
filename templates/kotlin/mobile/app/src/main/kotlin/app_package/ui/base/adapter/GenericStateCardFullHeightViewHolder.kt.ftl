@@ -3,7 +3,7 @@ package ${configs.packageName}.ui.base.adapter
 import android.view.View
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
-import ${configs.packageName}.R
+import ${configs.packageName}.data.common.NetworkState
 import ${configs.packageName}.databinding.ItemGenericViewStateFullHeightBinding
 import ${configs.packageName}.utils.helper.extensions.isVisible
 import ${configs.packageName}.utils.helper.extensions.removeView
@@ -13,15 +13,14 @@ class GenericStateCardFullHeightViewHolder(itemView: View): RecyclerView.ViewHol
 
     val dataBinding: ItemGenericViewStateFullHeightBinding? = DataBindingUtil.bind(itemView)
 
-    fun bind(holder: GenericStateCardFullHeightViewHolder, card: GenericStateCard?, clickListener: ((ClickType, GenericStateCard) -> Unit)?, noContentType: Int = -1) {
+    fun bind(holder: GenericStateCardFullHeightViewHolder, card: GenericStateCard?, clickListener: ((ClickType, GenericStateCard) -> Unit)?
+             , errorViews: (emptyViews: GenericStateCardErrorViews, errorViews: GenericStateCardErrorViews, isFullHeight: Boolean, state : NetworkState?) -> Unit) {
 
         val binding = holder.dataBinding ?: return
         var genericStateCard = card
 
         if(genericStateCard == null) {
-            genericStateCard = GenericStateCard(binding.loading.isVisible()
-                    , binding.emptyContent.isVisible()
-                    , binding.viewError.isVisible())
+            genericStateCard = GenericStateCard(binding.loading.isVisible(), binding.emptyContent.isVisible(), binding.viewError.isVisible())
         }
 
         binding.genericView.setOnClickListener {
@@ -36,11 +35,17 @@ class GenericStateCardFullHeightViewHolder(itemView: View): RecyclerView.ViewHol
             }
         }
 
-        if(noContentType != -1) {
-            binding.emptyContent.text = itemView.context.getString(R.string.generic_no_content_text, itemView.context.getString(noContentType))
-        }
-
-        binding.viewErrorText.text = itemView.context.getString(R.string.generic_error_retry_text)
+        errorViews.invoke(GenericStateCardErrorViews(
+            icon = binding.emptyIcon,
+            title = binding.emptyTitle,
+            body = binding.emptyText,
+            button = binding.emptyBtn
+        ), GenericStateCardErrorViews(
+            icon = binding.errorIcon,
+            title = binding.errorTitle,
+            body = binding.errorText,
+            button = binding.errorBtn
+        ),true, genericStateCard.state)
 
         if(genericStateCard.showingLoading) {
             binding.loading.showView()
@@ -48,7 +53,7 @@ class GenericStateCardFullHeightViewHolder(itemView: View): RecyclerView.ViewHol
             binding.viewError.removeView()
         }
 
-        if(genericStateCard.showingEmptyContent && noContentType != -1) {
+        if(genericStateCard.showingEmptyContent) {
             binding.loading.removeView()
             binding.emptyContent.showView()
             binding.viewError.removeView()

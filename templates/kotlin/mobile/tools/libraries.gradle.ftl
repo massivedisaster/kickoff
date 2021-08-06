@@ -1,16 +1,14 @@
 ext.libraries = [
 
     kotlin  : [
-        base: "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+        base: "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     ],
-
 <#if configs.hasOneSignal!true>
+
     oneSignal : [
         base : "com.onesignal:OneSignal:$versions.oneSignalVersion"
     ],
-</#if>
-
-<#if configs.dependencies??>
+</#if><#if configs.dependencies??>
     <#list configs.dependencies as dependency>
 
     ${dependency.name?capitalize?replace(" ", "")?trim?uncap_first} : [

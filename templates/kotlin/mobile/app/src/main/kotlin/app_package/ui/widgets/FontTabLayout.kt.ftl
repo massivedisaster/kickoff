@@ -26,8 +26,8 @@ class FontTabLayout : TabLayout {
     }
 
     private fun init() {
-        typeface = ResourcesCompat.getFont(context, R.font.montserrat_regular)
-        typefaceSelected = ResourcesCompat.getFont(context, R.font.montserrat_semi_bold)
+        typeface = ResourcesCompat.getFont(context, R.font.roboto)
+        typefaceSelected = ResourcesCompat.getFont(context, R.font.roboto)
 
         addOnTabSelectedListener(object : OnTabSelectedListener {
             override fun onTabSelected(tab: Tab) {

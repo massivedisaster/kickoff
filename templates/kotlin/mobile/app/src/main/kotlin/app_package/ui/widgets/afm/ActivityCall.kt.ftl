@@ -57,7 +57,7 @@ class ActivityCall private constructor() : Builder() {
         @JvmStatic
         fun init(fragment: Fragment, activity: KClass<out BaseActivity<*, *>>, fragmentClass: KClass<out Fragment>): ActivityCall {
             val activityCall = ActivityCall()
-            activityCall.init(fragment.context!!, activity.java, fragment, fragmentClass.java)
+            activityCall.init(fragment.requireContext(), activity.java, fragment, fragmentClass.java)
             return activityCall
         }
 

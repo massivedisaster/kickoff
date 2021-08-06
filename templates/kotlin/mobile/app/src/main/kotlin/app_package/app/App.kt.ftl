@@ -7,9 +7,11 @@ import ${configs.packageName}.di.component.DaggerAppComponent
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasAndroidInjector
 import javax.inject.Inject
+import timber.log.Timber
 <#if configs.hasOneSignal!true>
 import com.onesignal.OneSignal
 </#if>
+
 
 /**
  * Base class fot the application.
@@ -28,6 +30,8 @@ open class App @Inject constructor() : Application(), HasAndroidInjector {
 
         OneSignal.startInit(this).init()
 		</#if>
+
+		Timber.plant(Timber.DebugTree())
     }
 
     override fun attachBaseContext(base: Context?) {

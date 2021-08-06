@@ -1,7 +1,9 @@
 package ${configs.packageName}.ui.base
 
 import android.os.Bundle
+import android.util.Log
 import android.view.*
+import androidx.annotation.DrawableRes
 import androidx.annotation.LayoutRes
 import androidx.annotation.StringRes
 import androidx.databinding.DataBindingUtil
@@ -11,11 +13,18 @@ import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import ${configs.packageName}.ui.animation.AnimationType
-import ${configs.packageName}.ui.animation.Animations
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasAndroidInjector
 import dagger.android.support.AndroidSupportInjection
+import ${configs.packageName}.data.common.CallResult
+import ${configs.packageName}.data.common.ServerErrors
+import ${configs.packageName}.ui.animation.AnimationType
+import ${configs.packageName}.ui.animation.Animations
+import ${configs.packageName}.ui.dialog.MessageDialog
+import ${configs.packageName}.utils.helper.DebounceTimer
+import ${configs.packageName}.utils.helper.extensions.hideKeyboard
+import ${configs.packageName}.utils.helper.InsetsListener
+import ${configs.packageName}.utils.manager.NetworkManager
 import javax.inject.Inject
 
 abstract class BaseFragment<T : ViewDataBinding, VM : ViewModel> : Fragment(), HasAndroidInjector {
@@ -27,6 +36,7 @@ abstract class BaseFragment<T : ViewDataBinding, VM : ViewModel> : Fragment(), H
 
     //makes fragment lazy
     open var useLazyLoading = false
+    protected val debouncer: DebounceTimer by lazy { DebounceTimer(lifecycle) }
 
     protected val dataBinding: T by lazy {
         DataBindingUtil.inflate<T>(LayoutInflater.from(context), layoutToInflate(), null, false)
@@ -39,6 +49,11 @@ abstract class BaseFragment<T : ViewDataBinding, VM : ViewModel> : Fragment(), H
             else -> throw Exception("ViewModel holder must be of type BaseFragment or BaseActivity")
         }
     }
+
+    protected val insetsCollapseListener: InsetsListener by lazy { InsetsListener() }
+    protected var hasConnection = false
+
+    fun viewModelFactoryExists() = ::viewModelFactory.isInitialized
 
     @LayoutRes
     abstract fun layoutToInflate(): Int
@@ -59,12 +74,18 @@ abstract class BaseFragment<T : ViewDataBinding, VM : ViewModel> : Fragment(), H
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        if (arguments != null) {
-            getArguments(arguments!!)
+        arguments?.let {
+            getArguments(it)
         }
 
         val menuResId = menuResourceId
         setHasOptionsMenu(menuResId > -1)
+
+        NetworkManager(context).observe(viewLifecycleOwner) { isConnected ->
+            isConnected?.let {
+                hasConnection = it
+            }
+        }
 
         if(useLazyLoading.not()) {
             doOnCreated()
@@ -91,7 +112,7 @@ abstract class BaseFragment<T : ViewDataBinding, VM : ViewModel> : Fragment(), H
 
         if (menuResId > -1) {
             inflater.inflate(menuResId, menu)
-            activity?.invalidateOptionsMenu();
+            activity?.invalidateOptionsMenu()
         }
         super.onCreateOptionsMenu(menu, inflater)
     }
@@ -158,4 +179,36 @@ abstract class BaseFragment<T : ViewDataBinding, VM : ViewModel> : Fragment(), H
         return Animations.NONE
     }
 
+    open fun handleError(result: CallResult<*>) {
+        val status = result.status
+        when (status.error?.serverError) {
+            ServerErrors.NO_INTERNET, ServerErrors.TIMEOUT -> Log.i("BASE", "failed - No Internet")
+            else -> Log.i("BASE", "failed - ${r"${status.error?.error?.status}"}")
+        }
+    }
+
+    private var messageDialog: MessageDialog? = null
+    open fun showMessage(@DrawableRes icon: Int, @StringRes message: Int, @StringRes okButton: Int, buttonOkExecution: (() -> Unit)? = null, @StringRes cancelButton: Int = -1, cancelExecution: (() -> Unit)? = null, close: Boolean = false) {
+        baseActivity?.hideKeyboard()
+        if (messageDialog == null) {
+            messageDialog = MessageDialog.newInstance(message, icon, okButton, buttonOkExecution, cancelButton, cancelExecution, close)
+        }
+        if (!messageDialog!!.isAdded && !messageDialog!!.isVisible) {
+            messageDialog!!.show(childFragmentManager, "errorDialog")
+
+            childFragmentManager.registerFragmentLifecycleCallbacks( object : FragmentManager.FragmentLifecycleCallbacks() {
+                override fun onFragmentViewDestroyed(fm: FragmentManager, f: Fragment) {
+                    super.onFragmentViewDestroyed(fm, f)
+                    childFragmentManager.unregisterFragmentLifecycleCallbacks(this)
+                    messageDialog = null
+                }
+            }, false)
+        }
+    }
+
+    open fun hideError() {
+        if (messageDialog != null) {
+            messageDialog!!.dismiss()
+        }
+    }
 }

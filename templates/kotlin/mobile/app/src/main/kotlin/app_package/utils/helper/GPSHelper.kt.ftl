@@ -4,6 +4,7 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
+import android.location.Geocoder
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
@@ -11,6 +12,7 @@ import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
 import androidx.appcompat.app.AlertDialog
+import java.util.*
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -124,7 +126,7 @@ class GPSHelper : LocationListener {
         }
     }
 
-    override fun onLocationChanged(location: Location?) {
+    override fun onLocationChanged(location: Location) {
         this.location = location
         latitude = location?.latitude ?: 0.0
         longitude = location?.longitude ?: 0.0
@@ -147,5 +149,27 @@ class GPSHelper : LocationListener {
     }
 
     override fun onStatusChanged(provider: String, status: Int, extras: Bundle) {}
+
+    fun getCity(): String {
+        if (canGetLocation && latitude != 0.0 && longitude != 0.0) {
+            val gcd = Geocoder(context, Locale("pt", "PT"))
+            val addresses = gcd.getFromLocation(latitude, longitude, 1)
+            if (addresses.isNotEmpty() && addresses[0].adminArea != null) {
+                return addresses[0].adminArea
+            }
+        }
+        return "Portugal"
+    }
+
+    fun getPostalCode(): String {
+        if (canGetLocation && latitude != 0.0 && longitude != 0.0) {
+            val gcd = Geocoder(context, Locale("pt", "PT"))
+            val addresses = gcd.getFromLocation(latitude, longitude, 1)
+            if (addresses.isNotEmpty() && addresses[0].adminArea != null) {
+                return addresses[0].postalCode
+            }
+        }
+        return ""
+    }
 
 }

@@ -2,12 +2,12 @@ package ${configs.packageName}.utils.manager
 
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
-import androidx.core.app.TaskStackBuilder
 import androidx.fragment.app.Fragment
 import ${configs.packageName}.ui.base.BaseActivity
-import ${configs.packageName}.ui.splash.SplashActivity
+import ${configs.packageName}.ui.screens.splash.SplashActivity
 import ${configs.packageName}.ui.widgets.afm.FragmentCall
 import javax.inject.Inject
 import kotlin.reflect.KClass
@@ -28,11 +28,12 @@ class CallManager @Inject constructor() {
         FragmentCall.init(activity, fragmentClass).setTransitionType(FragmentCall.TransitionType.ADD).setBundle(bundle).build()
     }
 
-    fun openEmail(subject: String, email: String) = Intent(Intent.ACTION_SENDTO).apply {
+    fun openEmail(subject: String, email: String, content: String = "") = Intent(Intent.ACTION_SENDTO).apply {
         type = "plain/text"
         data = Uri.parse("mailto:")
         putExtra(Intent.EXTRA_EMAIL, arrayOf(email))
         putExtra(Intent.EXTRA_SUBJECT, subject)
+        putExtra(Intent.EXTRA_TEXT, content)
     }
 
     fun openBrowser(url : String) = Intent(Intent.ACTION_VIEW).apply {
@@ -47,6 +48,26 @@ class CallManager @Inject constructor() {
 
     fun openDial(phone: String) = Intent(Intent.ACTION_DIAL, Uri.parse("tel:$phone")).apply {
         flags = Intent.FLAG_ACTIVITY_NEW_TASK
+    }
+
+    fun openPlayStore(pack: String) = Intent(Intent.ACTION_VIEW).apply {
+        data = Uri.parse("https://play.google.com/store/apps/details?id=$pack")
+        setPackage("com.android.vending")
+        flags = Intent.FLAG_ACTIVITY_NEW_TASK
+    }
+
+
+    fun openMaps(latitude: Double, longitude: Double) = Intent(Intent.ACTION_VIEW).apply {
+        data = Uri.parse("http://maps.google.com/maps?daddr=$latitude,$longitude")
+        flags = Intent.FLAG_ACTIVITY_NEW_TASK
+    }
+
+    fun share(url: String): Intent {
+        val shareIntent = Intent(Intent.ACTION_SEND).apply {
+            type = "text/plain"
+            putExtra(Intent.EXTRA_TEXT, url)
+        }
+        return Intent.createChooser(shareIntent, "Partilha")
     }
 
 }

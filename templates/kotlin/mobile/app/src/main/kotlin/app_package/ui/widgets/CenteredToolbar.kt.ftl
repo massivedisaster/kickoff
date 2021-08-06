@@ -10,7 +10,9 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
-import ${configs.packageName}.utils.helper.extensions.toPx
+import androidx.core.content.res.ResourcesCompat
+import ${configs.packageName}.R
+import ${configs.packageName}.utils.helper.extensions.dpInPx
 
 class CenteredToolbar : Toolbar {
 
@@ -34,14 +36,13 @@ class CenteredToolbar : Toolbar {
         getCenteredTitleTextView().text = title
     }
 
-    override fun getTitle(): CharSequence {
-        return getCenteredTitleTextView().text.toString()
-    }
+    override fun getTitle() = getCenteredTitleTextView().text.toString()
 
     private fun getCenteredTitleTextView(): TextView {
         if (centeredTitleTextView == null) {
             centeredTitleTextView = TextView(context)
             centeredTitleTextView!!.setTextColor(ContextCompat.getColor(context, android.R.color.white))
+            centeredTitleTextView!!.typeface = ResourcesCompat.getFont(context, R.font.roboto_bold)
             centeredTitleTextView!!.setSingleLine()
             centeredTitleTextView!!.ellipsize = TextUtils.TruncateAt.END
             centeredTitleTextView!!.gravity = Gravity.CENTER
@@ -59,7 +60,7 @@ class CenteredToolbar : Toolbar {
         if (centeredLogoImageView == null) {
             centeredLogoImageView = AspectRatioImageView(context)
 
-            val lp = LayoutParams(150F.toPx(context).toInt(), LayoutParams.WRAP_CONTENT)
+            val lp = LayoutParams(150F.dpInPx(context).toInt(), LayoutParams.WRAP_CONTENT)
             lp.gravity = Gravity.CENTER
             centeredLogoImageView!!.layoutParams = lp
 

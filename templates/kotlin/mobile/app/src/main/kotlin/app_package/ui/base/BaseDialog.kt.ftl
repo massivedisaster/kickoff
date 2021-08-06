@@ -18,6 +18,8 @@ import androidx.lifecycle.ViewModelProvider
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasAndroidInjector
 import dagger.android.support.AndroidSupportInjection
+import ${configs.packageName}.utils.helper.DebounceTimer
+import ${configs.packageName}.utils.helper.InsetsListener
 import javax.inject.Inject
 
 abstract class BaseDialog<T : ViewDataBinding, VM : ViewModel> : DialogFragment(), HasAndroidInjector {
@@ -40,6 +42,10 @@ abstract class BaseDialog<T : ViewDataBinding, VM : ViewModel> : DialogFragment(
         ViewModelProvider(this, viewModelFactory).get(getViewModelClass())
     }
 
+    protected val debouncer: DebounceTimer by lazy { DebounceTimer(lifecycle) }
+
+    protected val insetsCollapseListener: InsetsListener by lazy { InsetsListener() }
+
     @LayoutRes
     abstract fun layoutToInflate(): Int
 
@@ -55,9 +61,9 @@ abstract class BaseDialog<T : ViewDataBinding, VM : ViewModel> : DialogFragment(
         AndroidSupportInjection.inject(this)
         dialog?.requestWindowFeature(Window.FEATURE_NO_TITLE)
         initDataBinding()
-        if (viewModel is LifecycleObserver )lifecycle.addObserver(viewModel as LifecycleObserver)
-        if (arguments != null) {
-            getArguments(arguments!!)
+        if (viewModel is LifecycleObserver)lifecycle.addObserver(viewModel as LifecycleObserver)
+        arguments?.let {
+            getArguments(it)
         }
 
         doOnCreated()
@@ -74,7 +80,7 @@ abstract class BaseDialog<T : ViewDataBinding, VM : ViewModel> : DialogFragment(
     }
 
     fun show(fragment: Fragment) {
-        show(fragment.childFragmentManager!!, javaClass.name)
+        show(fragment.childFragmentManager, javaClass.name)
     }
 
     fun show(activity: AppCompatActivity) {
@@ -83,7 +89,7 @@ abstract class BaseDialog<T : ViewDataBinding, VM : ViewModel> : DialogFragment(
 
     fun showForResult(fragment: Fragment, requestCode: Int) {
         setTargetFragment(fragment, requestCode)
-        show(fragment.fragmentManager!!, javaClass.name)
+        show(fragment.parentFragmentManager, javaClass.name)
     }
 
     fun showForResult(activity: BaseActivity<*,*>, requestCode: Int) {
@@ -111,7 +117,7 @@ abstract class BaseDialog<T : ViewDataBinding, VM : ViewModel> : DialogFragment(
             val activity = activity
             if (activity != null && activity is Callback) {
                 callback = activity
-                requestCode = arguments!!.getInt(activity.javaClass.name + "requestCode")
+                requestCode = requireArguments().getInt(activity.javaClass.name + "requestCode")
             }
         }
 
