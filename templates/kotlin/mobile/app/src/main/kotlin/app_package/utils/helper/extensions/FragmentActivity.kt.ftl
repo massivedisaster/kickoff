@@ -9,8 +9,15 @@ import android.graphics.Point
 import android.os.Build
 import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
+import androidx.activity.ComponentActivity
+import androidx.annotation.MainThread
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
+import androidx.fragment.app.createViewModelLazy
+import androidx.lifecycle.*
+import androidx.lifecycle.viewmodel.CreationExtras
 import ${configs.packageName}.utils.helper.DebounceTimer
+import kotlin.reflect.KClass
 
 /**
  * starts an activity using a debouncer (fast click avoidance)
@@ -90,4 +97,22 @@ fun FragmentActivity.openKeyboard() {
         val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY)
     }
+}
+
+@MainThread
+fun <VM : ViewModel> ComponentActivity.viewModels(viewModelClass: KClass<VM>)
+        = ViewModelLazy(viewModelClass, { viewModelStore }, { defaultViewModelProviderFactory }, { this.defaultViewModelCreationExtras })
+
+@MainThread
+fun <VM : ViewModel> Fragment.viewModels(
+    viewModelClass: KClass<VM>,
+    ownerProducer: () -> ViewModelStoreOwner = { this }
+): Lazy<VM> {
+    val owner by lazy(LazyThreadSafetyMode.NONE) { ownerProducer() }
+        return createViewModelLazy(
+        viewModelClass,
+        { owner.viewModelStore },
+        { (owner as? HasDefaultViewModelProviderFactory)?.defaultViewModelCreationExtras ?: CreationExtras.Empty },
+        { (owner as? HasDefaultViewModelProviderFactory)?.defaultViewModelProviderFactory ?: defaultViewModelProviderFactory }
+    )
 }

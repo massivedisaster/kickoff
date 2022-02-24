@@ -12,13 +12,12 @@ import ${configs.packageName}.network.models.ApiSuccessResponse
 import ${configs.packageName}.utils.authentication.AccountUtils
 import ${configs.packageName}.utils.helper.AppExecutors
 
-abstract class NetworkBoundResource<ResultType, RequestType, RefreshType> @MainThread constructor(private val appExecutors: AppExecutors,
-                                                                                                  private val accountUtils: AccountUtils) {
+abstract class NetworkBoundResource<ResultType, RequestType, RefreshType> @MainThread constructor(private val appExecutors: AppExecutors) {
 
     enum class Type { NETWORK, DATABASE, BOTH }
 
     private val result = LiveDataWrapper<ResultType>()
-    private var network = MediatorLiveData<RequestType>()
+    private var network = MediatorLiveData<RequestType?>()
     private val refresh = MediatorLiveData<CallResult<RefreshType>>()
 
     private var refreshCall: LiveData<ApiResponse<RefreshType>>? = null
@@ -102,7 +101,7 @@ abstract class NetworkBoundResource<ResultType, RequestType, RefreshType> @MainT
                                         val innerResponse = transformResponse(response.body)
                                         val result = CallResult.success(response.successCode, innerResponse ?: newData as ResultType?, response.headers, this)
                                         publishEndEvent(result)
-                                        publishEndEventMeta(newData)
+                                        newData?.let { publishEndEventMeta(it) }
                                         setValue(result)
                                     }
 

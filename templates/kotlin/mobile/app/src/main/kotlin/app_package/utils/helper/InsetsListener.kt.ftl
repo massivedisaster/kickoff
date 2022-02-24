@@ -3,6 +3,7 @@ package ${configs.packageName}.utils.helper
 import android.view.View
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsCompat.CONSUMED
 
 class InsetsListener {
 
@@ -11,13 +12,14 @@ class InsetsListener {
 
     fun listenStatusHeightChange(view : View, block : (v: View, insets : WindowInsetsCompat) -> Unit) {
         ViewCompat.setOnApplyWindowInsetsListener(view) { v, insets ->
-            if(insets.systemWindowInsetTop != statusHeight && !runOnce) {
-                statusHeight = insets.systemWindowInsetTop
+            val topInsets = insets.getInsetsIgnoringVisibility(WindowInsetsCompat.Type.systemBars()).top
+            if(topInsets != statusHeight && !runOnce) {
+                statusHeight = topInsets
                 runOnce = true
                 block.invoke(v, insets)
             }
 
-            insets.consumeSystemWindowInsets()
+            CONSUMED
         }
     }
 
@@ -25,7 +27,7 @@ class InsetsListener {
         ViewCompat.setOnApplyWindowInsetsListener(view) { v, insets ->
             block.invoke(v, insets)
 
-            insets.consumeSystemWindowInsets()
+            CONSUMED
         }
     }
 

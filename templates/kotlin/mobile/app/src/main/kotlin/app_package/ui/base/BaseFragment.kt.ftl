@@ -18,8 +18,6 @@ import dagger.android.HasAndroidInjector
 import dagger.android.support.AndroidSupportInjection
 import ${configs.packageName}.data.common.CallResult
 import ${configs.packageName}.data.common.ServerErrors
-import ${configs.packageName}.ui.animation.AnimationType
-import ${configs.packageName}.ui.animation.Animations
 import ${configs.packageName}.ui.dialog.MessageDialog
 import ${configs.packageName}.utils.helper.DebounceTimer
 import ${configs.packageName}.utils.helper.extensions.hideKeyboard
@@ -158,26 +156,6 @@ abstract class BaseFragment<T : ViewDataBinding, VM : ViewModel> : Fragment(), H
      * @return int The menu resource id (default: -1).
      */
     internal open var menuResourceId: Int = -1
-
-    /**
-     * Defines a transition animation enter for the activity
-     *
-     * @return animation enter
-     */
-    @AnimationType
-    fun defineActivityAnimationEnter(): Int {
-        return Animations.NONE
-    }
-
-    /**
-     * Defines a transition animation exit for the activity
-     *
-     * @return animation exit
-     */
-    @AnimationType
-    fun defineActivityAnimationExit(): Int {
-        return Animations.NONE
-    }
 
     open fun handleError(result: CallResult<*>) {
         val status = result.status

@@ -12,14 +12,14 @@ buildscript {
     dependencies {
         classpath 'com.android.tools.build:gradle:${configs.gradlePluginVersion}'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        classpath 'com.google.gms:google-services:4.3.8'
-        classpath 'com.google.firebase:firebase-crashlytics-gradle:2.7.1'
-        classpath "com.github.ben-manes:gradle-versions-plugin:0.39.0"
+        classpath 'com.google.gms:google-services:4.3.10'
+        classpath 'com.google.firebase:firebase-crashlytics-gradle:2.8.1'
+        classpath "com.github.ben-manes:gradle-versions-plugin:0.42.0"
         <#if configs.hasOneSignal!true>
         classpath 'gradle.plugin.com.onesignal:onesignal-gradle-plugin:[0.12.4, 0.99.99]'
         </#if>
         <#if configs.hasFirebasePerformance!true>
-        classpath 'com.google.firebase:perf-plugin:1.4.0'
+        classpath 'com.google.firebase:perf-plugin:1.4.1'
         </#if>
     }
 }

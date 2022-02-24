@@ -26,8 +26,6 @@ import dagger.android.HasAndroidInjector
 import ${configs.packageName}.R
 import ${configs.packageName}.data.common.CallResult
 import ${configs.packageName}.data.common.ServerErrors
-import ${configs.packageName}.ui.animation.AnimationType
-import ${configs.packageName}.ui.animation.TransactionAnimation
 import ${configs.packageName}.ui.dialog.LoadingDialog
 import ${configs.packageName}.ui.dialog.MessageDialog
 import ${configs.packageName}.ui.widgets.afm.OnBackPressedListener
@@ -37,7 +35,7 @@ import ${configs.packageName}.utils.helper.extensions.setSystemBarTransparent
 import ${configs.packageName}.utils.manager.NetworkManager
 import javax.inject.Inject
 
-abstract class BaseActivity<T : ViewDataBinding, VM : ViewModel> : AppCompatActivity(), HasAndroidInjector, TransactionAnimation {
+abstract class BaseActivity<T : ViewDataBinding, VM : ViewModel> : AppCompatActivity(), HasAndroidInjector {
 
     companion object {
         @JvmField
@@ -56,16 +54,6 @@ abstract class BaseActivity<T : ViewDataBinding, VM : ViewModel> : AppCompatActi
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
 
-    //to draw behind potential transparent status bar
-    open var drawBehindStatusBar = false
-
-    //to draw behind potential transparent bottom navigation bar
-    open var drawBehindBottomNavigation = false
-
-    open var setFullScreen = false
-
-    open var adjustNothing = false
-
     private var loadingDialog: LoadingDialog? = null
     private var messageDialog: MessageDialog? = null
     protected var hasConnection = false
@@ -79,6 +67,12 @@ abstract class BaseActivity<T : ViewDataBinding, VM : ViewModel> : AppCompatActi
     }
 
     protected val debouncer: DebounceTimer by lazy { DebounceTimer(lifecycle) }
+
+    private val containerView: View? by lazy {
+        getViewContainer()
+    }
+    open fun getViewContainer(): View? = null
+    open fun insetRules(v: View, insets: WindowInsetsCompat) { }
 
     @LayoutRes
     abstract fun layoutToInflate(): Int
@@ -98,17 +92,6 @@ abstract class BaseActivity<T : ViewDataBinding, VM : ViewModel> : AppCompatActi
         requestWindowFeature(Window.FEATURE_ACTIVITY_TRANSITIONS)
         requestWindowFeature(Window.FEATURE_CONTENT_TRANSITIONS)
 
-        if (drawBehindStatusBar && drawBehindBottomNavigation) {
-           window.decorView.systemUiVisibility = SYSTEM_UI_FLAG_LAYOUT_STABLE or SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-        } else {
-           if (drawBehindStatusBar) {
-               window.decorView.systemUiVisibility = SYSTEM_UI_FLAG_LAYOUT_STABLE or SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-           }
-           if (drawBehindBottomNavigation) {
-               window.decorView.systemUiVisibility = SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-           }
-        }
-
         AndroidInjection.inject(this)
         if (intent.extras != null) {
             getArguments(intent.extras!!)
@@ -116,9 +99,6 @@ abstract class BaseActivity<T : ViewDataBinding, VM : ViewModel> : AppCompatActi
 
         super.onCreate(savedInstanceState)
         window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN)
-        if(adjustNothing) {
-           window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING)
-        }
         initDataBinding()
 
         if (supportFragmentManager.fragments.isEmpty() && supportFragmentManager.backStackEntryCount == 0) {
@@ -135,33 +115,26 @@ abstract class BaseActivity<T : ViewDataBinding, VM : ViewModel> : AppCompatActi
             }
         }
 
+        containerView?.let {
+            applyInsets(it)
+        }
+
         doOnCreated()
-        //setSystemBarTransparent()
     }
 
-    private fun hideSystemUI() {
-        // Enables regular immersive mode.
-        // For "lean back" mode, remove SYSTEM_UI_FLAG_IMMERSIVE.
-        // Or for "sticky immersive," replace it with SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-        window.decorView.systemUiVisibility = (View.SYSTEM_UI_FLAG_IMMERSIVE
-                // Set the content to appear under the system bars so that the
-                // content doesn't resize when the system bars hide and show.
-                or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                // Hide the nav bar and status bar
-                or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                or View.SYSTEM_UI_FLAG_FULLSCREEN)
+    private fun applyInsets(view: View) {
+        ViewCompat.setOnApplyWindowInsetsListener(view) { v, insets ->
+
+            insetRules(v, insets)
+
+            var mInsets = insets
+            mInsets = ViewCompat.onApplyWindowInsets(v, mInsets)
+            if (mInsets.isConsumed) { return@setOnApplyWindowInsetsListener mInsets }
+            if (mInsets.isConsumed) { WindowInsetsCompat.CONSUMED } else { mInsets }
+        }
     }
 
-    override fun onWindowFocusChanged(hasFocus: Boolean) {
-        super.onWindowFocusChanged(hasFocus)
-        if (hasFocus && setFullScreen) hideSystemUI()
-    }
-
-    protected open fun getDefaultFragment(): Class<out Fragment>? {
-        return null
-    }
+    protected open fun getDefaultFragment(): Class<out Fragment>? = null
 
     override fun onDestroy() {
         dataBinding.unbind()
@@ -188,17 +161,13 @@ abstract class BaseActivity<T : ViewDataBinding, VM : ViewModel> : AppCompatActi
      * @param tag      the tag to be applied.
      */
     private fun performInitialTransaction(fragment: Fragment?, tag: String?) {
-         if (fragment != null) {
-            val fragmentTransaction = supportFragmentManager.beginTransaction()
-            fragmentTransaction.replace(containerId(), fragment, tag)
-            fragmentTransaction.commitNow()
+         fragment?.let {
+             supportFragmentManager.beginTransaction().apply {
+                 replace(containerId(), it, tag)
+                 commitNow()
+             }
          }
     }
-
-    override val animationEnter = android.R.anim.fade_in
-    override val animationExit = android.R.anim.fade_out
-    override val animationPopEnter = android.R.anim.fade_in
-    override val animationPopExit = android.R.anim.fade_out
 
     private fun getFragmentTag() = intent.getStringExtra(ACTIVITY_MANAGER_FRAGMENT_TAG)
 
@@ -245,29 +214,6 @@ abstract class BaseActivity<T : ViewDataBinding, VM : ViewModel> : AppCompatActi
      */
     fun getActiveFragment() = supportFragmentManager.findFragmentById(containerId())
 
-    /**
-     * Defines a transition animation to the given activity
-     *
-     * @param activity      The activity for animation.
-     * @param animationType The type of the animation.
-     */
-    fun defineActivityTransitionAnimation(activity: Activity, @AnimationType animationType: Int) {
-        /*when (animationType) {
-            Animations.LEFT -> activity.overridePendingTransition(R.anim.fragment_left_in, R.anim.fragment_right_out)
-            Animations.RIGHT -> activity.overridePendingTransition(R.anim.fragment_right_in, R.anim.fragment_left_out)
-            Animations.UP -> activity.overridePendingTransition(R.anim.fragment_up_in, R.anim.fragment_down_out)
-            Animations.DOWN -> activity.overridePendingTransition(R.anim.fragment_down_in, R.anim.fragment_up_out)
-            Animations.LEFT_IN -> activity.overridePendingTransition(R.anim.fragment_left_in, R.anim.fragment_static)
-            Animations.RIGHT_IN -> activity.overridePendingTransition(R.anim.fragment_right_in, R.anim.fragment_static)
-            Animations.UP_IN -> activity.overridePendingTransition(R.anim.fragment_up_in, R.anim.fragment_static)
-            Animations.DOWN_IN -> activity.overridePendingTransition(R.anim.fragment_down_in, R.anim.fragment_static)
-            Animations.LEFT_OUT -> activity.overridePendingTransition(R.anim.fragment_static, R.anim.fragment_left_out)
-            Animations.RIGHT_OUT -> activity.overridePendingTransition(R.anim.fragment_static, R.anim.fragment_right_out)
-            Animations.UP_OUT -> activity.overridePendingTransition(R.anim.fragment_static, R.anim.fragment_up_out)
-            Animations.DOWN_OUT -> activity.overridePendingTransition(R.anim.fragment_static, R.anim.fragment_down_out)
-        }*/
-    }
-
     open fun showLoading() {
         hideKeyboard()
         if (loadingDialog == null) {
@@ -287,11 +233,7 @@ abstract class BaseActivity<T : ViewDataBinding, VM : ViewModel> : AppCompatActi
         }
     }
 
-    open fun hideLoading() {
-        if (loadingDialog != null) {
-            loadingDialog!!.dismiss()
-        }
-    }
+    open fun hideLoading() { loadingDialog?.dismiss() }
 
     open fun handleError(result: CallResult<*>, retry: (() -> Unit)? = null) {
         hideLoading()
