@@ -154,7 +154,7 @@ class GPSHelper : LocationListener {
         if (canGetLocation && latitude != 0.0 && longitude != 0.0) {
             val gcd = Geocoder(context, Locale("pt", "PT"))
             val addresses = gcd.getFromLocation(latitude, longitude, 1)
-            if (addresses.isNotEmpty() && addresses[0].adminArea != null) {
+            if (!addresses.isNullOrEmpty() && addresses[0].adminArea != null) {
                 return addresses[0].adminArea
             }
         }
@@ -165,7 +165,7 @@ class GPSHelper : LocationListener {
         if (canGetLocation && latitude != 0.0 && longitude != 0.0) {
             val gcd = Geocoder(context, Locale("pt", "PT"))
             val addresses = gcd.getFromLocation(latitude, longitude, 1)
-            if (addresses.isNotEmpty() && addresses[0].adminArea != null) {
+            if (!addresses.isNullOrEmpty() && addresses[0].adminArea != null) {
                 return addresses[0].postalCode
             }
         }

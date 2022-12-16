@@ -19,12 +19,12 @@ class LiveDataCallAdapter<T>(private val responseType: Type) : CallAdapter<T, Li
                 super.onActive()
                 if (started.compareAndSet(false, true)) {
                     call.enqueue(object : Callback<T> {
-                        override fun onFailure(call: Call<T>?, throwable: Throwable) {
-                            postValue(ApiResponse.create(call?.request()?.url.toString(), throwable))
+                        override fun onFailure(call: Call<T>, throwable: Throwable) {
+                            postValue(ApiResponse.create(call.request().url.toString(), throwable))
                         }
 
-                        override fun onResponse(call: Call<T>?, response: Response<T>) {
-                            postValue(ApiResponse.create(call?.request()?.url.toString(), response))
+                        override fun onResponse(call: Call<T>, response: Response<T>) {
+                            postValue(ApiResponse.create(call.request().url.toString(), response))
                         }
                     })
                 }

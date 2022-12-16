@@ -4,12 +4,6 @@ import android.os.Handler
 import android.os.Looper
 import androidx.viewpager2.widget.ViewPager2
 
-/**
-*
-override fun onPause() {
-    handler.removeCallbacksAndMessages(null)
-    super.onPause()
-}
 */
 fun ViewPager2.autoScroll(interval: Long, handler: Handler) {
     var scrollPosition = 0

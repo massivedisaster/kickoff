@@ -1,11 +1,8 @@
 package ${configs.packageName}.ui.base
 
-import android.app.Activity
 import android.content.Context
-import android.os.Build
 import android.os.Bundle
 import android.view.View
-import android.view.View.*
 import android.view.Window
 import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
@@ -14,28 +11,26 @@ import androidx.annotation.IdRes
 import androidx.annotation.LayoutRes
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import dagger.android.AndroidInjection
-import dagger.android.DispatchingAndroidInjector
-import dagger.android.HasAndroidInjector
 import ${configs.packageName}.R
 import ${configs.packageName}.data.common.CallResult
-import ${configs.packageName}.data.common.ServerErrors
+import ${configs.packageName}.data.common.ServerError
 import ${configs.packageName}.ui.dialog.LoadingDialog
 import ${configs.packageName}.ui.dialog.MessageDialog
 import ${configs.packageName}.ui.widgets.afm.OnBackPressedListener
 import ${configs.packageName}.utils.helper.DebounceTimer
 import ${configs.packageName}.utils.helper.extensions.hideKeyboard
-import ${configs.packageName}.utils.helper.extensions.setSystemBarTransparent
+import ${configs.packageName}.utils.helper.extensions.viewModels
 import ${configs.packageName}.utils.manager.NetworkManager
-import javax.inject.Inject
+import kotlin.reflect.KClass
 
-abstract class BaseActivity<T : ViewDataBinding, VM : ViewModel> : AppCompatActivity(), HasAndroidInjector {
+abstract class BaseActivity<T : ViewDataBinding, VM : ViewModel> : AppCompatActivity() {
 
     companion object {
         @JvmField
@@ -48,12 +43,6 @@ abstract class BaseActivity<T : ViewDataBinding, VM : ViewModel> : AppCompatActi
         const val DEFAULT_CONTAINER_ID = 0
     }
 
-    @Inject
-    lateinit var androidInjector: DispatchingAndroidInjector<Any>
-
-    @Inject
-    lateinit var viewModelFactory: ViewModelProvider.Factory
-
     private var loadingDialog: LoadingDialog? = null
     private var messageDialog: MessageDialog? = null
     protected var hasConnection = false
@@ -62,29 +51,23 @@ abstract class BaseActivity<T : ViewDataBinding, VM : ViewModel> : AppCompatActi
         DataBindingUtil.setContentView<T>(this, layoutToInflate())
     }
 
-    protected val viewModel: VM by lazy {
-        ViewModelProvider(this, viewModelFactory).get(getViewModelClass())
-    }
+    protected val viewModel: VM by viewModels(getViewModelClass())
 
     protected val debouncer: DebounceTimer by lazy { DebounceTimer(lifecycle) }
 
-    private val containerView: View? by lazy {
-        getViewContainer()
-    }
+    private val containerView: View? by lazy { getViewContainer() }
     open fun getViewContainer(): View? = null
     open fun insetRules(v: View, insets: WindowInsetsCompat) { }
 
     @LayoutRes
     abstract fun layoutToInflate(): Int
 
-    abstract fun getViewModelClass(): Class<VM>
+    abstract fun getViewModelClass(): KClass<VM>
 
     abstract fun doOnCreated()
 
     @IdRes
     open fun containerId() = DEFAULT_CONTAINER_ID
-
-    override fun androidInjector() = androidInjector
 
     open fun getArguments(arguments: Bundle) {}
 
@@ -92,7 +75,6 @@ abstract class BaseActivity<T : ViewDataBinding, VM : ViewModel> : AppCompatActi
         requestWindowFeature(Window.FEATURE_ACTIVITY_TRANSITIONS)
         requestWindowFeature(Window.FEATURE_CONTENT_TRANSITIONS)
 
-        AndroidInjection.inject(this)
         if (intent.extras != null) {
             getArguments(intent.extras!!)
         }

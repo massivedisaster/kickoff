@@ -46,7 +46,7 @@ platform :android do
   end
   <#if configs.hasQa!true>
 
-      lane :build_qa do |options|
+  lane :build_qa do |options|
     #test
     gradle(task: "clean")
     gradle(task: 'assemble', flavor: 'app', build_type: 'qa')
@@ -93,15 +93,14 @@ platform :android do
     @lane_name = lane
     @error_message = exception.message
 
-    slack(message: "#@error_message",
-          success: false)
+    #slack(message: "#@error_message", success: false)
 
   end
 
   desc "After executing the lane we send a custom Slack message using FL_SLACK_MESSAGE env variable"
   after_all do |lane|
 
-    slack(success: true)
+    #slack(success: true)
 
   end
 

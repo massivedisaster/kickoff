@@ -1,6 +1,7 @@
 package ${configs.packageName}.utils.helper.extensions
 
 import android.view.Gravity
+import android.view.View
 import android.widget.TextView
 import androidx.annotation.FontRes
 import androidx.annotation.StringRes
@@ -12,7 +13,7 @@ import ${configs.packageName}.utils.helper.DebounceTimer
 
 fun Snackbar.withFont(@FontRes font: Int): Snackbar{
     val typeface = ResourcesCompat.getFont(context, font)
-    this.view.findViewById<TextView>(R.id.snackbar_text).typeface = typeface
+    view.findViewById<TextView>(com.google.android.material.R.id.snackbar_text).typeface = typeface
     return this
 }
 
@@ -30,4 +31,11 @@ fun Snackbar.onClickDebounce(debouncer: DebounceTimer, @StringRes resId: Int, ac
     setAction(resId) { debouncer.debounceRunFirst {
         action()
     } }
+}
+
+fun View.showSnackBar(message: String) {
+    val snackbar = Snackbar.make(this, message, Snackbar.LENGTH_SHORT)
+    val textView = snackbar.view.findViewById<View>(com.google.android.material.R.id.snackbar_text) as TextView
+    textView.maxLines = 2
+    snackbar.show()
 }

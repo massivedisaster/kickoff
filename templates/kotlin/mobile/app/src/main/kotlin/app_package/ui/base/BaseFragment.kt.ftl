@@ -1,36 +1,22 @@
 package ${configs.packageName}.ui.base
 
 import android.os.Bundle
-import android.util.Log
 import android.view.*
-import androidx.annotation.DrawableRes
 import androidx.annotation.LayoutRes
 import androidx.annotation.StringRes
+import androidx.core.view.WindowInsetsCompat
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentActivity
-import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import dagger.android.DispatchingAndroidInjector
-import dagger.android.HasAndroidInjector
-import dagger.android.support.AndroidSupportInjection
-import ${configs.packageName}.data.common.CallResult
-import ${configs.packageName}.data.common.ServerErrors
-import ${configs.packageName}.ui.dialog.MessageDialog
 import ${configs.packageName}.utils.helper.DebounceTimer
-import ${configs.packageName}.utils.helper.extensions.hideKeyboard
 import ${configs.packageName}.utils.helper.InsetsListener
+import ${configs.packageName}.utils.helper.extensions.viewModels
 import ${configs.packageName}.utils.manager.NetworkManager
-import javax.inject.Inject
+import kotlin.reflect.KClass
 
-abstract class BaseFragment<T : ViewDataBinding, VM : ViewModel> : Fragment(), HasAndroidInjector {
 
-    @Inject
-    lateinit var androidInjector: DispatchingAndroidInjector<Any>
-    @Inject
-    lateinit var viewModelFactory: ViewModelProvider.Factory
+abstract class BaseFragment<T : ViewDataBinding, VM : ViewModel> : Fragment() {
 
     //makes fragment lazy
     open var useLazyLoading = false
@@ -40,32 +26,31 @@ abstract class BaseFragment<T : ViewDataBinding, VM : ViewModel> : Fragment(), H
         DataBindingUtil.inflate<T>(LayoutInflater.from(context), layoutToInflate(), null, false)
     }
 
-    protected val viewModel: VM by lazy {
-        when (getViewModelClass().second) {
-            is BaseFragment<*, *> -> ViewModelProvider(this, viewModelFactory).get(getViewModelClass().first)
-            is BaseActivity<*, *> -> ViewModelProvider(getViewModelClass().second as FragmentActivity, viewModelFactory).get(getViewModelClass().first)
-            else -> throw Exception("ViewModel holder must be of type BaseFragment or BaseActivity")
-        }
+    protected val viewModel: VM by when (getViewModelClass().second) {
+        is BaseFragment<*, *> -> viewModels(getViewModelClass().first)
+        is BaseActivity<*, *> -> viewModels(getViewModelClass().first) { baseActivity!! }
+        else -> throw Exception("ViewModel holder must be of type BaseFragment or BaseActivity")
     }
 
     protected val insetsCollapseListener: InsetsListener by lazy { InsetsListener() }
     protected var hasConnection = false
 
-    fun viewModelFactoryExists() = ::viewModelFactory.isInitialized
+    private val containerView: View? by lazy {
+        getViewContainer()
+    }
+    open fun getViewContainer(): View? = null
+    open fun insetRules(insets: WindowInsetsCompat) { }
 
     @LayoutRes
     abstract fun layoutToInflate(): Int
 
-    abstract fun getViewModelClass() : Pair<Class<VM>, *>
+    abstract fun getViewModelClass() : Pair<KClass<VM>, *>
 
     abstract fun doOnCreated()
 
     open fun getArguments(arguments: Bundle) {}
 
-    override fun androidInjector() = androidInjector
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?) : View? {
-        AndroidSupportInjection.inject(this)
         initDataBinding()
         return dataBinding.root
     }
@@ -85,6 +70,10 @@ abstract class BaseFragment<T : ViewDataBinding, VM : ViewModel> : Fragment(), H
             }
         }
 
+        containerView?.let {
+            insetsCollapseListener.listenStatusHeightChange(it) { _, insets -> insetRules(insets) }
+        }
+
         if(useLazyLoading.not()) {
             doOnCreated()
         } else if(isVisibleFirstTime.not()) {
@@ -94,15 +83,13 @@ abstract class BaseFragment<T : ViewDataBinding, VM : ViewModel> : Fragment(), H
     }
 
     private var isVisibleFirstTime = true
-    override fun setUserVisibleHint(isVisibleToUser: Boolean) {
-        super.setUserVisibleHint(isVisibleToUser)
-        if (isVisibleToUser) {
-            if(useLazyLoading && isVisibleFirstTime && view != null) {
-                doOnCreated()
-            }
-            isVisibleFirstTime = false
-            // load you data
+    override fun onResume() {
+        super.onResume()
+        if(useLazyLoading && isVisibleFirstTime && view != null) {
+            doOnCreated()
         }
+        isVisibleFirstTime = false
+        // load you data
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -139,8 +126,8 @@ abstract class BaseFragment<T : ViewDataBinding, VM : ViewModel> : Fragment(), H
      *
      * @return [ActivityBase] The Activity where this fragment is attached.
      */
-            protected val baseActivity: BaseActivity<*, *>?
-            get() = activity as BaseActivity<*, *>
+     protected val baseActivity: BaseActivity<*, *>?
+         get() = activity as BaseActivity<*, *>
 
     /**
      * Checks whether fragment can be used or not
@@ -157,36 +144,4 @@ abstract class BaseFragment<T : ViewDataBinding, VM : ViewModel> : Fragment(), H
      */
     internal open var menuResourceId: Int = -1
 
-    open fun handleError(result: CallResult<*>) {
-        val status = result.status
-        when (status.error?.serverError) {
-            ServerErrors.NO_INTERNET, ServerErrors.TIMEOUT -> Log.i("BASE", "failed - No Internet")
-            else -> Log.i("BASE", "failed - ${r"${status.error?.error?.status}"}")
-        }
-    }
-
-    private var messageDialog: MessageDialog? = null
-    open fun showMessage(@DrawableRes icon: Int, @StringRes message: Int, @StringRes okButton: Int, buttonOkExecution: (() -> Unit)? = null, @StringRes cancelButton: Int = -1, cancelExecution: (() -> Unit)? = null, close: Boolean = false) {
-        baseActivity?.hideKeyboard()
-        if (messageDialog == null) {
-            messageDialog = MessageDialog.newInstance(message, icon, okButton, buttonOkExecution, cancelButton, cancelExecution, close)
-        }
-        if (!messageDialog!!.isAdded && !messageDialog!!.isVisible) {
-            messageDialog!!.show(childFragmentManager, "errorDialog")
-
-            childFragmentManager.registerFragmentLifecycleCallbacks( object : FragmentManager.FragmentLifecycleCallbacks() {
-                override fun onFragmentViewDestroyed(fm: FragmentManager, f: Fragment) {
-                    super.onFragmentViewDestroyed(fm, f)
-                    childFragmentManager.unregisterFragmentLifecycleCallbacks(this)
-                    messageDialog = null
-                }
-            }, false)
-        }
-    }
-
-    open fun hideError() {
-        if (messageDialog != null) {
-            messageDialog!!.dismiss()
-        }
-    }
 }

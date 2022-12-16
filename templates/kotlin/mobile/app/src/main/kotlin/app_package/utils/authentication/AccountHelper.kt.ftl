@@ -9,7 +9,6 @@ import android.os.Bundle
 
 object AccountHelper {
     
-    private const val MISSING_PERMISSION = "MissingPermission"
     private var manager: AccountManager? = null
     private var deletedAccounts: Int = 0
     
@@ -81,13 +80,8 @@ object AccountHelper {
     private fun removeAccounts(onAccount: () -> Unit, vararg accounts: Account) {
         validateAccountManager()
         for (account in accounts) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
-                val callback: AccountManagerCallback<Bundle> = AccountCallback(++deletedAccounts, accounts.size, onAccount)
-                manager!!.removeAccount(account, null, callback, null)
-            } else {
-                val callback: AccountManagerCallback<Boolean> = AccountCallback(++deletedAccounts, accounts.size, onAccount)
-                manager!!.removeAccount(account, callback, null)
-            }
+            val callback: AccountManagerCallback<Bundle> = AccountCallback(++deletedAccounts, accounts.size, onAccount)
+            manager!!.removeAccount(account, null, callback, null)
         }
     }
     
@@ -128,7 +122,7 @@ object AccountHelper {
     /**
      * Retrieve the account token.
      *
-     * @param account The account account to take the token.
+     * @param account The account to take the token.
      * @param context The application context.
      * @return The account token.
      */
@@ -136,7 +130,20 @@ object AccountHelper {
         validateAccountManager()
         return manager!!.peekAuthToken(account, context.packageName)
     }
-    
+
+
+    /**
+    * Retrieve the account token.
+    *
+    * @param account The account to take the token.
+    * @param context The application context.
+    * @param token   The new token for account.
+    */
+    fun setCurrentToken(account: Account, context: Context, token: String?) {
+        validateAccountManager()
+        manager!!.setAuthToken(account, context.packageName, token)
+    }
+
     /**
      * Verify if manager was initialized.
      *

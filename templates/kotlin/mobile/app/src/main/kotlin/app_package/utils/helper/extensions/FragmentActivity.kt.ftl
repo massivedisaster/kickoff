@@ -14,7 +14,10 @@ import androidx.annotation.MainThread
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.createViewModelLazy
-import androidx.lifecycle.*
+import androidx.lifecycle.HasDefaultViewModelProviderFactory
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelLazy
+import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.viewmodel.CreationExtras
 import ${configs.packageName}.utils.helper.DebounceTimer
 import kotlin.reflect.KClass
@@ -58,11 +61,9 @@ fun FragmentActivity.getDisplayHeight(): Int {
 }
 
 fun Activity.setSystemBarTransparent() {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-        val window = this.window
-        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
-        window.statusBarColor = Color.TRANSPARENT
-    }
+    val window = this.window
+    window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+    window.statusBarColor = Color.TRANSPARENT
 }
 
 
@@ -115,4 +116,23 @@ fun <VM : ViewModel> Fragment.viewModels(
         { (owner as? HasDefaultViewModelProviderFactory)?.defaultViewModelCreationExtras ?: CreationExtras.Empty },
         { (owner as? HasDefaultViewModelProviderFactory)?.defaultViewModelProviderFactory ?: defaultViewModelProviderFactory }
     )
+}
+
+/**
+ * starts an activity using a debouncer (fast click avoidance)
+ */
+fun Fragment.startActivityDebounced(intent : Intent, debounceTimer: DebounceTimer) {
+    debounceTimer.debounceRunFirst {
+       startActivity(intent)
+    }
+}
+
+/**
+ * returns actionBar default size (similar to ?attr/actionBarSize)
+ */
+fun Fragment.actionBarSize(): Float {
+    val styledAttributes = activity?.theme?.obtainStyledAttributes(IntArray(1) { android.R.attr.actionBarSize })
+    val actionBarSize = styledAttributes?.getDimension(0, 0F)
+    styledAttributes?.recycle()
+    return actionBarSize ?: 0F
 }

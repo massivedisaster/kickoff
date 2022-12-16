@@ -6,13 +6,12 @@ import androidx.lifecycle.MediatorLiveData
 import androidx.paging.PageKeyedDataSource
 import ${configs.packageName}.data.common.CallResult
 import ${configs.packageName}.data.common.NetworkState
-import ${configs.packageName}.data.common.ServerErrors
+import ${configs.packageName}.data.common.ServerError
 import ${configs.packageName}.network.models.ApiErrorResponse
 import ${configs.packageName}.utils.helper.AppExecutors
 
 abstract class PagedDataSourceBoundResource<PaginationType, MetaType, ResultType : Any>(
-        private val appExecutors: AppExecutors,
-        private val usePaging: Boolean
+        private val appExecutors: AppExecutors
 ) : PageKeyedDataSource<Int, ResultType>() {
 
     var retry: (() -> Any)? = null
@@ -46,38 +45,29 @@ abstract class PagedDataSourceBoundResource<PaginationType, MetaType, ResultType
 
             when (apiResponse.status.status) {
                 NetworkState.Status.SUCCESS -> {
-
                     val responseBody = processResponse(apiResponse)
                     retry = null
                     val nextKey = calculateNextKey(responseBody!!, nextPage)
 
-                    if (usePaging) {
-                        appExecutors.getMainThread().execute {
-                            callback?.onResult(identifyResponseList(responseBody), null, nextKey)
+                    loadnext = nextKey?.let { { loadNext(LoadParams<Int>(nextKey, params.requestedLoadSize), null) } }
+                    postMeta(identifyMeta(responseBody))
+                    postInitialState(identifyResponseList(responseBody), null, nextKey)
+                    if (nextKey == null) {
+                        if(identifyResponseList(responseBody).isNullOrEmpty()) {
+                            postInitialState(NetworkState.EMPTY)
+                        } else {
+                            postInitialState(NetworkState.NO_MORE)
                         }
                     } else {
-                        loadnext = nextKey?.let { { loadNext(LoadParams<Int>(nextKey, params.requestedLoadSize), null) } }
-                        postMeta(identifyMeta(responseBody))
-                        postInitialState(identifyResponseList(responseBody), null, nextKey)
-                        if (nextKey == null) {
-                            if(identifyResponseList(responseBody).isNullOrEmpty()) {
-                                postInitialState(NetworkState.EMPTY)
-                            } else {
-                                postInitialState(NetworkState.NO_MORE)
-                            }
-                        } else {
-                            postInitialState(NetworkState.SUCCESS)
-                        }
+                        postInitialState(NetworkState.SUCCESS)
                     }
-
                 }
                 NetworkState.Status.FAILED -> {
                     retry = { loadInit(params, callback) }
                     postMeta(null)
-                    postInitialState(NetworkState.error(ApiErrorResponse<PaginationType>("", apiResponse.code, apiResponse.message ?: "", apiResponse.status.error?.serverError ?: ServerErrors.GENERAL)))
+                    postInitialState(NetworkState.error(ApiErrorResponse<PaginationType>("", apiResponse.code, apiResponse.message ?: "", apiResponse.status.error?.serverError ?: ServerError.GENERAL)))
                 }
-                else -> {
-                }
+                else -> {}
             }
             isLoading = false
         }
@@ -98,28 +88,21 @@ abstract class PagedDataSourceBoundResource<PaginationType, MetaType, ResultType
                     retry = null
                     val nextKey = calculateNextKey(responseBody!!, nextPage)
 
-                    if (usePaging) {
-                        appExecutors.getMainThread().execute {
-                            callback?.onResult(identifyResponseList(responseBody), nextKey)
-                        }
+                    loadnext = nextKey?.let { { loadNext(LoadParams(nextKey, params.requestedLoadSize), null) } }
+                    postMeta(identifyMeta(responseBody))
+                    postAfterState(identifyResponseList(responseBody), nextKey)
+                    if (nextKey == null) {
+                    postAfterState(NetworkState.NO_MORE)
                     } else {
-                        loadnext = nextKey?.let { { loadNext(LoadParams(nextKey, params.requestedLoadSize), null) } }
-                        postMeta(identifyMeta(responseBody))
-                        postAfterState(identifyResponseList(responseBody), nextKey)
-                        if (nextKey == null) {
-                            postAfterState(NetworkState.NO_MORE)
-                        } else {
-                            postAfterState(NetworkState.SUCCESS)
-                        }
+                        postAfterState(NetworkState.SUCCESS)
                     }
                 }
                 NetworkState.Status.FAILED -> {
                     retry = { loadNext(params, callback) }
                     postInitialState(NetworkState.error(ApiErrorResponse<PaginationType>("", apiResponse.code, apiResponse.message
-                            ?: "", apiResponse.status.error?.serverError ?: ServerErrors.GENERAL)))
+                            ?: "", apiResponse.status.error?.serverError ?: ServerError.GENERAL)))
                 }
-                else -> {
-                }
+                else -> {}
             }
             isLoading = false
         }
@@ -206,7 +189,7 @@ abstract class PagedDataSourceBoundResource<PaginationType, MetaType, ResultType
 
     protected abstract fun identifyResponseList(response: PaginationType): List<ResultType>
 
-    protected abstract fun identifyMeta(response: PaginationType): MetaType
+    protected abstract fun identifyMeta(response: PaginationType): MetaType?
 
     protected abstract fun initialPage(): Int
 

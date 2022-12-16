@@ -5,11 +5,14 @@ import androidx.core.util.PatternsCompat.EMAIL_ADDRESS
 import com.google.i18n.phonenumbers.NumberParseException
 import com.google.i18n.phonenumbers.PhoneNumberUtil
 import com.google.i18n.phonenumbers.Phonenumber
+import java.nio.charset.Charset
 import java.text.Normalizer
 
 fun String.round(decimalPlace: Int) = String.format("%.${r"${decimalPlace}"}f", this.replace(',', '.').toFloat().round(decimalPlace)).replace('.', ',')
 
 fun String.isEmail() = EMAIL_ADDRESS.matcher(this).matches()
+
+fun String.checkValidUrl() = (startsWith("http") || startsWith("https")) && endsWith("/")
 
 fun String.isPhone(prefix: String) : Boolean { //NOTE: This should probably be a member variable.
     //NOTE: This should probably be a member variable.
@@ -31,9 +34,9 @@ fun String.shortDayOfMonth(): String {
     return split.joinToString(",")
 }
 
-fun String.toBase64(flag: Int = Base64.DEFAULT) = Base64.encodeToString(this.toByteArray(), flag)
+fun String.toBase64(flag: Int = Base64.DEFAULT) = Base64.encodeToString(this.encodeToByteArray(), flag)
 
-fun String.fromBase64(flag: Int = Base64.DEFAULT) = Base64.decode(this.toByteArray(), flag)
+fun String.fromBase64(flag: Int = Base64.DEFAULT) = String(Base64.decode(this, flag), Charset.defaultCharset())
 
 fun String.isValidNIF(ignoreFirst: Boolean = false): Boolean {
     // 1. Remove extra spacing

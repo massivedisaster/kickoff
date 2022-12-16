@@ -14,33 +14,22 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import dagger.android.DispatchingAndroidInjector
-import dagger.android.HasAndroidInjector
-import dagger.android.support.AndroidSupportInjection
 import ${configs.packageName}.utils.helper.DebounceTimer
 import ${configs.packageName}.utils.helper.InsetsListener
-import javax.inject.Inject
+import ${configs.packageName}.utils.helper.extensions.viewModels
+import kotlin.reflect.KClass
 
-abstract class BaseDialog<T : ViewDataBinding, VM : ViewModel> : DialogFragment(), HasAndroidInjector {
+abstract class BaseDialog<T : ViewDataBinding, VM : ViewModel> : DialogFragment() {
 
     interface Callback {
         fun onDialogResult(requestCode: Int, resultCode: Int, data: Intent)
     }
 
-    @Inject
-    lateinit var androidInjector: DispatchingAndroidInjector<Any>
-
-    @Inject
-    lateinit var viewModelFactory: ViewModelProvider.Factory
-
     protected val dataBinding: T by lazy {
         DataBindingUtil.inflate<T>(LayoutInflater.from(context), layoutToInflate(), null, false)
     }
 
-    protected val viewModel: VM by lazy {
-        ViewModelProvider(this, viewModelFactory).get(getViewModelClass())
-    }
+    protected val viewModel: VM by viewModels(getViewModelClass())
 
     protected val debouncer: DebounceTimer by lazy { DebounceTimer(lifecycle) }
 
@@ -49,16 +38,13 @@ abstract class BaseDialog<T : ViewDataBinding, VM : ViewModel> : DialogFragment(
     @LayoutRes
     abstract fun layoutToInflate(): Int
 
-    abstract fun getViewModelClass() : Class<VM>
+    abstract fun getViewModelClass() : KClass<VM>
 
     abstract fun doOnCreated()
-
-    override fun androidInjector() = androidInjector
 
     open fun getArguments(arguments: Bundle) {}
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        AndroidSupportInjection.inject(this)
         dialog?.requestWindowFeature(Window.FEATURE_NO_TITLE)
         initDataBinding()
         if (viewModel is LifecycleObserver)lifecycle.addObserver(viewModel as LifecycleObserver)

@@ -120,3 +120,19 @@ fun View.addKeyboardListener(keyboardCallback: (visible: Boolean) -> Unit) {
         }
     }
 }
+
+/**
+* hides keyboard for current focused activity
+*/
+fun View.hideKeyboard() {
+    val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+    imm.hideSoftInputFromWindow(windowToken, 0)
+}
+
+/**
+* hides keyboard for current focused activity
+*/
+fun View.openKeyboard() {
+    val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+    imm.showSoftInput(this, 0)
+}

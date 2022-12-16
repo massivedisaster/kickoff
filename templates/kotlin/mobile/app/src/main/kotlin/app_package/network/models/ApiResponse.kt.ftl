@@ -3,7 +3,6 @@ package ${configs.packageName}.network.models
 import com.fasterxml.jackson.databind.JsonMappingException
 import okhttp3.Headers
 import ${configs.packageName}.data.common.ServerError
-import ${configs.packageName}.data.common.ServerErrors
 import ${configs.packageName}.network.models.response.ApiError
 import ${configs.packageName}.utils.manager.PreferencesManager
 import retrofit2.HttpException
@@ -20,22 +19,22 @@ sealed class ApiResponse<T> {
             throwable.printStackTrace()
 
             if (throwable is SocketTimeoutException && throwable.message != null) {
-                return ApiErrorResponse(url, -1, throwable.message ?: ERROR, ServerErrors.TIMEOUT)
+                return ApiErrorResponse(url, -1, throwable.message ?: ERROR, ServerError.TIMEOUT)
             }
 
             if (throwable is JsonMappingException && throwable.message != null) {
-                return ApiErrorResponse(url, -1, throwable.message ?: ERROR, ServerErrors.EMPTY_BODY)
+                return ApiErrorResponse(url, -1, throwable.message ?: ERROR, ServerError.EMPTY_BODY)
             }
 
             if (throwable is UnknownHostException && throwable.message != null) {
-                return ApiErrorResponse(url, -1, throwable.message ?: ERROR, ServerErrors.NO_INTERNET)
+                return ApiErrorResponse(url, -1, throwable.message ?: ERROR, ServerError.NO_INTERNET)
             }
 
             if (throwable is HttpException) {
-                return ApiErrorResponse(url, throwable.code(), ERROR, ServerErrors.GENERAL)
+                return ApiErrorResponse(url, throwable.code(), ERROR, ServerError.GENERAL)
             }
 
-            return ApiErrorResponse(url, 520, throwable.message ?: ERROR, ServerErrors.GENERAL)
+            return ApiErrorResponse(url, 520, throwable.message ?: ERROR, ServerError.GENERAL)
         }
 
         fun <T> create(url: String, response: Response<T>): ApiResponse<T> {
@@ -51,7 +50,7 @@ sealed class ApiResponse<T> {
                 } else {
                     message
                 }
-                ApiErrorResponse(url, code, errorMessage ?: ERROR, ServerErrors.API, error)
+                ApiErrorResponse(url, code, errorMessage ?: ERROR, ServerError.API, error)
             }
         }
     }
@@ -60,4 +59,4 @@ sealed class ApiResponse<T> {
 
 data class ApiSuccessResponse<T>(val url: String, val successCode: Int, val body: T?, val headers: Headers) : ApiResponse<T>()
 
-data class ApiErrorResponse<T>(val url: String, val errorCode: Int, val errorMessage: String, @ServerError val serverError: Int, val error: ApiError? = null) : ApiResponse<T>()
+data class ApiErrorResponse<T>(val url: String, val errorCode: Int, val errorMessage: String, val serverError: ServerError, val error: ApiError? = null) : ApiResponse<T>()

@@ -4,10 +4,8 @@ import android.accounts.AbstractAccountAuthenticator
 import android.accounts.Account
 import android.accounts.AccountAuthenticatorResponse
 import android.accounts.AccountManager.KEY_ERROR_CODE
-import android.accounts.AccountManager.KEY_ERROR_MESSAGE
 import android.content.Context
 import android.os.Bundle
-import ${configs.packageName}.R
 
 class AccountAuthenticator(private val context: Context) : AbstractAccountAuthenticator(context) {
     

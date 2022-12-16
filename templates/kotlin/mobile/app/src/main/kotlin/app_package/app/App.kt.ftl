@@ -2,11 +2,10 @@ package ${configs.packageName}.app
 
 import android.app.Application
 import android.content.Context
+import androidx.hilt.work.HiltWorkerFactory
+import androidx.work.Configuration
 import com.jakewharton.threetenabp.AndroidThreeTen
-import ${configs.packageName}.di.component.DaggerAppComponent
-import dagger.android.DispatchingAndroidInjector
-import dagger.android.HasAndroidInjector
-import javax.inject.Inject
+import dagger.hilt.android.HiltAndroidApp
 import timber.log.Timber
 <#if configs.hasOneSignal!true>
 import com.onesignal.OneSignal
@@ -17,18 +16,23 @@ import com.onesignal.OneSignal
  * Base class fot the application.
  * You need to add this class to your manifest file.
  */
-open class App @Inject constructor() : Application(), HasAndroidInjector {
+@HiltAndroidApp
+open class App @Inject constructor() : Application(), Configuration.Provider {
 
-    @Inject
-    lateinit var androidInjector: DispatchingAndroidInjector<Any>
+    lateinit var workerFactory: HiltWorkerFactory
 
-    override fun androidInjector() = androidInjector
+    override fun getWorkManagerConfiguration() = Configuration.Builder().setWorkerFactory(workerFactory).build()
 
     override fun onCreate() {
         super.onCreate()
         <#if configs.hasOneSignal!true>
 
-        OneSignal.startInit(this).init()
+        if (BuildConfig.DEBUG) {
+            OneSignal.setLogLevel(OneSignal.LOG_LEVEL.VERBOSE, OneSignal.LOG_LEVEL.NONE)
+        }
+
+        OneSignal.initWithContext(this)
+        OneSignal.setAppId(BuildConfig.ONESIGNAL_APP_ID)
 		</#if>
 
 		Timber.plant(Timber.DebugTree())
@@ -37,7 +41,6 @@ open class App @Inject constructor() : Application(), HasAndroidInjector {
     override fun attachBaseContext(base: Context?) {
         super.attachBaseContext(base)
         AndroidThreeTen.init(this)
-        DaggerAppComponent.builder().application(this).build().inject(this)
     }
 
 }

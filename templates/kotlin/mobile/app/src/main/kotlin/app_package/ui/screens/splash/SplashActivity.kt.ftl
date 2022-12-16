@@ -2,7 +2,10 @@ package ${configs.packageName}.ui.screens.splash
 
 import android.os.Handler
 import android.os.Looper
+import dagger.hilt.android.AndroidEntryPoint
 <#if configs.hasOneSignal!true>
+import com.onesignal.OSSubscriptionObserver
+import com.onesignal.OSSubscriptionStateChanges
 import com.onesignal.OneSignal
 </#if>
 import ${configs.packageName}.R
@@ -16,20 +19,16 @@ import javax.inject.Inject
 /**
  * Activity to apply the splash screen.
  */
-class SplashActivity : BaseActivity<ActivitySplashBinding, SplashViewModel>() {
+@AndroidEntryPoint
+class SplashActivity : BaseActivity<ActivitySplashBinding, SplashViewModel>()<#if configs.hasOneSignal!true>, OSSubscriptionObserver</#if> {
 
     companion object {
         private const val SPLASH_TIME_OUT: Long = 2000
     }
 
-    @Inject
-    lateinit var accountUtils: AccountUtils
-
-    @Inject
-    lateinit var callManager: CallManager
-
-    @Inject
-    lateinit var preferencesManager: PreferencesManager
+    @Inject lateinit var accountUtils: AccountUtils
+    @Inject lateinit var callManager: CallManager
+    @Inject lateinit var preferencesManager: PreferencesManager
 
     private var handler: Handler? = null
     private var startTime: Long = 0
@@ -47,7 +46,7 @@ class SplashActivity : BaseActivity<ActivitySplashBinding, SplashViewModel>() {
 
     override fun layoutToInflate() = R.layout.activity_splash
 
-    override fun getViewModelClass() = SplashViewModel::class.java
+    override fun getViewModelClass() = SplashViewModel::class
 
     override fun doOnCreated() { }
 
@@ -59,9 +58,16 @@ class SplashActivity : BaseActivity<ActivitySplashBinding, SplashViewModel>() {
     public override fun onResume() {
         super.onResume()
         <#if configs.hasOneSignal!true>
-        OneSignal.idsAvailable { userId, _ -> preferencesManager.write(PreferencesManager.PUSH_ID, userId) }
+        OneSignal.addSubscriptionObserver(this)
         </#if>
 
+        if (!preferencesManager.read(PreferencesManager.PUSH_ID,"").isNullOrEmpty()) {
+            init()
+        }
+
+    }
+
+    private fun init() {
         startTime = System.currentTimeMillis()
         if (handler == null) return
 
@@ -70,6 +76,17 @@ class SplashActivity : BaseActivity<ActivitySplashBinding, SplashViewModel>() {
             //finishAffinity()
         }, timeout)
     }
+
+<#if configs.hasOneSignal!true>
+    override fun onOSSubscriptionChanged(stateChanges: OSSubscriptionStateChanges) {
+        if (!stateChanges.from.isSubscribed && stateChanges.to.isSubscribed) {
+            // get player ID
+            stateChanges.to.userId
+            preferencesManager.write(PreferencesManager.PUSH_ID, stateChanges.to.userId)
+            init()
+        }
+    }
+</#if>
 
     public override fun onPause() {
         super.onPause()

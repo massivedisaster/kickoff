@@ -17,7 +17,9 @@ android {
         }
 
         variant.buildConfigField 'String', 'API_BASE_URL', '\"' + flavors[0].extension.endpoints[buildType] + '\"'
-
+<#if configs.network??>
+        variant.buildConfigField 'long', 'API_TIMEOUT', '${configs.network.timeout}'
+</#if>
         //MANIFEST KEYS
         if (flavors[0].extension.manifestKeys != null && !flavors[0].extension.manifestKeys.isEmpty()) {
             for ( e in flavors[0].extension.manifestKeys[buildType] ) {

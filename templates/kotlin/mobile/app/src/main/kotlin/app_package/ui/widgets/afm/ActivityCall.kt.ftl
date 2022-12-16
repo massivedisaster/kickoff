@@ -134,10 +134,9 @@ class ActivityCall private constructor() : Builder() {
             intent.putExtra(BaseActivity.ACTIVITY_MANAGER_FRAGMENT_TAG, tag)
         }
 
-        if (!shareElementsMap.isEmpty()) {
+        if (shareElementsMap.isNotEmpty()) {
             intent.putExtra(BaseActivity.ACTIVITY_MANAGER_FRAGMENT_SHARED_ELEMENTS, true)
-            bundleOptions = ActivityOptionsCompat.makeSceneTransitionAnimation(activity
-                    ?: fragment?.activity!!, *shareElementsMap).toBundle()
+            bundleOptions = (activity ?: fragment?.requireActivity())?.let { ActivityOptionsCompat.makeSceneTransitionAnimation(it, *shareElementsMap).toBundle() }
         }
 
         bundle.putString(BaseActivity.ACTIVITY_MANAGER_FRAGMENT, fragmentClass?.canonicalName)
@@ -173,8 +172,7 @@ class ActivityCall private constructor() : Builder() {
 
         if (shareElementsMap.isNotEmpty()) {
             intent.putExtra(BaseActivity.ACTIVITY_MANAGER_FRAGMENT_SHARED_ELEMENTS, true)
-            bundleOptions = ActivityOptionsCompat.makeSceneTransitionAnimation(activity
-                    ?: fragment?.activity!!, *shareElementsMap).toBundle()
+            bundleOptions = (activity ?: fragment?.requireActivity())?.let { ActivityOptionsCompat.makeSceneTransitionAnimation(it, *shareElementsMap).toBundle() }
         }
 
         bundle.putString(BaseActivity.ACTIVITY_MANAGER_FRAGMENT, fragmentClass?.canonicalName)

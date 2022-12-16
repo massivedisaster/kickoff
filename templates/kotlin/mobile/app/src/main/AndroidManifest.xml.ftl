@@ -1,17 +1,16 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          xmlns:tools="http://schemas.android.com/tools"
-    package="${configs.packageName}">
+          xmlns:tools="http://schemas.android.com/tools">
     
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission
-            android:name="android.permission.AUTHENTICATE_ACCOUNTS"
-            android:maxSdkVersion="22" />
+        android:name="android.permission.AUTHENTICATE_ACCOUNTS"
+        android:maxSdkVersion="22" />
     <uses-permission
-            android:name="android.permission.GET_ACCOUNTS"
-            android:maxSdkVersion="22" />
+        android:name="android.permission.GET_ACCOUNTS"
+        android:maxSdkVersion="22" />
     <uses-permission
-            android:name="android.permission.MANAGE_ACCOUNTS"
-            android:maxSdkVersion="22" />
+        android:name="android.permission.MANAGE_ACCOUNTS"
+        android:maxSdkVersion="22" />
 
     <application 
         android:allowBackup="false"
@@ -24,9 +23,10 @@
         tools:ignore="GoogleAppIndexingWarning">
 
     	<activity
-                android:name=".ui.screens.splash.SplashActivity"
-                android:screenOrientation="portrait"
-                tools:ignore="LockedOrientationActivity">
+            android:name=".ui.screens.splash.SplashActivity"
+            android:screenOrientation="portrait"
+            android:exported="true"
+            tools:ignore="LockedOrientationActivity">
 
             <intent-filter>
 
@@ -39,16 +39,16 @@
         </activity>
 
         <service
-                android:name=".utils.authentication.AuthenticationService"
-                android:exported="false"
-                android:process=":auth">
+            android:name=".utils.authentication.AuthenticationService"
+            android:exported="false"
+            android:process=":auth">
             <intent-filter>
                 <action android:name="android.accounts.AccountAuthenticator" />
             </intent-filter>
 
             <meta-data
-                    android:name="android.accounts.AccountAuthenticator"
-                    android:resource="@xml/authenticator" />
+                android:name="android.accounts.AccountAuthenticator"
+                android:resource="@xml/authenticator" />
         </service>
 
     </application>

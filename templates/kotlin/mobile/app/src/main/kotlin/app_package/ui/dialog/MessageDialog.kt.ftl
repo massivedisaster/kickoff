@@ -9,6 +9,7 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
 import androidx.transition.Fade
+import dagger.hilt.android.AndroidEntryPoint
 import ${configs.packageName}.R
 import ${configs.packageName}.databinding.DialogMessageBinding
 import ${configs.packageName}.ui.base.BaseDialog
@@ -16,6 +17,7 @@ import ${configs.packageName}.utils.helper.extensions.onClickDebounce
 import ${configs.packageName}.utils.helper.extensions.removeView
 import ${configs.packageName}.utils.helper.extensions.showCondition
 
+@AndroidEntryPoint
 class MessageDialog : BaseDialog<DialogMessageBinding, MessageViewModel>() {
 
     companion object {
@@ -62,7 +64,7 @@ class MessageDialog : BaseDialog<DialogMessageBinding, MessageViewModel>() {
 
     override fun layoutToInflate() = R.layout.dialog_message
 
-    override fun getViewModelClass() = MessageViewModel::class.java
+    override fun getViewModelClass() = MessageViewModel::class
 
     override fun getArguments(arguments: Bundle) {
         close = arguments.getBoolean(CLOSE, false)

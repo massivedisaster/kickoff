@@ -1,20 +1,17 @@
 package ${configs.packageName}.ui.widgets.afm
 
-import android.os.Build
 import android.os.Bundle
 import android.transition.TransitionInflater
 import android.view.View
 import androidx.annotation.IdRes
 import androidx.fragment.app.Fragment
-import ${configs.packageName}.ui.animation.TransactionAnimation
 import ${configs.packageName}.ui.base.BaseActivity
 import kotlin.reflect.KClass
 
 class FragmentCall private constructor() : Builder() {
 
     enum class TransitionType {
-        ADD,
-        REPLACE
+        ADD, REPLACE
     }
 
     private val INVALID_CONTAINER_ID = -1
@@ -27,7 +24,6 @@ class FragmentCall private constructor() : Builder() {
     private var addToBackStack: Boolean = false
     private var bundle: Bundle? = null
     private var clazz: Class<out Fragment>? = null
-    private var transactionAnimation: TransactionAnimation? = null
     private var shareElementsMap: MutableMap<String, View> = mutableMapOf()
 
     private var transitionType: TransitionType = TransitionType.ADD
@@ -102,23 +98,14 @@ class FragmentCall private constructor() : Builder() {
         try {
             val fragment = if(::frag.isInitialized) frag else clazz!!.newInstance()
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                fragment.sharedElementEnterTransition = TransitionInflater.from(activity).inflateTransition(android.R.transition.move)
-                fragment.sharedElementReturnTransition = TransitionInflater.from(activity).inflateTransition(android.R.transition.move)
-            }
-
+            fragment.sharedElementEnterTransition = TransitionInflater.from(activity).inflateTransition(android.R.transition.move)
+            fragment.sharedElementReturnTransition = TransitionInflater.from(activity).inflateTransition(android.R.transition.move)
             fragment.arguments = bundle
 
             val fragmentName = fragment.javaClass.name
 
             if (addToBackStack) {
                 fragmentTransaction.addToBackStack(fragmentName)
-            }
-
-            if (transactionAnimation != null) {
-                fragmentTransaction.setCustomAnimations(transactionAnimation!!.animationEnter, transactionAnimation?.animationExit!!,
-                transactionAnimation!!.animationPopEnter,
-                transactionAnimation!!.animationPopExit)
             }
 
             if (transitionType == TransitionType.ADD) {
@@ -203,19 +190,6 @@ class FragmentCall private constructor() : Builder() {
      */
     fun setTransitionType(transitionType: TransitionType): FragmentCall {
         this.transitionType = transitionType
-        return this
-    }
-
-    /**
-     * Set the transaction animation to be passed to the new Fragment.
-     *
-     * @param transactionAnimation The animation to used in fragment transaction.
-     *
-     * @return Builder instance
-     */
-    fun setTransactionAnimation(transactionAnimation: TransactionAnimation?): FragmentCall {
-        this.transactionAnimation = transactionAnimation ?: activity
-
         return this
     }
 

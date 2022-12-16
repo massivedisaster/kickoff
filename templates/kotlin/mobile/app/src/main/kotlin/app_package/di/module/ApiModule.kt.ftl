@@ -4,21 +4,24 @@ import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import dagger.Module
+import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
+import okhttp3.Interceptor
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import ${configs.packageName}.BuildConfig
 import ${configs.packageName}.network.ApiProvider
 import ${configs.packageName}.network.EndpointCollection
 import ${configs.packageName}.network.adapter.CallAdapterFactory
-import dagger.Module
-import dagger.Provides
-import okhttp3.Interceptor
-import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
 import ${configs.packageName}.utils.authentication.AccountUtils
 import retrofit2.Retrofit
 import retrofit2.converter.jackson.JacksonConverterFactory
 import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
 
+@InstallIn(SingletonComponent::class)
 @Module
 class ApiModule {
 
@@ -32,10 +35,6 @@ class ApiModule {
         var requestBuilder = it.request().newBuilder()
         requestBuilder.header("Content-Type", "application/json")
         requestBuilder.header("Accept", "application/json")
-
-        //seems to fix server issue (IOException end of stream) -> https://github.com/square/okhttp/issues/2738
-        //uncommnent if you need to
-        //.addHeader("Connection", "close")
 
         if (accountUtils.isLogged()) {
             requestBuilder.header("Authorization", "Bearer ${r"${accountUtils.getAccessToken()}"}")

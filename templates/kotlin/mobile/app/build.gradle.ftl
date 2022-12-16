@@ -3,12 +3,10 @@ plugins {
     id 'kotlin-android'
     id 'kotlin-kapt'
     id 'kotlin-parcelize'
+    id 'dagger.hilt.android.plugin'
     id 'com.google.firebase.crashlytics'
     <#if configs.hasFirebasePerformance!true>
     id 'com.google.firebase.firebase-perf'
-    </#if>
-    <#if configs.hasOneSignal!true>
-    id 'com.onesignal.androidsdk.onesignal-gradle-plugin'
     </#if>
 }
 apply from: "$project.rootDir/tools/git-version.gradle"
@@ -16,14 +14,12 @@ apply from: "$project.rootDir/tools/versions.gradle"
 
 android {
     compileSdkVersion versions.compileSdk
+    namespace "${configs.packageName}"
 
     defaultConfig {
         applicationId "${configs.packageName}"
         minSdkVersion versions.minSdk
         targetSdkVersion versions.targetSdk
-        <#if configs.network??>
-        buildConfigField ("long", "API_TIMEOUT", "${configs.network.timeout}")
-        </#if>
     }
 
     sourceSets {

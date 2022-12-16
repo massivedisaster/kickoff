@@ -118,4 +118,4 @@ fabric.properties
 fastlane/report.xml
 fastlane/README.MD
 fastlane/actions
-app/app/prod/output-metadata.json
+output-metadata.json

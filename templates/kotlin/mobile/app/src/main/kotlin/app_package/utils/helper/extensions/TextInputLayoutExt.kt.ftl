@@ -4,6 +4,7 @@ import android.content.res.ColorStateList
 import android.os.Handler
 import android.os.Looper
 import androidx.core.content.res.ResourcesCompat
+import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 
 /**
@@ -74,4 +75,10 @@ fun TextInputLayout.isPasswordMatching(password: TextInputLayout, errorMessage: 
     }
 
     return true
+}
+
+fun TextInputEditText.setupFocusKeyboard() {
+    setOnFocusChangeListener { _, hasFocus ->
+        if (!hasFocus && findFocus() !is TextInputEditText) hideKeyboard() else openKeyboard()
+    }
 }

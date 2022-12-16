@@ -34,7 +34,7 @@ class GenericStateCardViewHolder(itemView: View) : RecyclerView.ViewHolder(itemV
             }
         }
 
-        errorViews.invoke(GenericStateCardErrorViews(binding.emptyIcon, binding.emptyText), GenericStateCardErrorViews(binding.errorIcon, binding.errorText),false, genericStateCard.state)
+        errorViews(GenericStateCardErrorViews(binding.emptyIcon, binding.emptyText), GenericStateCardErrorViews(binding.errorIcon, binding.errorText),false, genericStateCard.state)
 
         if (genericStateCard.showingLoading) {
             binding.loading.showView()
