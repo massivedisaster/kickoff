@@ -19,4 +19,9 @@
 android.enableJetifier=true
 android.useAndroidX=true
 kapt.incremental.apt=true
-org.gradle.jvmargs=-Xmx4096m -XX\:MaxPermSize\=512m -XX\:+HeapDumpOnOutOfMemoryError
+org.gradle.jvmargs=-Xmx4G -XX\:MaxPermSize\=1G -XX\:+HeapDumpOnOutOfMemoryError
+org.gradle.daemon=true
+org.gradle.parallel=true
+org.gradle.vsf.watch=true
+org.gradle.unsafe.configuration-cache=true
+kotlin.incremental.useclasspathSnapshot=true
