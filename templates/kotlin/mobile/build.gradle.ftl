@@ -1,32 +1,21 @@
-apply plugin: "com.github.ben-manes.versions"
 buildscript {
     ext.kotlin_version = '${configs.kotlinVersion}'
-    repositories {
-        google()
-        mavenCentral()
-        gradlePluginPortal()
-    }
+    ext.android_version = '${configs.gradlePluginVersion}'
     dependencies {
-        classpath 'com.android.tools.build:gradle:${configs.gradlePluginVersion}'
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        classpath "com.google.dagger:hilt-android-gradle-plugin:2.44.2"
+<#if configs.hasFirebase!true>
         classpath 'com.google.gms:google-services:4.3.14'
         classpath 'com.google.firebase:firebase-crashlytics-gradle:2.9.2'
-        classpath "com.github.ben-manes:gradle-versions-plugin:0.44.0"
-        <#if configs.hasFirebasePerformance!true>
-        classpath 'com.google.firebase:perf-plugin:1.4.1'
-        </#if>
+        classpath 'com.google.firebase:perf-plugin:1.4.2'
+</#if>
     }
 }
 
-allprojects {
-    repositories {
-        google()
-        mavenCentral()
-        maven { url 'https://jitpack.io' }
-    }
-}
-
-task clean(type: Delete) {
-    delete rootProject.buildDir
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
+plugins {
+    id 'com.android.application' version "android_version" apply false
+    id 'com.android.library' version "android_version" apply false
+    id 'org.jetbrains.kotlin.android' version "$kotlin_version" apply false
+    id 'org.jetbrains.kotlin.kapt' version "$kotlin_version" apply false
+    id 'com.google.dagger.hilt.android' version '2.44.2' apply false
+    id 'com.github.ben-manes.versions' version '0.44.0' apply true
 }

@@ -29,8 +29,6 @@ platform :android do
 
     if options[:submit]
       send_firebase(value: ENV["FIREBASE_APP_ID_DEV"])
-    else
-      ENV["FL_SLACK_MESSAGE"] = "Build successfully!"
     end
   end
 
@@ -57,22 +55,6 @@ platform :android do
   end
   </#if>
 
-  lane :send_testfairy do |options|
-    changelog = changelog_from_git_commits(merge_commit_filtering: "exclude_merges")
-    changelog = "No changes" if changelog.to_s.length == 0
-
-    testfairy(
-      api_key: ENV["TEST_FAIRY_API_KEY"],
-      comment: changelog,
-      testers_groups: ENV['TEST_FAIRY_TESTER_GROUP'],
-      notify: "on"
-    )
-
-    @testfairy_build_url = lane_context[SharedValues::TESTFAIRY_BUILD_URL]
-
-    ENV["FL_SLACK_MESSAGE"] = "A new version has been uploaded on TestFairy! \n Version: #@app_version \n URL: #@testfairy_build_url"
-  end
-
   lane :send_firebase do |options|
     changelog = changelog_from_git_commits(merge_commit_filtering: "exclude_merges")
     changelog = "No changes" if changelog.to_s.length == 0
@@ -83,25 +65,6 @@ platform :android do
       groups: ENV['FIREBASE_GROUPS'],
       firebase_cli_path: "/usr/local/bin/firebase"
     )
-
-    ENV["FL_SLACK_MESSAGE"] = "A new version has been uploaded on Firebase! \n Version: #@app_version"
-  end
-
-  desc "For every error we send a Slack message"
-  error do |lane, exception, options|
-
-    @lane_name = lane
-    @error_message = exception.message
-
-    #slack(message: "#@error_message", success: false)
-
-  end
-
-  desc "After executing the lane we send a custom Slack message using FL_SLACK_MESSAGE env variable"
-  after_all do |lane|
-
-    #slack(success: true)
-
   end
 
 end

@@ -72,18 +72,18 @@ class InputLayout : FrameLayout {
                 dataBinding.editText.filters = arrayOf(InputFilter.LengthFilter(maxLength))
             }
 
-            val imeOptions = typedArray.getInt(R.styleable.InputLayout_imeOptions, 0)
+            val imeOptions = typedArray.getInt(R.styleable.InputLayout_imeOptions, EditorInfo.IME_NULL)
             dataBinding.editText.imeOptions = imeOptions
 
             val lines = typedArray.getInt(R.styleable.InputLayout_lines, 1)
             dataBinding.editText.setLines(lines)
             dataBinding.editText.maxLines = lines
 
-            val gravity = typedArray.getInt(R.styleable.InputLayout_gravity, -1)
+            val gravity = typedArray.getInt(R.styleable.InputLayout_gravity, Gravity.TOP or Gravity.START)
             dataBinding.editText.gravity = gravity
 
             if (inputType == 129) { // 129 is not mapped in Google InputType enum...
-                dataBinding.editText.typeface = ResourcesCompat.getFont(this.context, R.font.cabin)
+                dataBinding.editText.typeface = ResourcesCompat.getFont(this.context, R.font.roboto)
                 dataBinding.editText.transformationMethod = PasswordTransformationMethod()
             }
 
