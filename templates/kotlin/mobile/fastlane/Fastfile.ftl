@@ -18,9 +18,9 @@ default_platform :android
 platform :android do
 
   #desc "Runs all the tests"
-  #lane :test do
-  #  gradle(task: "test")
-  #end
+  lane :test do
+    gradle(task: "test")
+  end
 
   lane :build_dev do |options|
     #test
@@ -35,12 +35,24 @@ platform :android do
   lane :build_prod do |options|
     #test
     gradle(task: 'clean')
-    gradle(task: 'assemble', flavor: 'app', build_type: 'prod',
-           print_command: false, properties: { })
+    gradle(task: 'bundle', flavor: 'app', build_type: 'prod', print_command: false, properties: {
+        "android.injected.signing.store.file" => ENV["KEYSTORE_PATH"],
+        "android.injected.signing.store.password" => ENV["KEYSTORE_PASSWORD"],
+        "android.injected.signing.key.alias" => ENV["KEYSTORE_ALIAS"],
+        "android.injected.signing.key.password" => ENV["KEYSTORE_ALIAS_PASSWORD"],
+    })
 
-    if options[:submit]
-      send_firebase(value: ENV["FIREBASE_APP_ID_PROD"])
-    end
+    gradle(task: 'assemble', flavor: 'app', build_type: 'prod', print_command: false, properties: {
+        "android.injected.signing.store.file" => ENV["KEYSTORE_PATH"],
+        "android.injected.signing.store.password" => ENV["KEYSTORE_PASSWORD"],
+        "android.injected.signing.key.alias" => ENV["KEYSTORE_ALIAS"],
+        "android.injected.signing.key.password" => ENV["KEYSTORE_ALIAS_PASSWORD"],
+    })
+
+    aab_path = Actions.lane_context[SharedValues::GRADLE_AAB_OUTPUT_PATH]
+    apk_path = Actions.lane_context[SharedValues::GRADLE_APK_OUTPUT_PATH]
+    puts "AAB Path: \"#{aab_path}\""
+    puts "APK Path: \"#{apk_path}\""
   end
   <#if configs.hasQa!true>
 

@@ -1,3 +1,7 @@
+KEYSTORE_PATH=C:\\Users\\andre\\StudioProjects\\network-demos\\keystore\\keystore.jks
+KEYSTORE_PASSWORD=123456
+KEYSTORE_ALIAS_PASSWORD=123456
+KEYSTORE_ALIAS=demo
 <#if configs.hasFirebase!true>
 FIREBASE_APP_ID_DEV=${configs.firebaseDistribution.ids.dev}
 FIREBASE_APP_ID_PROD=${configs.firebaseDistribution.ids.prod}

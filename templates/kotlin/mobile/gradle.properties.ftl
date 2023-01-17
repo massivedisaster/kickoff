@@ -16,12 +16,9 @@
 # This option should only be used with decoupled projects. More details, visit
 # http://www.gradle.org/docs/current/userguide/multi_project_builds.html#sec:decoupled_projects
 # org.gradle.parallel=true
+android.defaults.buildfeatures.buildconfig=true
 android.enableJetifier=true
+android.nonTransitiveRClass=false
 android.useAndroidX=true
 kapt.incremental.apt=true
-org.gradle.jvmargs=-Xmx4G -XX\:MaxPermSize\=1G -XX\:+HeapDumpOnOutOfMemoryError
-org.gradle.daemon=true
-org.gradle.parallel=true
-org.gradle.vsf.watch=true
-org.gradle.unsafe.configuration-cache=true
-kotlin.incremental.useclasspathSnapshot=true
+org.gradle.jvmargs=-Xmx4096m -XX\:+HeapDumpOnOutOfMemoryError

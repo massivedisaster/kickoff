@@ -314,6 +314,10 @@
 		},
 		"classpaths": [
 			{
+				"group": "com.google.gms:google-services",
+				"version": "4.3.14"
+			},
+			{
 				"group": "com.google.firebase:firebase-crashlytics-gradle",
 				"version": "2.9.2"
 			},

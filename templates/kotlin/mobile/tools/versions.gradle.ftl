@@ -14,6 +14,9 @@ ext.versions = [
 <#if configs.hasOneSignal!true>
         oneSignalVersion: '[3.9.1, 3.99.99]',
 </#if>
+<#if configs.hasFirebase!true>
+        firebaseVersion: '${configs.firebase.version}'
+</#if>
 
         // ANDROID CONFIGS
         compileSdk: ${configs.targetSdkApi},

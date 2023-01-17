@@ -8,7 +8,18 @@ ext.libraries = [
     oneSignal : [
         base : "com.onesignal:OneSignal:$versions.oneSignalVersion"
     ],
-</#if><#if configs.dependencies??>
+</#if>
+<#if configs.hasFirebase!true>
+<#if configs.firebase.dependencies??>
+
+    firebase : [
+        <#list configs.firebase.dependencies?keys as key>
+        ${key} : "${configs.firebase.dependencies[key]}<#if key == "base">:$versions.firebaseVersion</#if>"<#if (key_index+1) < configs.firebase.dependencies?keys?size>,</#if>
+        </#list>
+    ],
+</#if>
+</#if>
+<#if configs.dependencies??>
     <#list configs.dependencies as dependency>
 
     ${dependency.name?capitalize?replace(" ", "")?trim?uncap_first} : [
