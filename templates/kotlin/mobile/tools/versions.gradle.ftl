@@ -11,8 +11,16 @@ ext.versions = [
         </#list>
         </#list>
 </#if>
+<#if configs.hasDaggerHilt!true>
+        hiltVersion: '${configs.daggerHilt.version}',
+        <#list configs.daggerHilt.dependencies?keys as key>
+                <#if configs.daggerHilt.dependencies[key].version??>
+        hilt${key?capitalize?replace(" ", "")?trim}Version: '${configs.daggerHilt.dependencies[key].version}',
+                </#if>
+        </#list>
+</#if>
 <#if configs.hasOneSignal!true>
-        oneSignalVersion: '[3.9.1, 3.99.99]',
+        oneSignalVersion: '${configs.oneSignal.version}',
 </#if>
 <#if configs.hasFirebase!true>
         firebaseVersion: '${configs.firebase.version}'

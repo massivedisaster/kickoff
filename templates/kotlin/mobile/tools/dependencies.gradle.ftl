@@ -33,5 +33,13 @@ dependencies {
     </#list>
 </#if>
 </#if>
+<#if configs.hasDaggerHilt!true>
+<#if configs.daggerHilt.dependencies??>
 
+    /* HILT */
+    <#list configs.daggerHilt.dependencies?keys as key>
+    <#if configs.daggerHilt.dependencies[key].isCompiler!true>kapt<#else>implementation</#if> libraries.hilt.${key}
+    </#list>
+</#if>
+</#if>
 }

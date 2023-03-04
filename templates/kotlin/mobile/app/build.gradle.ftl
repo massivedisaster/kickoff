@@ -3,23 +3,25 @@ plugins {
     id 'kotlin-android'
     id 'kotlin-kapt'
     id 'kotlin-parcelize'
+    <#if configs.hasDaggerHilt!true>
     id 'dagger.hilt.android.plugin'
+    </#if>
+    <#if configs.hasFirebase!true>
     id 'com.google.firebase.crashlytics'
-    <#if configs.hasFirebasePerformance!true>
     id 'com.google.firebase.firebase-perf'
     </#if>
 }
-apply from: "$project.rootDir/tools/git-version.gradle"
 apply from: "$project.rootDir/tools/versions.gradle"
 
 android {
-    compileSdkVersion versions.compileSdk
+
     namespace "${configs.packageName}"
+    compileSdk versions.compileSdk
 
     defaultConfig {
         applicationId "${configs.packageName}"
-        minSdkVersion versions.minSdk
-        targetSdkVersion versions.targetSdk
+        minSdk versions.minSdk
+        targetSdk versions.targetSdk
     }
 
     sourceSets {
@@ -30,22 +32,19 @@ android {
         dataBinding = true
     }
 
-    kotlinOptions {
-        jvmTarget = '1.8'
-    }
-
     packagingOptions {
-        exclude 'LICENSE.txt'
-        exclude 'META-INF/LICENSE.txt'
-        exclude 'META-INF/NOTICE.txt'
-        exclude 'META-INF/ASL2.0'
-        exclude 'META-INF/LICENSE'
-        exclude 'META-INF/NOTICE'
+        resources {
+            excludes += ['LICENSE.txt', 'META-INF/LICENSE.txt', 'META-INF/NOTICE.txt', 'META-INF/ASL2.0', 'META-INF/LICENSE', 'META-INF/NOTICE']
+        }
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    kotlinOptions {
+        jvmTarget = '17'
     }
 
     buildTypes {
@@ -83,11 +82,11 @@ android {
             ]
         }
     }
-}
 
-android.variantFilter { variant ->
-    if(variant.buildType.name.endsWith('release') || variant.buildType.name.endsWith('debug')) {
-variant.setIgnore(true)
+    androidComponents {
+        beforeVariants(selector().all()) {
+            enabled = !(buildType == "debug" || buildType == "release")
+        }
     }
 }
 

@@ -6,7 +6,9 @@ ext.libraries = [
 <#if configs.hasOneSignal!true>
 
     oneSignal : [
-        base : "com.onesignal:OneSignal:$versions.oneSignalVersion"
+        <#list configs.oneSignal.dependencies?keys as key>
+        ${key} : "${configs.oneSignal.dependencies[key].group}:$versions.oneSignalVersion"<#if (key_index+1) < dependency.list?keys?size>,</#if>
+        </#list>
     ],
 </#if>
 <#if configs.hasFirebase!true>
@@ -15,6 +17,16 @@ ext.libraries = [
     firebase : [
         <#list configs.firebase.dependencies?keys as key>
         ${key} : "${configs.firebase.dependencies[key]}<#if key == "base">:$versions.firebaseVersion</#if>"<#if (key_index+1) < configs.firebase.dependencies?keys?size>,</#if>
+        </#list>
+    ],
+</#if>
+</#if>
+<#if configs.hasDaggerHilt!true>
+<#if configs.daggerHilt.dependencies??>
+
+    hilt : [
+        <#list configs.daggerHilt.dependencies?keys as key>
+        <#if configs.daggerHilt.dependencies[key].version??>${key} : "${configs.daggerHilt.dependencies[key].group}:$versions.hilt${key?capitalize?replace(" ", "")?trim}Version"<#else>${key} : "${configs.daggerHilt.dependencies[key].group}:$versions.hiltVersion"</#if><#if (key_index+1) < dependency.list?keys?size>,</#if>
         </#list>
     ],
 </#if>

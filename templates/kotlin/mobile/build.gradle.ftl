@@ -18,6 +18,9 @@ plugins {
     id 'com.android.library' version "$android_version" apply false
     id 'org.jetbrains.kotlin.android' version "$kotlin_version" apply false
     id 'org.jetbrains.kotlin.kapt' version "$kotlin_version" apply false
-    id 'com.google.dagger.hilt.android' version '2.44.2' apply false
-    id 'com.github.ben-manes.versions' version '0.44.0' apply true
+<#if configs.hasDaggerHilt!true>
+    id '${configs.daggerHilt.plugin}' version '${configs.daggerHilt.version}' apply false
+</#if>
+    id 'com.github.ben-manes.versions' version '${configs.benManesVersion}' apply true
+    id 'org.ajoberstar.grgit' version '${configs.grGitVersion}' apply true
 }

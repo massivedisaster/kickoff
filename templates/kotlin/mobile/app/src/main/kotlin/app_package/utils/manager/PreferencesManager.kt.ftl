@@ -2,10 +2,8 @@ package ${configs.packageName}.utils.manager
 
 import android.content.Context
 import android.content.SharedPreferences
-import com.fasterxml.jackson.core.JsonProcessingException
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
-import java.io.IOException
+import ${configs.packageName}.utils.helper.extensions.text.getJson
+import ${configs.packageName}.utils.helper.extensions.text.getObject
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -15,32 +13,7 @@ class PreferencesManager @Inject constructor(context: Context) {
     companion object {
         const val FIRST_TIME = "FIRST_TIME"
         const val FIRST_LOGIN = "FIRST_LOGIN"
-<#if configs.hasOneSignal!true>
         const val PUSH_ID = "PUSH_ID"
-</#if>
-
-        inline fun <reified T : Any> getObject(json: String?): T? {
-            val mapper = jacksonObjectMapper()
-            try {
-                if (json.isNullOrBlank()) return null
-                return mapper.readValue(json)
-            } catch (e: IOException) {
-                e.printStackTrace()
-            }
-            return null
-        }
-
-        fun getJson(obj: Any?): String? {
-            val mapper = jacksonObjectMapper()
-            try {
-                if (obj == null) return null
-                return mapper.writeValueAsString(obj)
-            } catch (e: JsonProcessingException) {
-                e.printStackTrace()
-            }
-
-            return null
-        }
     }
 
     val prefs: SharedPreferences = context.getSharedPreferences("${configs.packageName}", Context.MODE_PRIVATE)
@@ -66,18 +39,18 @@ class PreferencesManager @Inject constructor(context: Context) {
             is Boolean -> edit { it.putBoolean(key, value) }
             is Float -> edit { it.putFloat(key, value) }
             is Long -> edit { it.putLong(key, value) }
-            else -> edit { it.putString(key, getJson(value)) }
+            else -> edit { it.putString(key, value.getJson()) }
         }
     }
 
     inline fun <reified T : Any> read(key: String, defaultValue: T? = null): T? = when (defaultValue) {
-            is String -> prefs.getString(key, defaultValue as? String) as T
-            is Int -> prefs.getInt(key, defaultValue as? Int ?: -1) as T
-            is Boolean -> prefs.getBoolean(key, defaultValue as? Boolean ?: false) as T
-            is Float -> prefs.getFloat(key, defaultValue as? Float ?: -1f) as T
-            is Long -> prefs.getLong(key, defaultValue as? Long ?: -1) as T
-            else -> getObject(prefs.getString(key, ""))
-        }
+        is String -> prefs.getString(key, defaultValue as? String) as T
+        is Int -> prefs.getInt(key, defaultValue as? Int ?: -1) as T
+        is Boolean -> prefs.getBoolean(key, defaultValue as? Boolean ?: false) as T
+        is Float -> prefs.getFloat(key, defaultValue as? Float ?: -1f) as T
+        is Long -> prefs.getLong(key, defaultValue as? Long ?: -1) as T
+        else -> prefs.getString(key, "").getObject()
+    }
 
     fun remove(key: String) {
         if (prefs.contains(key)) {

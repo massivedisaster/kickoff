@@ -75,7 +75,7 @@ platform :android do
       app: options[:value],
       release_notes: changelog,
       groups: ENV['FIREBASE_GROUPS'],
-      firebase_cli_path: "/usr/local/bin/firebase"
+      firebase_cli_path: ENV['FIREBASE_PATH']
     )
   end
 

@@ -1,5 +1,17 @@
 import java.text.Normalizer
 
+ext {
+    gitVersionName = grgit.describe(tags: true, always: true)
+    gitVersionCode = grgit.tag.list().size()
+    gitVersionCodeTime = grgit.head().dateTime.toEpochSecond()
+}
+
+tasks.register('printVersion') {
+    println("Version Name: $gitVersionName")
+    println("Version Code: $gitVersionCode")
+    println("Version Code Time: $gitVersionCodeTime")
+}
+
 android {
 
     applicationVariants.all { variant ->

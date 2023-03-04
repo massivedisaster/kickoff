@@ -1,13 +1,15 @@
 {
 	"template": "templates/kotlin/mobile.tar.gz",
 	"language": "kotlin",
-	"gradlePluginVersion": "8.0.0-alpha10",
+	"gradlePluginVersion": "8.1.0-alpha07",
 	"projectName": "TEST APP",
 	"packageName": "pt.test",
 	"minimumSdkApi": 23,
 	"targetSdkApi": 33,
 	"gradleVersion": "8.0-rc-1",
 	"kotlinVersion": "1.8.0",
+	"benManesVersion": "0.46.0",
+	"grGitVersion": "5.0.0",
 	"network": {
 		"timeout": 30,
 		"endpoints": {
@@ -150,29 +152,6 @@
 			}
 		},
 		{
-			"name": "Hilt",
-			"globalVersion": "2.44.2",
-			"list": {
-				"base": {
-					"group": "com.google.dagger:hilt-android",
-					"isCompiler": false
-				},
-				"work": {
-					"group": "androidx.hilt:hilt-work",
-					"version": "1.0.0",
-					"isCompiler": false
-				},
-				"android": {
-					"group": "com.google.dagger:hilt-android-compiler",
-					"isCompiler": true
-				},
-				"compiler": {
-					"group": "com.google.dagger:hilt-compiler",
-					"isCompiler": true
-				}
-			}
-		},
-		{
 			"name": "Glide",
 			"globalVersion": "4.14.2",
 			"list": {
@@ -282,22 +261,18 @@
 					"isCompiler": false
 				}
 			}
-		},
-		{
-			"name": "OneSignal",
-			"globalVersion": "4.8.3",
-			"list": {
-				"base": {
-					"group": "com.onesignal.OneSignal",
-					"isCompiler": false
-				}
-			}
 		}
 	],
 	"hasQa": true,
 	"hasOneSignal": true,
 	"oneSignal": {
-
+		"version": "4.8.4",
+		"dependencies": {
+			"base": {
+				"group": "com.onesignal.OneSignal",
+				"isCompiler": false
+			}
+		}
 	},
 	"hasFirebase": true,
 	"firebase": {
@@ -332,6 +307,30 @@
 			"messaging": "com.google.firebase:firebase-messaging-ktx",
 			"crashlytics": "com.google.firebase:firebase-crashlytics-ktx",
 			"performance": "com.google.firebase:firebase-perf-ktx"
+		}
+	},
+	"hasDaggerHilt": true,
+	"daggerHilt": {
+		"version": "2.44.2",
+		"plugin": "com.google.dagger.hilt.android",
+		"dependencies": {
+			"base": {
+				"group": "com.google.dagger:hilt-android",
+				"isCompiler": false
+			},
+			"work": {
+				"group": "androidx.hilt:hilt-work",
+				"version": "1.0.0",
+				"isCompiler": false
+			},
+			"android": {
+				"group": "com.google.dagger:hilt-android-compiler",
+				"isCompiler": true
+			},
+			"compiler": {
+				"group": "com.google.dagger:hilt-compiler",
+				"isCompiler": true
+			}
 		}
 	}
 }
