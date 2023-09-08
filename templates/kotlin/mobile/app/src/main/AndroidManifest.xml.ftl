@@ -12,30 +12,29 @@
         android:name="android.permission.MANAGE_ACCOUNTS"
         android:maxSdkVersion="22" />
 
+    <!-- Permission to use BiometricPrompt -->
+    <uses-permission android:name="android.permission.USE_BIOMETRIC" />
+
     <application 
+        android:name=".app.App"
         android:allowBackup="false"
         android:label="@string/app_name"
         android:icon="${r"${appIcon}"}"
         android:roundIcon="${r"${appIconRound}"}"
         android:supportsRtl="true"
+        android:allowClearUserData="true"
         android:theme="@style/AppTheme.NoActionBar"
-        android:name=".app.App"
         tools:ignore="GoogleAppIndexingWarning">
 
     	<activity
             android:name=".ui.screens.splash.SplashActivity"
-            android:screenOrientation="portrait"
             android:exported="true"
+            android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity">
-
             <intent-filter>
-
                 <action android:name="android.intent.action.MAIN"/>
-
                 <category android:name="android.intent.category.LAUNCHER"/>
-
             </intent-filter>
-
         </activity>
 
         <service

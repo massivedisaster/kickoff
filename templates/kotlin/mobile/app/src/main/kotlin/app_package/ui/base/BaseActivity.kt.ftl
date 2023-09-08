@@ -72,8 +72,8 @@ abstract class BaseActivity<T : ViewDataBinding, VM : ViewModel> : AppCompatActi
     open fun getArguments(arguments: Bundle) {}
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        requestWindowFeature(Window.FEATURE_ACTIVITY_TRANSITIONS)
-        requestWindowFeature(Window.FEATURE_CONTENT_TRANSITIONS)
+       window.requestFeature(Window.FEATURE_ACTIVITY_TRANSITIONS)
+       window.requestFeature(Window.FEATURE_CONTENT_TRANSITIONS)
 
         if (intent.extras != null) {
             getArguments(intent.extras!!)

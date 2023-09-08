@@ -13,10 +13,10 @@ class DialogManager @Inject constructor() {
         val builder = AlertDialog.Builder(context)
         builder.setMessage(message)
         builder.setTitle(title)
-                .setPositiveButton(positive) { dialog, _ ->
-                    success()
-                    dialog.dismiss()
-                }
+            .setPositiveButton(positive) { dialog, _ ->
+                success()
+                dialog.dismiss()
+            }
 
         if (option) {
             builder.setNegativeButton(negative) { dialog, _ ->

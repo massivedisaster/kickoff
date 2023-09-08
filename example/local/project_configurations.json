@@ -1,14 +1,15 @@
 {
 	"template": "templates/kotlin/mobile.tar.gz",
 	"language": "kotlin",
-	"gradlePluginVersion": "7.3.0-alpha03",
+	"gradlePluginVersion": "8.1.0-alpha07",
 	"projectName": "TEST APP",
 	"packageName": "pt.test",
 	"minimumSdkApi": 23,
-	"targetSdkApi": 31,
-	"gradleVersion": "7.4",
-	"buildTools": "30.0.2",
-	"kotlinVersion": "1.6.10",
+	"targetSdkApi": 33,
+	"gradleVersion": "8.0-rc-1",
+	"kotlinVersion": "1.8.0",
+	"benManesVersion": "0.46.0",
+	"grGitVersion": "5.0.0",
 	"network": {
 		"timeout": 30,
 		"endpoints": {
@@ -46,7 +47,7 @@
 	"dependencies": [
 		{
 			"name": "Android Jetpack",
-			"globalVersion": "1.4.1",
+			"globalVersion": "1.7.0-alpha01",
 			"list": {
 				"base": {
 					"group": "androidx.appcompat:appcompat",
@@ -59,22 +60,22 @@
 				},
 				"activity": {
 					"group": "androidx.activity:activity-ktx",
-					"version": "1.5.0-alpha03",
+					"version": "1.7.0-alpha02",
 					"isCompiler": false
 				},
 				"fragment": {
 					"group": "androidx.fragment:fragment-ktx",
-					"version": "1.5.0-alpha03",
+					"version": "1.6.0-alpha03",
 					"isCompiler": false
 				},
 				"browser": {
 					"group": "androidx.browser:browser",
-					"version": "1.4.0",
+					"version": "1.5.0-alpha01",
 					"isCompiler": false
 				},
 				"constraintLayout": {
 					"group": "androidx.constraintlayout:constraintlayout",
-					"version": "2.1.3",
+					"version": "2.2.0-alpha04",
 					"isCompiler": false
 				},
 				"multidex": {
@@ -84,12 +85,12 @@
 				},
 				"recyclerView": {
 					"group": "androidx.recyclerview:recyclerview",
-					"version": "1.3.0-alpha01",
+					"version": "1.3.0-rc01",
 					"isCompiler": false
 				},
 				"work": {
 					"group": "androidx.work:work-runtime-ktx",
-					"version": "2.8.0-alpha01",
+					"version": "2.8.0-beta02",
 					"isCompiler": false
 				},
 				"swipeRefresh": {
@@ -99,14 +100,14 @@
 				},
 				"paging": {
 					"group": "androidx.paging:paging-runtime",
-					"version": "3.1.0",
+					"version": "3.2.0-alpha03",
 					"isCompiler": false
 				}
 			}
 		},
 		{
 			"name": "KOTLIN ANDROID",
-			"globalVersion": "1.8.0-alpha04",
+			"globalVersion": "1.9.0",
 			"list": {
 				"core": {
 					"group": "androidx.core:core-ktx",
@@ -116,7 +117,7 @@
 		},
 		{
 			"name": "Android Material Components",
-			"globalVersion": "1.6.0-alpha02",
+			"globalVersion": "1.8.0-alpha03",
 			"list": {
 				"design": {
 					"group": "com.google.android.material:material",
@@ -126,7 +127,7 @@
 		},
 		{
 			"name": "Android Jetpack Lifecycle",
-			"globalVersion": "2.4.0",
+			"globalVersion": "2.6.0-alpha03",
 			"list": {
 				"lifecycleCompiler": {
 					"group": "androidx.lifecycle:lifecycle-compiler",
@@ -151,59 +152,8 @@
 			}
 		},
 		{
-			"name": "Dagger",
-			"globalVersion": "2.40.5",
-			"list": {
-				"base": {
-					"group": "com.google.dagger:dagger",
-					"isCompiler": false
-				},
-				"android": {
-					"group": "com.google.dagger:dagger-android",
-					"isCompiler": false
-				},
-				"androidSupport": {
-					"group": "com.google.dagger:dagger-android-support",
-					"isCompiler": false
-				},
-				"androidProcessor": {
-					"group": "com.google.dagger:dagger-android-processor",
-					"isCompiler": true
-				},
-				"compiler": {
-					"group": "com.google.dagger:dagger-compiler",
-					"isCompiler": true
-				}
-			}
-		},
-		{
-			"name": "Firebase",
-			"globalVersion": "20.1.0",
-			"list": {
-				"base": {
-					"group": "com.google.firebase:firebase-analytics-ktx",
-					"isCompiler": false
-				},
-				"messaging": {
-					"group": "com.google.firebase:firebase-messaging-ktx",
-					"version": "23.0.0",
-					"isCompiler": false
-				},
-				"crashlytics": {
-					"group": "com.google.firebase:firebase-crashlytics-ktx",
-					"version": "18.2.8",
-					"isCompiler": false
-				},
-				"performance": {
-					"group": "com.google.firebase:firebase-perf-ktx",
-					"version": "20.0.5",
-					"isCompiler": false
-				}
-			}
-		},
-		{
 			"name": "Glide",
-			"globalVersion": "4.13.0",
+			"globalVersion": "4.14.2",
 			"list": {
 				"base": {
 					"group": "com.github.bumptech.glide:glide",
@@ -229,19 +179,19 @@
 				},
 				"jackson": {
 					"group": "com.fasterxml.jackson.module:jackson-module-kotlin",
-					"version": "2.13.1",
+					"version": "2.14.1",
 					"isCompiler": false
 				},
 				"logging": {
 					"group": "com.squareup.okhttp3:logging-interceptor",
-					"version": "5.0.0-alpha.3",
+					"version": "5.0.0-alpha.10",
 					"isCompiler": false
 				}
 			}
 		},
 		{
 			"name": "threeTenABP",
-			"globalVersion": "1.3.1",
+			"globalVersion": "1.4.3",
 			"list": {
 				"base": {
 					"group": "com.jakewharton.threetenabp:threetenabp",
@@ -251,7 +201,7 @@
 		},
 		{
 			"name": "Permissions Dispatcher",
-			"globalVersion": "4.9.1",
+			"globalVersion": "4.9.2",
 			"list": {
 				"base": {
 					"group": "com.github.permissions-dispatcher:permissionsdispatcher",
@@ -265,7 +215,7 @@
 		},
 		{
 			"name": "Deeplink Dispatcher",
-			"globalVersion": "6.0.0-beta06",
+			"globalVersion": "6.1.0",
 			"list": {
 				"base": {
 					"group": "com.airbnb:deeplinkdispatch",
@@ -289,7 +239,7 @@
 		},
 		{
 			"name": "Google Code",
-			"globalVersion": "8.12.43",
+			"globalVersion": "8.13.1",
 			"list": {
 				"libPhoneNumber": {
 					"group": "com.googlecode.libphonenumber:libphonenumber",
@@ -299,7 +249,7 @@
 		},
 		{
 			"name": "Play Services",
-			"globalVersion": "18.0.1",
+			"globalVersion": "18.1.0",
 			"list": {
 				"base": {
 					"group": "com.google.android.gms:play-services-base",
@@ -314,27 +264,73 @@
 		}
 	],
 	"hasQa": true,
-	"useAndroidX": true,
-	"hasOneSignal": false,
-	"hasFirebasePerformance": true,
-	"slack": {
-		"channel": "-",
-		"slug": "-"
+	"hasOneSignal": true,
+	"oneSignal": {
+		"version": "4.8.4",
+		"dependencies": {
+			"base": {
+				"group": "com.onesignal.OneSignal",
+				"isCompiler": false
+			}
+		}
 	},
-	"testFairy": {
-		"key": "-",
-		"groups": [
-			"fastlane"
-		]
-	},
-	"firebaseDistribution": {
-		"ids": {
-			"prod": "-",
-			"dev": "-",
-			"qa": "-"
+	"hasFirebase": true,
+	"firebase": {
+		"version": "31.1.1",
+		"distribution": {
+			"ids": {
+				"prod": "-",
+				"dev": "-",
+				"qa": "-"
+			},
+			"groups": [
+				"fastlane"
+			]
 		},
-		"groups": [
-			"fastlane"
-		]
+		"classpaths": [
+			{
+				"group": "com.google.gms:google-services",
+				"version": "4.3.14"
+			},
+			{
+				"group": "com.google.firebase:firebase-crashlytics-gradle",
+				"version": "2.9.2"
+			},
+			{
+				"group": "com.google.firebase:perf-plugin",
+				"version": "1.4.1"
+			}
+		],
+		"dependencies": {
+			"base": "com.google.firebase:firebase-bom",
+			"analytics": "com.google.firebase:firebase-analytics-ktx",
+			"messaging": "com.google.firebase:firebase-messaging-ktx",
+			"crashlytics": "com.google.firebase:firebase-crashlytics-ktx",
+			"performance": "com.google.firebase:firebase-perf-ktx"
+		}
+	},
+	"hasDaggerHilt": true,
+	"daggerHilt": {
+		"version": "2.44.2",
+		"plugin": "com.google.dagger.hilt.android",
+		"dependencies": {
+			"base": {
+				"group": "com.google.dagger:hilt-android",
+				"isCompiler": false
+			},
+			"work": {
+				"group": "androidx.hilt:hilt-work",
+				"version": "1.0.0",
+				"isCompiler": false
+			},
+			"android": {
+				"group": "com.google.dagger:hilt-android-compiler",
+				"isCompiler": true
+			},
+			"compiler": {
+				"group": "com.google.dagger:hilt-compiler",
+				"isCompiler": true
+			}
+		}
 	}
 }

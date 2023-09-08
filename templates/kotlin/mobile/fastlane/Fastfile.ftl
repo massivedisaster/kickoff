@@ -18,9 +18,9 @@ default_platform :android
 platform :android do
 
   #desc "Runs all the tests"
-  #lane :test do
-  #  gradle(task: "test")
-  #end
+  lane :test do
+    gradle(task: "test")
+  end
 
   lane :build_dev do |options|
     #test
@@ -29,20 +29,30 @@ platform :android do
 
     if options[:submit]
       send_firebase(value: ENV["FIREBASE_APP_ID_DEV"])
-    else
-      ENV["FL_SLACK_MESSAGE"] = "Build successfully!"
     end
   end
 
   lane :build_prod do |options|
     #test
     gradle(task: 'clean')
-    gradle(task: 'assemble', flavor: 'app', build_type: 'prod',
-           print_command: false, properties: { })
+    gradle(task: 'bundle', flavor: 'app', build_type: 'prod', print_command: false, properties: {
+        "android.injected.signing.store.file" => ENV["KEYSTORE_PATH"],
+        "android.injected.signing.store.password" => ENV["KEYSTORE_PASSWORD"],
+        "android.injected.signing.key.alias" => ENV["KEYSTORE_ALIAS"],
+        "android.injected.signing.key.password" => ENV["KEYSTORE_ALIAS_PASSWORD"],
+    })
 
-    if options[:submit]
-      send_firebase(value: ENV["FIREBASE_APP_ID_PROD"])
-    end
+    gradle(task: 'assemble', flavor: 'app', build_type: 'prod', print_command: false, properties: {
+        "android.injected.signing.store.file" => ENV["KEYSTORE_PATH"],
+        "android.injected.signing.store.password" => ENV["KEYSTORE_PASSWORD"],
+        "android.injected.signing.key.alias" => ENV["KEYSTORE_ALIAS"],
+        "android.injected.signing.key.password" => ENV["KEYSTORE_ALIAS_PASSWORD"],
+    })
+
+    aab_path = Actions.lane_context[SharedValues::GRADLE_AAB_OUTPUT_PATH]
+    apk_path = Actions.lane_context[SharedValues::GRADLE_APK_OUTPUT_PATH]
+    puts "AAB Path: \"#{aab_path}\""
+    puts "APK Path: \"#{apk_path}\""
   end
   <#if configs.hasQa!true>
 
@@ -57,22 +67,6 @@ platform :android do
   end
   </#if>
 
-  lane :send_testfairy do |options|
-    changelog = changelog_from_git_commits(merge_commit_filtering: "exclude_merges")
-    changelog = "No changes" if changelog.to_s.length == 0
-
-    testfairy(
-      api_key: ENV["TEST_FAIRY_API_KEY"],
-      comment: changelog,
-      testers_groups: ENV['TEST_FAIRY_TESTER_GROUP'],
-      notify: "on"
-    )
-
-    @testfairy_build_url = lane_context[SharedValues::TESTFAIRY_BUILD_URL]
-
-    ENV["FL_SLACK_MESSAGE"] = "A new version has been uploaded on TestFairy! \n Version: #@app_version \n URL: #@testfairy_build_url"
-  end
-
   lane :send_firebase do |options|
     changelog = changelog_from_git_commits(merge_commit_filtering: "exclude_merges")
     changelog = "No changes" if changelog.to_s.length == 0
@@ -81,27 +75,8 @@ platform :android do
       app: options[:value],
       release_notes: changelog,
       groups: ENV['FIREBASE_GROUPS'],
-      firebase_cli_path: "/usr/local/bin/firebase"
+      firebase_cli_path: ENV['FIREBASE_PATH']
     )
-
-    ENV["FL_SLACK_MESSAGE"] = "A new version has been uploaded on Firebase! \n Version: #@app_version"
-  end
-
-  desc "For every error we send a Slack message"
-  error do |lane, exception, options|
-
-    @lane_name = lane
-    @error_message = exception.message
-
-    #slack(message: "#@error_message", success: false)
-
-  end
-
-  desc "After executing the lane we send a custom Slack message using FL_SLACK_MESSAGE env variable"
-  after_all do |lane|
-
-    #slack(success: true)
-
   end
 
 end

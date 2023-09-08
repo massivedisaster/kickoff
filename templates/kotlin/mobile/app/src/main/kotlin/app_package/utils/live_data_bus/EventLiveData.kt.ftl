@@ -22,10 +22,10 @@ import androidx.lifecycle.Observer
 /**
  * A custom LiveData which can unregister when there is no observer
  */
-class EventLiveData(private val mSubject: String, private val list : MutableList<ConsumableEvent> = mutableListOf()) : MutableLiveData<ListConsumableEvent>() {
+class EventLiveData(private val subject: String, private val list : MutableList<ConsumableEvent> = mutableListOf()) : MutableLiveData<ListConsumableEvent>() {
 
     fun update(obj: ConsumableEvent) {
-        list.removeAll {it.isConsumed}
+        list.removeAll { it.isConsumed }
         if(obj.consumableID.isNotEmpty()){
             if(!list.any { it.consumableID == obj.consumableID }) {
                 list.add(obj)
@@ -40,7 +40,7 @@ class EventLiveData(private val mSubject: String, private val list : MutableList
     override fun removeObserver(observer: Observer<in ListConsumableEvent>) {
         super.removeObserver(observer)
         if (!hasObservers()) {
-            LiveDataBus.unregister(mSubject)
+            LiveDataBus.unregister(subject)
         }
     }
 }

@@ -50,7 +50,7 @@ object LiveDataBus {
      */
     @NonNull
     private fun getLiveData(subjectCode: String): EventLiveData {
-        var liveData: EventLiveData? = subjectMap[subjectCode]
+        var liveData = subjectMap[subjectCode]
         if (liveData == null) {
             liveData = EventLiveData(subjectCode)
             subjectMap[subjectCode] = liveData
@@ -67,7 +67,6 @@ object LiveDataBus {
      */
     fun subscribe(subject: String, uniqueID : String = "", @NonNull lifecycle: LifecycleOwner, @NonNull action: Observer<ListConsumableEvent>) {
         try {
-//            i{"livedatabus subscribe - " + subject + lifecycle::class.java.name + uniqueID}
             // avoid register same instance
             getLiveData(subject + lifecycle::class.java.name + uniqueID).observe(lifecycle, action)
         } catch (throwable: IllegalArgumentException) {
