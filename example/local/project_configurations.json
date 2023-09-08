@@ -1,92 +1,336 @@
 {
-  "template" : "/Users/nunosilva/Documents/Projetos/kickoff/templates/java/mobile.tar.gz",      // Mandatory
-  "language" : "java",												                            // Mandatory
-  "gradlePluginVersion" : "3.0.1",									                            // Mandatory
-  "projectType" : "mobile", 										                            // Mandatory
-  "projectName" : "Kickoff Example",								                            // Mandatory
-  "packageName" : "com.massivedisaster.kickoff.example", 			                            // Mandatory
-  "minimumSdkApi" : 19,												                            // Mandatory
-  "targetSdkApi" : 26,												                            // Mandatory
-  "buildTools" : "26.0.2",											                            // Mandatory
-  "dependencies" : {                                                                            // Mandatory
-    "onesignal" : {													                            // Optional
-      "prod" : {
-        "googleProjectNumber" : "<your_prod_google_project_number>",
-        "appId" : "<your_prod_app_id>"
-      },
-
-      "dev" : {
-        "googleProjectNumber" : "<your_dev_google_project_number>",
-        "appId" : "<your_dev_app_id>"
-      },
-      "qa" : {
-        "googleProjectNumber" : "<your_qa_google_project_number>",
-        "appId" : "<your_qa_app_id>"
-      }
-    },
-    "retrofit" : {
-      "timeout" : 30,
-      "prod" : "<your_prod_api_url>",
-      "dev" : "<your_dev_api_url>",
-      "qa" : "<your_qa_api_url>"
-    },
-    "others" : [
-      {
-        "name" : "GOOGLE SUPPORT",
-        "version" : "27.0.1",
-        "list" : [
-          "com.android.support:appcompat-v7",
-          "com.android.support:recyclerview-v7",
-          "com.android.support:cardview-v7",
-          "com.android.support:design"
-        ]
-      },
-      {
-        "name" : "RETROFIT",
-        "version" : "2.3.0",
-        "list" : [
-          "com.squareup.retrofit2:retrofit",
-          "com.squareup.retrofit2:converter-jackson"
-        ]
-      },
-      {
-        "name" : "OKHTTP",
-        "version" : "3.9.0",
-        "list" : [
-          "com.squareup.okhttp3:logging-interceptor"
-        ]
-      },
-      {
-        "name" : "LOMBOK",
-        "version" : "1.16.18",
-        "list" : [
-          "org.projectlombok:lombok"
-        ]
-      },
-      {
-        "name" : "ADAL",
-        "version" : "0.1.15",
-        "list" : [
-          "com.massivedisaster.adal:adal-accounts"
-        ]
-      },
-      {
-        "name" : "AFM",
-        "version" : "0.4.4",
-        "list" : [
-          "com.massivedisaster:activity-fragment-manager"
-        ]
-      }
-    ],
-    "filesToRemove" : [
-      "RetrofitAdapter.java"
-    ]
-  },
-  "hasQa" : false,
-  "cvs" : {
-    "type" : "git"
-  },
-  "qualityVerifier" : {
-    "version" : "3.5.9"
-  }
+	"template": "templates/kotlin/mobile.tar.gz",
+	"language": "kotlin",
+	"gradlePluginVersion": "8.1.0-alpha07",
+	"projectName": "TEST APP",
+	"packageName": "pt.test",
+	"minimumSdkApi": 23,
+	"targetSdkApi": 33,
+	"gradleVersion": "8.0-rc-1",
+	"kotlinVersion": "1.8.0",
+	"benManesVersion": "0.46.0",
+	"grGitVersion": "5.0.0",
+	"network": {
+		"timeout": 30,
+		"endpoints": {
+			"preprod": "-",
+			"prod": "-",
+			"dev": "-",
+			"qa": "-"
+		}
+	},
+	"extraBuildVars": {
+		"preprod": {
+			"EXAMPLE": "-"
+		},
+		"prod": {
+			"EXAMPLE": "-"
+		},
+		"dev": {
+			"EXAMPLE": "-"
+		},
+		"qa": {
+			"EXAMPLE": "-"
+		}
+	},
+	"manifestKeys": {
+		"prod": {
+			"example": "-"
+		},
+		"dev": {
+			"example": "-"
+		},
+		"qa": {
+			"example": "-"
+		}
+	},
+	"dependencies": [
+		{
+			"name": "Android Jetpack",
+			"globalVersion": "1.7.0-alpha01",
+			"list": {
+				"base": {
+					"group": "androidx.appcompat:appcompat",
+					"isCompiler": false
+				},
+				"cardView": {
+					"group": "androidx.cardview:cardview",
+					"version": "1.0.0",
+					"isCompiler": false
+				},
+				"activity": {
+					"group": "androidx.activity:activity-ktx",
+					"version": "1.7.0-alpha02",
+					"isCompiler": false
+				},
+				"fragment": {
+					"group": "androidx.fragment:fragment-ktx",
+					"version": "1.6.0-alpha03",
+					"isCompiler": false
+				},
+				"browser": {
+					"group": "androidx.browser:browser",
+					"version": "1.5.0-alpha01",
+					"isCompiler": false
+				},
+				"constraintLayout": {
+					"group": "androidx.constraintlayout:constraintlayout",
+					"version": "2.2.0-alpha04",
+					"isCompiler": false
+				},
+				"multidex": {
+					"group": "androidx.multidex:multidex",
+					"version": "2.0.1",
+					"isCompiler": false
+				},
+				"recyclerView": {
+					"group": "androidx.recyclerview:recyclerview",
+					"version": "1.3.0-rc01",
+					"isCompiler": false
+				},
+				"work": {
+					"group": "androidx.work:work-runtime-ktx",
+					"version": "2.8.0-beta02",
+					"isCompiler": false
+				},
+				"swipeRefresh": {
+					"group": "androidx.swiperefreshlayout:swiperefreshlayout",
+					"version": "1.2.0-alpha01",
+					"isCompiler": false
+				},
+				"paging": {
+					"group": "androidx.paging:paging-runtime",
+					"version": "3.2.0-alpha03",
+					"isCompiler": false
+				}
+			}
+		},
+		{
+			"name": "KOTLIN ANDROID",
+			"globalVersion": "1.9.0",
+			"list": {
+				"core": {
+					"group": "androidx.core:core-ktx",
+					"isCompiler": false
+				}
+			}
+		},
+		{
+			"name": "Android Material Components",
+			"globalVersion": "1.8.0-alpha03",
+			"list": {
+				"design": {
+					"group": "com.google.android.material:material",
+					"isCompiler": false
+				}
+			}
+		},
+		{
+			"name": "Android Jetpack Lifecycle",
+			"globalVersion": "2.6.0-alpha03",
+			"list": {
+				"lifecycleCompiler": {
+					"group": "androidx.lifecycle:lifecycle-compiler",
+					"isCompiler": true
+				},
+				"lifecycleRuntime": {
+					"group": "androidx.lifecycle:lifecycle-runtime-ktx",
+					"isCompiler": false
+				},
+				"viewModel": {
+					"group": "androidx.lifecycle:lifecycle-viewmodel-ktx",
+					"isCompiler": false
+				},
+				"livedata": {
+					"group": "androidx.lifecycle:lifecycle-livedata-ktx",
+					"isCompiler": false
+				},
+				"savedState": {
+					"group": "androidx.lifecycle:lifecycle-viewmodel-savedstate",
+					"isCompiler": false
+				}
+			}
+		},
+		{
+			"name": "Glide",
+			"globalVersion": "4.14.2",
+			"list": {
+				"base": {
+					"group": "com.github.bumptech.glide:glide",
+					"isCompiler": false
+				},
+				"compiler": {
+					"group": "com.github.bumptech.glide:compiler",
+					"isCompiler": true
+				}
+			}
+		},
+		{
+			"name": "retrofit",
+			"globalVersion": "2.9.0",
+			"list": {
+				"base": {
+					"group": "com.squareup.retrofit2:retrofit",
+					"isCompiler": false
+				},
+				"jacksonConverter": {
+					"group": "com.squareup.retrofit2:converter-jackson",
+					"isCompiler": false
+				},
+				"jackson": {
+					"group": "com.fasterxml.jackson.module:jackson-module-kotlin",
+					"version": "2.14.1",
+					"isCompiler": false
+				},
+				"logging": {
+					"group": "com.squareup.okhttp3:logging-interceptor",
+					"version": "5.0.0-alpha.10",
+					"isCompiler": false
+				}
+			}
+		},
+		{
+			"name": "threeTenABP",
+			"globalVersion": "1.4.3",
+			"list": {
+				"base": {
+					"group": "com.jakewharton.threetenabp:threetenabp",
+					"isCompiler": false
+				}
+			}
+		},
+		{
+			"name": "Permissions Dispatcher",
+			"globalVersion": "4.9.2",
+			"list": {
+				"base": {
+					"group": "com.github.permissions-dispatcher:permissionsdispatcher",
+					"isCompiler": false
+				},
+				"android": {
+					"group": "com.github.permissions-dispatcher:permissionsdispatcher-processor",
+					"isCompiler": true
+				}
+			}
+		},
+		{
+			"name": "Deeplink Dispatcher",
+			"globalVersion": "6.1.0",
+			"list": {
+				"base": {
+					"group": "com.airbnb:deeplinkdispatch",
+					"isCompiler": false
+				},
+				"android": {
+					"group": "com.airbnb:deeplinkdispatch-processor",
+					"isCompiler": true
+				}
+			}
+		},
+		{
+			"name": "Timber",
+			"globalVersion": "5.0.1",
+			"list": {
+				"base": {
+					"group": "com.jakewharton.timber:timber",
+					"isCompiler": false
+				}
+			}
+		},
+		{
+			"name": "Google Code",
+			"globalVersion": "8.13.1",
+			"list": {
+				"libPhoneNumber": {
+					"group": "com.googlecode.libphonenumber:libphonenumber",
+					"isCompiler": false
+				}
+			}
+		},
+		{
+			"name": "Play Services",
+			"globalVersion": "18.1.0",
+			"list": {
+				"base": {
+					"group": "com.google.android.gms:play-services-base",
+					"isCompiler": false
+				},
+				"licenses": {
+					"group": "com.google.android.gms:play-services-oss-licenses",
+					"version": "17.0.0",
+					"isCompiler": false
+				}
+			}
+		}
+	],
+	"hasQa": true,
+	"hasOneSignal": true,
+	"oneSignal": {
+		"version": "4.8.4",
+		"dependencies": {
+			"base": {
+				"group": "com.onesignal.OneSignal",
+				"isCompiler": false
+			}
+		}
+	},
+	"hasFirebase": true,
+	"firebase": {
+		"version": "31.1.1",
+		"distribution": {
+			"ids": {
+				"prod": "-",
+				"dev": "-",
+				"qa": "-"
+			},
+			"groups": [
+				"fastlane"
+			]
+		},
+		"classpaths": [
+			{
+				"group": "com.google.gms:google-services",
+				"version": "4.3.14"
+			},
+			{
+				"group": "com.google.firebase:firebase-crashlytics-gradle",
+				"version": "2.9.2"
+			},
+			{
+				"group": "com.google.firebase:perf-plugin",
+				"version": "1.4.1"
+			}
+		],
+		"dependencies": {
+			"base": "com.google.firebase:firebase-bom",
+			"analytics": "com.google.firebase:firebase-analytics-ktx",
+			"messaging": "com.google.firebase:firebase-messaging-ktx",
+			"crashlytics": "com.google.firebase:firebase-crashlytics-ktx",
+			"performance": "com.google.firebase:firebase-perf-ktx"
+		}
+	},
+	"hasDaggerHilt": true,
+	"daggerHilt": {
+		"version": "2.44.2",
+		"plugin": "com.google.dagger.hilt.android",
+		"dependencies": {
+			"base": {
+				"group": "com.google.dagger:hilt-android",
+				"isCompiler": false
+			},
+			"work": {
+				"group": "androidx.hilt:hilt-work",
+				"version": "1.0.0",
+				"isCompiler": false
+			},
+			"android": {
+				"group": "com.google.dagger:hilt-android-compiler",
+				"isCompiler": true
+			},
+			"compiler": {
+				"group": "com.google.dagger:hilt-compiler",
+				"isCompiler": true
+			}
+		}
+	}
 }

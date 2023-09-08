@@ -1,18 +1,30 @@
-group 'com..massivedisaster'
-version '0.0.2-SNAPSHOT'
+group 'com.massivedisaster'
+version '0.0.4-SNAPSHOT'
 
 apply plugin: 'java'
+apply plugin: 'kotlin'
 
-sourceCompatibility = 1.7
+sourceCompatibility = 1.8
 
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    compile 'com.google.code.gson:gson:2.8.0'
-    compile 'org.freemarker:freemarker:2.3.26-incubating'
-    compile 'commons-cli:commons-cli:20040117.000000'
-    compile 'org.rauschig:jarchivelib:0.7.1'
-    compile 'com.squareup.retrofit2:retrofit:2.3.0'
+    implementation 'com.google.code.gson:gson:2.8.5'
+    implementation 'org.freemarker:freemarker:2.3.29'
+    implementation 'commons-cli:commons-cli:1.4'
+    implementation 'org.rauschig:jarchivelib:1.0.0'
+    implementation 'com.squareup.retrofit2:retrofit:2.6.1'
+    implementation 'com.squareup.retrofit2:converter-jackson:2.6.1'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+}
+buildscript {
+    ext.kotlin_version = '1.8.0'
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
 }

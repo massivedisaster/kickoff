@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="error_fingerprint">Fingerprint recognition has failed. Please, try again.</string>
+    <string name="generic_no_content_text">Não existem resultados para apresentar</string>
+    <string name="generic_error_retry_text">Houve um problema\na carregar o conteúdo</string>
+    <string name="generic_object_text">Houve um problema\na carregar o conteúdo</string>
+
+    <string name="internet_title">Sem Internet</string>
+    <string name="internet_error">Verifique a sua ligação à internet.</string>
+
+    <string name="error_generic_title">Erro</string>
+    <string name="error_generic_body">Ocorreu um erro inesperado.</string>
+
+    <string name="btn_retry">Tentar novamente</string>
+</resources>

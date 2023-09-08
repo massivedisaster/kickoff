@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <dimen name="bottomsheet_default_height">340dp</dimen>
+
+</resources>
