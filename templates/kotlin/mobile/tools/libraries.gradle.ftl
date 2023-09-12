@@ -7,7 +7,7 @@ ext.libraries = [
 
     oneSignal : [
         <#list configs.oneSignal.dependencies?keys as key>
-        ${key} : "${configs.oneSignal.dependencies[key].group}:$versions.oneSignalVersion"<#if (key_index+1) < dependency.list?keys?size>,</#if>
+        ${key} : "${configs.oneSignal.dependencies[key].group}:$versions.oneSignalVersion"<#if (key_index+1) < configs.oneSignal.dependencies?keys?size>,</#if>
         </#list>
     ],
 </#if>
@@ -26,7 +26,7 @@ ext.libraries = [
 
     hilt : [
         <#list configs.daggerHilt.dependencies?keys as key>
-        <#if configs.daggerHilt.dependencies[key].version??>${key} : "${configs.daggerHilt.dependencies[key].group}:$versions.hilt${key?capitalize?replace(" ", "")?trim}Version"<#else>${key} : "${configs.daggerHilt.dependencies[key].group}:$versions.hiltVersion"</#if><#if (key_index+1) < dependency.list?keys?size>,</#if>
+        <#if configs.daggerHilt.dependencies[key].version??>${key} : "${configs.daggerHilt.dependencies[key].group}:$versions.hilt${key?capitalize?replace(" ", "")?trim}Version"<#else>${key} : "${configs.daggerHilt.dependencies[key].group}:$versions.hiltVersion"</#if><#if (key_index+1) < configs.daggerHilt.dependencies?keys?size>,</#if>
         </#list>
     ],
 </#if>

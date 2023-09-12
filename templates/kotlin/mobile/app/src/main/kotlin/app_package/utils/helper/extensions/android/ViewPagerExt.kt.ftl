@@ -1,7 +1,6 @@
-package ${configs.packageName}.utils.helper.extensions
+package ${configs.packageName}.utils.helper.extensions.android
 
 import android.os.Handler
-import android.os.Looper
 import androidx.viewpager2.widget.ViewPager2
 
 fun ViewPager2.autoScroll(interval: Long, handler: Handler) {

@@ -23,7 +23,7 @@ ext.versions = [
         oneSignalVersion: '${configs.oneSignal.version}',
 </#if>
 <#if configs.hasFirebase!true>
-        firebaseVersion: '${configs.firebase.version}'
+        firebaseVersion: '${configs.firebase.version}',
 </#if>
 
         // ANDROID CONFIGS

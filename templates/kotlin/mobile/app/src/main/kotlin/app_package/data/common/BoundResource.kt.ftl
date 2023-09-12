@@ -120,7 +120,7 @@ abstract class BoundResource<ResultType, RequestType, RefreshType>
                 if (withDb) {
                     responseBody = loadFromDatabase()
                 }
-                val callResult = CallResult.success(response.successCode, newData, response.headers, this))
+                val callResult = CallResult.success(response.successCode, newData, response.headers, this)
                 publishEndEvent(callResult)
 
                 callResult

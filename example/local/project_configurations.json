@@ -264,7 +264,7 @@
 		}
 	],
 	"hasQa": true,
-	"hasOneSignal": true,
+	"hasOneSignal": false,
 	"oneSignal": {
 		"version": "4.8.4",
 		"dependencies": {

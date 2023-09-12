@@ -51,8 +51,6 @@ platform :android do
 
     aab_path = Actions.lane_context[SharedValues::GRADLE_AAB_OUTPUT_PATH]
     apk_path = Actions.lane_context[SharedValues::GRADLE_APK_OUTPUT_PATH]
-    puts "AAB Path: \"#{aab_path}\""
-    puts "APK Path: \"#{apk_path}\""
   end
   <#if configs.hasQa!true>
 

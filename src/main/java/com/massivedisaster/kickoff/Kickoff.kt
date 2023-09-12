@@ -17,6 +17,7 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import java.io.*
 import java.util.*
+import kotlin.system.exitProcess
 
 /**
  * Generate a new android project based on configurations
@@ -28,9 +29,9 @@ import java.util.*
         println("kickoff v.0.0.4 - A tool to generate new android projects based on a powerful template.\n")
         val cli = Cli(args)
         cli.parse()
-        if (cli.options.hasOption("g")) {
+        if (cli.getOptions()!!.hasOption("g")) {
             try {
-                generateNewProject(cli.options.getOptionValue("g"))
+                generateNewProject(cli.getOptions()!!.getOptionValue("g"))
             } catch (e: Exception) {
                 e.printStackTrace()
             }
@@ -111,7 +112,7 @@ import java.util.*
                 } else {
                     println("Error getting template from the server.")
                 }
-                System.exit(0)
+                exitProcess(0)
             }
 
             override fun onFailure(call: Call<ResponseBody?>, t: Throwable) {

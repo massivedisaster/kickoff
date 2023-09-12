@@ -10,7 +10,7 @@ dependencies {
 
     /* ${dependency.name?upper_case} */
     <#list dependency.list?keys as key>
-    <#if dependency.list[key].isCompiler!true>kapt<#else>implementation</#if> libraries.${dependency.name?capitalize?replace(" ", "")?trim?uncap_first}.${key}
+    <#if dependency.list[key].compiler!true>kapt<#else>implementation</#if> libraries.${dependency.name?capitalize?replace(" ", "")?trim?uncap_first}.${key}
     </#list>
     </#list>
 </#if>
@@ -38,7 +38,7 @@ dependencies {
 
     /* HILT */
     <#list configs.daggerHilt.dependencies?keys as key>
-    <#if configs.daggerHilt.dependencies[key].isCompiler!true>kapt<#else>implementation</#if> libraries.hilt.${key}
+    <#if configs.daggerHilt.dependencies[key].compiler!true>kapt<#else>implementation</#if> libraries.hilt.${key}
     </#list>
 </#if>
 </#if>
